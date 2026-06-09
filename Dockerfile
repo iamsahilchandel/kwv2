@@ -9,6 +9,7 @@ WORKDIR /app
 FROM base AS deps
 
 COPY package.json pnpm-lock.yaml ./
+COPY prisma/ prisma/
 
 RUN pnpm install --frozen-lockfile
 
@@ -17,6 +18,8 @@ FROM deps AS build
 
 COPY tsconfig.json tsconfig.build.json nest-cli.json ./
 COPY src/ src/
+
+RUN pnpm run db:generate
 
 RUN pnpm run build
 
@@ -28,7 +31,6 @@ FROM node:22-alpine AS production
 RUN apk add --no-cache dumb-init
 
 ENV NODE_ENV=production
-ENV NODE_ENV=production
 
 WORKDIR /app
 
@@ -36,6 +38,7 @@ RUN chown -R node:node /app
 
 COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
+COPY --from=build --chown=node:node /app/prisma ./prisma
 
 COPY --chown=node:node package.json ./
 

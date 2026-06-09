@@ -1,6 +1,19 @@
-import { PrismaClient, ServiceGroup } from '../src/generated/prisma';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient, ServiceGroup } from '../src/generated/prisma/client';
+import 'dotenv/config';
 
-const prisma = new PrismaClient();
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error('DATABASE_URL environment variable is not set.');
+  process.exit(1);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+const pool = new Pool({ connectionString: DATABASE_URL });
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 const AMENITIES = [
   'spacious',
@@ -170,4 +183,7 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  });
