@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,2135 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+enum FcmUserType {
+  admin
+  center
+  expert
+  learner
+}
+
+enum ServiceGroup {
+  sports_and_physical_activities @map("Sports and Physical Activities")
+  dance_and_fitness              @map("Dance and Fitness")
+  music_and_performing_arts      @map("Music and Performing Arts")
+  art_and_creativity             @map("Art and Creativity")
+  academic_and_skill_development @map("Academic and Skill Development")
+}
+
+// ── Admin ────────────────────────────────────────────────────────────────────
+
+enum AdminRole {
+  super_admin        @map("super-admin")
+  admin
+  admin_account      @map("admin-account")
+  sales_head         @map("sales-head")
+  area_sales_manager @map("area-sales-manager")
+  sales_executive    @map("sales-executive")
+  onboarding_team    @map("onboarding-team")
+  curriculum_team    @map("curriculum-team")
+  marketing_head     @map("marketing-head")
+}
+
+// ── Center ───────────────────────────────────────────────────────────────────
+
+enum CenterInquiryStatus {
+  new
+  contacted
+  interested
+  qualified
+  unqualified
+  in_process            @map("in-process")
+  follow_up             @map("follow-up")
+  converted
+  lost
+  no_response           @map("no-response")
+  duplicate
+  onboarded
+  verified
+  verification_rejected @map("verification-rejected")
+}
+
+enum CenterMediaType {
+  gallery_image       @map("gallery-image")
+  testimonial_video   @map("testimonial-video")
+  gallery_video       @map("gallery-video")
+  center_certificates @map("center-certificates")
+  logo
+  qr_code             @map("qr-code")
+}
+
+enum CenterOperatingEntity {
+  rwa
+  school
+  owner
+  maintenance
+}
+
+enum CenterVerificationStatus {
+  verified
+  pending
+  rejected
+}
+
+enum CenterType {
+  clubhouse_apartment_complex @map("clubhouse-apartment-complex")
+  clubhouse_residential       @map("clubhouse-residential")
+  society
+  professional_center         @map("professional-center")
+  school
+  others
+}
+
+enum CenterStaffRole {
+  center_admin @map("center-admin")
+  center_head  @map("center-head")
+}
+
+enum VerificationMode {
+  manual
+  api
+}
+
+enum CenterStaffDocumentType {
+  aadhaar_front @map("aadhaar-front")
+  aadhaar_back  @map("aadhaar-back")
+  pan_card      @map("pan-card")
+}
+
+enum CenterDocumentType {
+  aadhaar_front  @map("aadhaar-front")
+  aadhaar_back   @map("aadhaar-back")
+  pan_card       @map("pan-card")
+  pass_or_cheque @map("pass-or-cheque")
+  gst
+}
+
+enum CenterPaymentMethod {
+  gateway
+  upi
+  poc
+  qr
+  coupon
+}
+
+// ── Expert ───────────────────────────────────────────────────────────────────
+
+enum ExpertDocumentType {
+  aadhaar_front   @map("aadhaar-front")
+  aadhaar_back    @map("aadhaar-back")
+  pan_card        @map("pan-card")
+  passport
+  driving_license @map("driving-license")
+}
+
+enum ExpertMediaType {
+  gallery_image     @map("gallery-image")
+  gallery_video     @map("gallery-video")
+  testimonial_video @map("testimonial-video")
+  certificates
+  demo_video        @map("demo-video")
+}
+
+// ── Learner ──────────────────────────────────────────────────────────────────
+
+enum LearnerMediaType {
+  profile_pic @map("profile-pic")
+}
+
+enum LearnerKycDocumentType {
+  aadhaar_front @map("aadhaar-front")
+  aadhaar_back  @map("aadhaar-back")
+}
+
+// ── Agreements / Users ───────────────────────────────────────────────────────
+
+enum AgreementType {
+  expert_center   @map("expert-center")
+  learner_center  @map("learner-center")
+  center_platform @map("center-platform")
+}
+
+enum UserType {
+  learner
+  expert
+  admin
+}
+
+// ── Batch & Class ────────────────────────────────────────────────────────────
+
+enum BatchType {
+  ongoing
+  workshop
+  camp
+  trial
+  competition
+}
+
+enum BatchStatus {
+  active
+  inactive
+  completed
+  cancelled
+}
+
+enum ClassStatus {
+  scheduled
+  completed
+  cancelled
+  rescheduled
+  reschedule_requested @map("reschedule-requested")
+}
+
+enum EnrollmentStatus {
+  enrolled
+  cancelled
+  completed
+  rescheduled
+  pending
+  refunded
+  rejected
+}
+
+enum BatchRequestStatus {
+  pending
+  approved
+  rejected
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+  rescheduled
+  excused
+  pending
+}
+
+enum BenefitType {
+  skill_development
+  certification
+  career_guidance
+  networking
+  resource_access
+  mentorship
+  other
+}
+
+// ── Scheduling ───────────────────────────────────────────────────────────────
+
+enum TrialRequestStatus {
+  pending
+  approved
+  rejected
+  completed
+}
+
+// ── Financial ────────────────────────────────────────────────────────────────
+
+enum PaymentStatus {
+  pending
+  authorized
+  successful
+  failed
+  cancelled
+  refunded
+  expired
+  rejected
+  pending_verification
+}
+
+enum PaymentMethod {
+  credit_card
+  debit_card
+  net_banking
+  upi
+  wallet
+  cash
+  cheque
+  other
+  pac
+  poc
+  coupon
+}
+
+enum PaymentType {
+  center_onboarding
+  center_subscription
+  expert_subscription
+  learner_subscription
+  batch_payment
+}
+
+enum InvoiceStatus {
+  pending
+  generated
+  sent
+  viewed
+}
+
+enum DiscountType {
+  advance_payment @map("advance-payment")
+  coupon
+}
+
+enum DiscountStatus {
+  active
+  inactive
+}
+
+// ── Platform ─────────────────────────────────────────────────────────────────
+
+// Inline ENUM from PlatformSettings model
+enum SettingValueType {
+  string
+  number
+  boolean
+  json
+  datetime
+}
+
+// Inline ENUM from AdvertisingBanners model
+enum BannerType {
+  center
+  learner
+  expert
+  all
+}
+
+// Inline ENUM from UpdateCenterDetailsRequest.status
+enum UpdateRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+// Inline ENUM from WhatsappConfig.templateSyncStatus
+enum TemplateSyncStatus {
+  pending
+  synced
+  partial_failure
+}
+
+// ── Expert Center Interest ─────────────────────────────────────────
+
+enum InterestStatus {
+  pending
+  accepted
+  rejected
+  withdrawn
+}
+
+enum InterestInitiator {
+  expert
+  center
+}
+
+// ── Batch & Class ───────────────────────────────────────────────────
+
+enum ClassType {
+  regular
+  trial
+}
+
+enum BatchMediaType {
+  image
+  video
+  document
+  audio
+  presentation
+  curriculum
+  brochure
+}
+
+enum BatchClassMediaType {
+  image
+  video
+  document
+  audio
+}
+
+enum MediaVisibility {
+  all
+  specific
+}
+
+enum MediaAccessType {
+  view
+  download
+  full
+}
+
+// ── Platform / Cross-cutting ───────────────────────────────────────
+
+enum NotificationStatus {
+  pending
+  sent
+  failed
+}
+
+enum DeviceType {
+  android
+  ios
+  web
+  desktop
+}
+
+enum ReferralEntityType {
+  learner
+  expert
+  center
+}
+
+enum ReferralStatus {
+  pending
+  completed
+  rewarded
+  used
+}
+
+enum AgreementStatus {
+  pending
+  approved
+  rejected
+  revised
+}
+
+// ── Financial ──────────────────────────────────────────────────────
+
+enum SubscriptionType {
+  monthly
+  quarterly
+  yearly
+}
+
+enum TransactionStatus {
+  SUCCESS
+  FAILED
+  USER_DROPPED
+  REFUND_SUCCESS
+  REFUND_FAILED
+  AUTO_REFUND_SUCCESS
+  AUTO_REFUND_FAILED
+}
+
+enum PaymentGroup {
+  credit_card
+  debit_card
+  net_banking
+  upi
+  wallet
+  credit_card_emi
+  debit_card_emi
+  cardless_emi
+  pay_later
+}
+
+enum CouponType {
+  percentage
+  fixed
+}
+
+enum CouponStatus {
+  active
+  expired
+  disabled
+  depleted
+}
+
+enum CouponApplication {
+  all
+  center_payment
+  batch_enrollment
+}
+
+enum CouponModule {
+  center_payment
+  batch_enrollment
+}
+
+enum RefundStatus {
+  pending
+  approved
+  rejected
+  cancelled
+  processed
+}
+
+// ── Learner Ecosystem ──────────────────────────────────────────────
+
+enum AccessRequestStatus {
+  pending
+  approved
+  rejected
+}
+
+enum RelationshipType {
+  resident
+  member
+  guest
+  employee
+  family
+  other
+}
+
+// ── Scheduling ─────────────────────────────────────────────────────
+
+enum RequesterType {
+  expert
+  learner
+}
+
+enum RescheduleRequestStatus {
+  pending
+  approved
+  rejected
+  cancelled
+}
+
+enum PollStatus {
+  active
+  closed
+}
+
+enum PollResponse {
+  available
+  unavailable
+}
+
+model Services {
+  id             Int           @id @default(autoincrement())
+  serviceGroup   ServiceGroup? @map("service_group")
+  serviceName    String        @unique @map("service_name")
+  description    String?
+  createdBy      BigInt?       @map("created_by")
+  lastModifiedBy BigInt?       @map("last_modified_by")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  centerServices   CenterServices[]
+  futureActivities FutureProposedActivities[]
+  expertExperties  ExpertExperties[]
+  interestServices ExpertInterestServices[]
+
+  learnerInterests LearnersInterest[]
+
+  batches       Batches[]
+  batchRequests BatchRequests[]
+
+  @@map("services")
+}
+
+model Ameneties {
+  id             Int      @id @default(autoincrement())
+  amenityName    String   @unique @map("amenity_name")
+  description    String?
+  createdBy      Int?     @map("created_by")
+  lastModifiedBy Int?     @map("last_modified_by")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  centerAmenities CenterAmenities[]
+
+  @@map("amenities")
+}
+
+model PlatformSettings {
+  id            Int              @id @default(autoincrement())
+  category      String           @db.VarChar(50)
+  keyName       String           @map("key_name") @db.VarChar(100)
+  valueType     SettingValueType @map("value_type")
+  stringValue   String?          @map("string_value")
+  numberValue   Decimal?         @map("number_value") @db.Decimal(15, 4)
+  booleanValue  Boolean?         @map("boolean_value")
+  jsonValue     Json?            @map("json_value")
+  datetimeValue DateTime?        @map("datetime_value")
+  description   String?
+  isActive      Boolean          @default(true) @map("is_active")
+  isSystem      Boolean          @default(false) @map("is_system")
+  sequence      Int              @default(0)
+  createdBy     Int?             @map("created_by")
+  updatedBy     Int?             @map("updated_by")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  @@unique([category, keyName], name: "unique_category_key")
+  @@index([category], name: "idx_category")
+  @@index([isActive], name: "idx_is_active")
+  @@map("platform_settings")
+}
+
+model PlatformGeneralDocuments {
+  id            Int      @id @default(autoincrement())
+  documentTitle String   @map("document_title")
+  documentType  String?  @map("document_type")
+  documentUrl   String   @map("document_url")
+  documentKey   String   @map("document_key")
+  createdBy     BigInt?  @map("created_by")
+  isDeleted     Boolean  @default(false) @map("is_deleted")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("platform_general_documents")
+}
+
+model AdvertisingBanners {
+  id        Int        @id @default(autoincrement())
+  title     String
+  imageUrl  String     @map("image_url")
+  imageKey  String     @map("image_key")
+  linkUrl   String?    @map("link_url")
+  type      BannerType
+  isActive  Boolean    @default(true) @map("is_active")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  @@map("advertising_banners")
+}
+
+// Three self-referential FKs require three named @relation pairs to avoid
+// Prisma's "ambiguous relation" error.
+model AppAdminStaff {
+  id             Int       @id @default(autoincrement())
+  firebaseUid    String?   @unique @map("firebase_uid")
+  fullName       String    @map("full_name") @db.VarChar(50)
+  email          String    @unique
+  phoneNumber    String    @unique @map("phone_number") @db.VarChar(15)
+  role           AdminRole
+  reportsTo      Int?      @map("reports_to")
+  createdBy      Int?      @map("created_by")
+  lastModifiedBy Int?      @map("last_modified_by")
+  isActive       Boolean   @default(false) @map("is_active")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Self-referential relations
+  manager        AppAdminStaff?  @relation("AdminHierarchy", fields: [reportsTo], references: [id])
+  subordinates   AppAdminStaff[] @relation("AdminHierarchy")
+  creator        AppAdminStaff?  @relation("AdminCreatedBy", fields: [createdBy], references: [id])
+  createdOthers  AppAdminStaff[] @relation("AdminCreatedBy")
+  modifier       AppAdminStaff?  @relation("AdminModifiedBy", fields: [lastModifiedBy], references: [id])
+  modifiedOthers AppAdminStaff[] @relation("AdminModifiedBy")
+
+  // Back-ref: LearnerProfiles.verifiedBy → AppAdminStaff
+  verifiedProfiles LearnerProfiles[] @relation("LearnerProfileVerifiedBy")
+
+  @@map("app_admin_staff")
+}
+
+// Two self-referential FKs + back-refs for all models whose createdBy /
+// lastModifiedBy / verifiedBy scalars reference center_staff.id.
+model CenterStaff {
+  id             Int       @id @default(autoincrement())
+  firebaseUid    String?   @map("firebase_uid")
+  firstName      String    @map("first_name")
+  lastName       String?   @map("last_name")
+  email          String?
+  phoneNumber    String    @unique @map("phone_number")
+  address        Json?
+  joinedOn       DateTime? @map("joined_on")
+  isActive       Boolean   @default(true) @map("is_active")
+  createdBy      Int?      @map("created_by")
+  lastModifiedBy Int?      @map("last_modified_by")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Self-referential
+  creator       CenterStaff?  @relation("StaffCreatedBy", fields: [createdBy], references: [id])
+  createdStaff  CenterStaff[] @relation("StaffCreatedBy")
+  modifier      CenterStaff?  @relation("StaffModifiedBy", fields: [lastModifiedBy], references: [id])
+  modifiedStaff CenterStaff[] @relation("StaffModifiedBy")
+
+  // Back-refs from Experts
+  verifiedExperts Experts[] @relation("ExpertVerifiedBy")
+  createdExperts  Experts[] @relation("ExpertCreatedBy")
+  modifiedExperts Experts[] @relation("ExpertModifiedBy")
+
+  // Back-refs from Learners
+  createdLearners  Learners[] @relation("LearnerCreatedBy")
+  modifiedLearners Learners[] @relation("LearnerModifiedBy")
+
+  // Back-refs from LearnerProfiles
+  createdProfiles  LearnerProfiles[] @relation("LearnerProfileCreatedBy")
+  modifiedProfiles LearnerProfiles[] @relation("LearnerProfileModifiedBy")
+
+  headedCenters      Center[]                  @relation("CenterHead")
+  staffMemberships   CenterHasManyStaff[]
+  staffVerifications CenterStaffVerification[]
+
+  approvedAccessRequests LearnerCenterAccessRequests[]
+
+  signedAgreements Agreements[]
+
+  @@map("center_staff")
+}
+
+// Experts.locationForWork uses PostGIS geometry — all geo queries must use $queryRaw.
+// centerId is a plain scalar FK (Center defined in Phase 3).
+// verifiedBy / createdBy / lastModifiedBy originally BIGINT in Sequelize but normalized
+// to Int? here to match CenterStaff.id (Int PK) and enable proper @relation.
+model Experts {
+  id                           Int                             @id @default(autoincrement())
+  firebaseUid                  String?                         @map("firebase_uid")
+  centerId                     Int?                            @map("center_id")
+  firstName                    String                          @map("first_name")
+  lastName                     String                          @map("last_name")
+  email                        String
+  phoneNumber                  String                          @unique @map("phone_number")
+  dateOfBirth                  DateTime?                       @map("date_of_birth")
+  address                      Json?
+  locationForWork              Unsupported("geometry(Point)")? @map("location_for_work")
+  rangeForWork                 Int?                            @default(5000) @map("range_for_work")
+  profilePicture               String?                         @map("profile_picture")
+  mediaKey                     String?                         @map("media_key")
+  gender                       Gender
+  isVerified                   Boolean                         @default(false) @map("is_verified")
+  verifiedOn                   DateTime?                       @map("verified_on")
+  verifiedBy                   Int?                            @map("verified_by")
+  isActive                     Boolean                         @default(false) @map("is_active")
+  isPublic                     Boolean                         @default(true) @map("is_public")
+  isOpenForWork                Boolean                         @default(false) @map("is_open_for_work")
+  preferredWorkingTimeSlots    Json?                           @map("preferred_working_time_slots")
+  termsAndConditionsAccepted   Boolean                         @default(false) @map("terms_and_conditions_accepted")
+  termsAndConditionsAcceptedOn DateTime?                       @map("terms_and_conditions_accepted_on")
+  isFreelancer                 Boolean                         @default(false) @map("is_freelancer")
+  referralCode                 String?                         @unique @map("referral_code")
+  createdBy                    Int?                            @map("created_by")
+  lastModifiedBy               Int?                            @map("last_modified_by")
+  createdAt                    DateTime                        @default(now()) @map("created_at")
+  updatedAt                    DateTime                        @updatedAt @map("updated_at")
+
+  verifiedByStaff     CenterStaff?           @relation("ExpertVerifiedBy", fields: [verifiedBy], references: [id])
+  createdByStaff      CenterStaff?           @relation("ExpertCreatedBy", fields: [createdBy], references: [id])
+  lastModifiedByStaff CenterStaff?           @relation("ExpertModifiedBy", fields: [lastModifiedBy], references: [id])
+  center              Center?                @relation("ExpertCenter", fields: [centerId], references: [id])
+  expertMemberships   CenterHasManyExperts[]
+
+  about           ExpertAbout[]
+  media           ExpertMedia[]
+  kycDocs         ExpertKycVerification[]
+  experties       ExpertExperties[]
+  centerInterests ExpertCenterInterest[]
+
+  batches              Batches[]
+  taughtClasses        BatchClasses[]
+  batchRequests        BatchRequests[]
+  classMedia           BatchClassMedia[]
+  classHistoryAsExpert BatchClassHistory[] @relation("BatchClassHistoryExpert")
+  createdClassHistory  BatchClassHistory[] @relation("BatchClassHistoryCreatedBy")
+  modifiedClassHistory BatchClassHistory[] @relation("BatchClassHistoryModifiedBy")
+
+  payments          Payment[]
+  coupons           Coupon[]
+  couponRedemptions CouponRedemption[]
+
+  signedAgreements Agreements[]
+
+  @@unique([centerId, phoneNumber], name: "experts_center_phone_unique")
+  @@map("experts")
+}
+
+// phoneNumber is BIGINT in Sequelize (stored as a number, not a formatted string).
+// profileId is a plain scalar FK pointing at the learner's "current active" LearnerProfile;
+// the full many-to-many relationship is established via learnerHasManyProfiles in Phase 5.
+// createdBy / lastModifiedBy normalized to Int? to match CenterStaff.id (Int PK).
+model Learners {
+  id              Int       @id @default(autoincrement())
+  profileId       BigInt?   @map("profile_id")
+  firebaseUid     String?   @unique @map("firebase_uid")
+  firstName       String    @map("first_name")
+  lastName        String?   @map("last_name")
+  email           String?   @unique
+  phoneNumber     BigInt    @unique @map("phone_number")
+  termsAccepted   Boolean   @default(false) @map("terms_accepted")
+  termsAcceptedOn DateTime? @map("terms_accepted_on")
+  createdBy       Int?      @map("created_by")
+  lastModifiedBy  Int?      @map("last_modified_by")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  createdByStaff      CenterStaff? @relation("LearnerCreatedBy", fields: [createdBy], references: [id])
+  lastModifiedByStaff CenterStaff? @relation("LearnerModifiedBy", fields: [lastModifiedBy], references: [id])
+
+  media            LearnerMedia[]
+  profileJunctions LearnerHasManyProfiles[]
+
+  couponRedemptions CouponRedemption[]
+
+  signedAgreements Agreements[]
+
+  @@map("learners")
+}
+
+// location uses PostGIS geometry — all geo queries must use $queryRaw.
+// verifiedBy normalized to Int? to match AppAdminStaff.id (Int PK).
+// createdBy / lastModifiedBy normalized to Int? to match CenterStaff.id (Int PK).
+model LearnerProfiles {
+  id                Int                             @id @default(autoincrement())
+  firstName         String?                         @map("first_name")
+  lastName          String?                         @map("last_name")
+  email             String?
+  phoneNumber       String?                         @map("phone_number")
+  dateOfBirth       DateTime?                       @map("date_of_birth")
+  address           Json?
+  gender            Gender?
+  profilePicture    String?                         @map("profile_picture")
+  profilePictureKey String?                         @map("profile_picture_key")
+  relation          String?
+  location          Unsupported("geometry(Point)")?
+  isActive          Boolean                         @default(false) @map("is_active")
+  isVerified        Boolean                         @default(false) @map("is_verified")
+  verifiedOn        DateTime?                       @map("verified_on")
+  verifiedBy        Int?                            @map("verified_by")
+  referralCode      String?                         @unique @map("referral_code")
+  createdBy         Int?                            @map("created_by")
+  lastModifiedBy    Int?                            @map("last_modified_by")
+  createdAt         DateTime                        @default(now()) @map("created_at")
+  updatedAt         DateTime                        @updatedAt @map("updated_at")
+
+  verifiedByAdmin     AppAdminStaff? @relation("LearnerProfileVerifiedBy", fields: [verifiedBy], references: [id])
+  createdByStaff      CenterStaff?   @relation("LearnerProfileCreatedBy", fields: [createdBy], references: [id])
+  lastModifiedByStaff CenterStaff?   @relation("LearnerProfileModifiedBy", fields: [lastModifiedBy], references: [id])
+
+  kycDocs              LearnerProfileKycVerifications[]
+  centerMemberships    LearnerProfileHasManyCenters[]
+  centerAccessRequests LearnerCenterAccessRequests[]
+  interests            LearnersInterest[]
+  learnerJunctions     LearnerHasManyProfiles[]
+
+  enrollments BatchEnrollments[]
+  attendance  BatchClassAttendence[]
+  mediaAccess BatchClassMediaAccess[]
+
+  pollResponses ReschedulePollResponses[]
+  trialRequests TrialRequests[]
+
+  payments       Payment[]
+  coupons        Coupon[]
+  refundRequests EnrollmentRefundRequests[]
+
+  @@map("learner_profiles")
+}
+
+// Defined before Center because Center holds a unique FK → center_inquiries.id.
+model CenterInquiries {
+  id                Int                 @id @default(autoincrement())
+  centerName        String              @map("center_name")
+  phoneNumber       String              @map("phone_number")
+  email             String
+  address           Json
+  website           String?
+  status            CenterInquiryStatus
+  assignedBy        Int?                @map("assigned_by")
+  assignedTo        Int?                @map("assigned_to")
+  servicesAvailable String[]            @map("services_available")
+  createdBy         Int?                @map("created_by")
+  lastModifiedBy    Int?                @map("last_modified_by")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+
+  registeredCenter Center?
+  notes            CenterInquiryNote[]
+
+  @@map("center_inquiries")
+}
+
+// geoLocation uses PostGIS geometry(Point,4326) — all geo queries must use $queryRaw.
+// reasonForNotVerified / onboardingPaymentRejectionReason are PostgreSQL text arrays.
+// centerInquiryId is a unique FK (one-to-one with CenterInquiries).
+// centerHeadId normalized to Int? (from BIGINT) to match CenterStaff.id (Int PK).
+// All payment/approval audit scalar FKs kept as plain Int? (no @relation).
+model Center {
+  id                               Int                                   @id @default(autoincrement())
+  centerInquiryId                  Int?                                  @unique @map("center_inquiry_id")
+  centerName                       String                                @map("center_name")
+  centerHeadId                     Int?                                  @map("center_head_id")
+  establishedDate                  DateTime?                             @map("established_date")
+  numberOfEmployees                Int                                   @map("number_of_employees")
+  email                            String
+  phoneNumber                      String                                @unique @map("phone_number")
+  dailyOperatingHours              Json                                  @map("daily_operating_hours")
+  address                          Json
+  geoLocation                      Unsupported("geometry(Point, 4326)")? @map("geo_location")
+  website                          String?
+  centerType                       CenterType?                           @map("center_type")
+  operatingEntity                  CenterOperatingEntity?                @map("operating_entity")
+  isNotifyByEmail                  Boolean                               @default(false) @map("is_notify_by_email")
+  isNotifyByPushAlert              Boolean                               @default(false) @map("is_notify_by_push_alert")
+  isNotifyBySms                    Boolean                               @default(false) @map("is_notify_by_sms")
+  isNotifyByWhatsapp               Boolean                               @default(false) @map("is_notify_by_whatsapp")
+  isActive                         Boolean                               @default(false) @map("is_active")
+  approvedBy                       Int?                                  @map("approved_by")
+  isVerified                       Boolean                               @default(false) @map("is_verified")
+  isPublic                         Boolean                               @default(true) @map("is_public")
+  reasonForNotVerified             String[]                              @map("reason_for_not_verified")
+  isOnboardingPaymentReceived      Boolean                               @default(false) @map("is_onboarding_payment_received")
+  onboardingPaymentVerifiedBy      Int?                                  @map("onboarding_payment_verified_by")
+  isOnboardingPaymentVerified      Boolean                               @default(false) @map("is_onboarding_payment_verified")
+  onboardingPaymentReceivedOn      DateTime?                             @map("onboarding_payment_received_on")
+  onboardingPaymentReceivedBy      Int?                                  @map("onboarding_payment_received_by")
+  isOnboardingPaymentRejected      Boolean                               @default(false) @map("is_onboarding_payment_rejected")
+  onboardingPaymentRejectedBy      Int?                                  @map("onboarding_payment_rejected_by")
+  onboardingPaymentRejectedOn      DateTime?                             @map("onboarding_payment_rejected_on")
+  onboardingPaymentRejectionReason String[]                              @map("onboarding_payment_rejection_reason")
+  onboardingPaymentMethod          CenterPaymentMethod?                  @map("onboarding_payment_method")
+  onboardingPaymentSS              String?                               @map("onboarding_payment_ss")
+  onboardingPaymentSSKey           String?                               @map("onboarding_payment_ss_key")
+  onboardingPaymentGatewayMethod   String?                               @map("onboarding_payment_gateway_method")
+  onboardingPaymentAmount          Decimal?                              @map("onboarding_payment_amount") @db.Decimal(15, 2)
+  onboardingPaymentTransactionId   String?                               @map("onboarding_payment_transaction_id")
+  onboardingPaymentOrderId         String?                               @map("onboarding_payment_order_id")
+  commissionPercentage             Decimal?                              @map("commission_percentage") @db.Decimal(10, 2)
+  approvalDate                     DateTime?                             @map("approval_date")
+  termsAccepted                    Boolean                               @default(false) @map("terms_accepted")
+  termsAcceptedOn                  DateTime?                             @map("terms_accepted_on")
+  createdBy                        Int?                                  @map("created_by")
+  lastModifiedBy                   Int?                                  @map("last_modified_by")
+  coupon                           String?
+  couponAppliedOn                  DateTime?                             @map("coupon_applied_on")
+  originalOnboardingAmount         Decimal?                              @map("original_onboarding_amount") @db.Decimal(15, 2)
+  subscriptionAmount               Decimal?                              @map("subscription_amount") @db.Decimal(15, 2)
+  batchTaxPercentage               Decimal?                              @map("batch_tax_percentage") @db.Decimal(10, 2)
+  createdAt                        DateTime                              @default(now()) @map("created_at")
+  updatedAt                        DateTime                              @updatedAt @map("updated_at")
+
+  // Structural forward relations (Center holds the FK)
+  inquiry    CenterInquiries? @relation(fields: [centerInquiryId], references: [id])
+  centerHead CenterStaff?     @relation("CenterHead", fields: [centerHeadId], references: [id])
+
+  // Back-refs from Center sub-models
+  experts            Experts[]                    @relation("ExpertCenter")
+  aboutUs            CenterAboutUs[]
+  bankDetails        CenterBankDetails[]
+  media              CenterMedia[]
+  verificationDocs   CenterVerification[]
+  centerAmenities    CenterAmenities[]
+  centerServices     CenterServices[]
+  staffAssociations  CenterHasManyStaff[]
+  expertAssociations CenterHasManyExperts[]
+  futureActivities   FutureProposedActivities[]
+  updateRequests     UpdateCenterDetailsRequest[]
+  whatsappConfig     WhatsappConfig?
+  expertInterests    ExpertCenterInterest[]
+
+  batches       Batches[]
+  batchRequests BatchRequests[]
+
+  rescheduleRequests ClassRescheduleRequests[]
+  polls              ReschedulePolls[]
+
+  payments          Payment[]
+  coupons           Coupon[]
+  couponRedemptions CouponRedemption[]
+
+  learnerMemberships LearnerProfileHasManyCenters[]
+  accessRequests     LearnerCenterAccessRequests[]
+
+  agreements Agreements[]
+
+  @@map("center")
+}
+
+model CenterAboutUs {
+  id                Int      @id @default(autoincrement())
+  centerId          Int      @map("center_id")
+  centerDescription String?  @map("center_description")
+  vision            String?
+  createdBy         Int?     @map("created_by")
+  lastModifiedBy    Int?     @map("last_modified_by")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  center Center @relation(fields: [centerId], references: [id])
+
+  @@map("center_about_us")
+}
+
+// centerId normalized to Int? (from BIGINT) to match Center.id (Int PK).
+model CenterBankDetails {
+  id                Int      @id @default(autoincrement())
+  centerId          Int?     @map("center_id")
+  accountHolderName String   @map("account_holder_name")
+  bankName          String   @map("bank_name")
+  accountNumber     String   @map("account_number")
+  ifscCode          String   @map("ifsc_code")
+  branchAddress     Json?    @map("branch_address")
+  createdBy         Int?     @map("created_by")
+  lastModifiedBy    Int?     @map("last_modified_by")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  center Center? @relation(fields: [centerId], references: [id])
+
+  @@map("center_bank_details")
+}
+
+// created_by / last_modified_by field names were already snake_case in the
+// Sequelize model definition; the DB columns remain created_by / last_modified_by.
+model CenterMedia {
+  id             Int             @id @default(autoincrement())
+  centerId       Int             @map("center_id")
+  mediaType      CenterMediaType @map("media_type")
+  mediaUrl       String          @map("media_url")
+  mediaKey       String          @map("media_key")
+  contentType    String?         @map("content_type")
+  createdBy      Int?            @map("created_by")
+  lastModifiedBy Int?            @map("last_modified_by")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  center Center @relation(fields: [centerId], references: [id])
+
+  @@map("center_media")
+}
+
+// centerId normalized to Int? (from BIGINT) to match Center.id (Int PK).
+model CenterVerification {
+  id                Int                @id @default(autoincrement())
+  docIdentityNumber String?            @map("doc_identity_number")
+  documentType      CenterDocumentType @map("document_type")
+  documentUrl       String?            @map("document_url")
+  mediaKey          String?            @map("media_key")
+  verificationMode  VerificationMode   @default(manual) @map("verification_mode")
+  isVerified        Boolean            @default(false) @map("is_verified")
+  verifiedBy        Int?               @map("verified_by")
+  centerId          Int?               @map("center_id")
+  createdBy         Int?               @map("created_by")
+  lastModifiedBy    Int?               @map("last_modified_by")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  center Center? @relation(fields: [centerId], references: [id])
+
+  @@map("center_verification")
+}
+
+// id is BIGINT PK (preserved from Sequelize — this table uses BIGSERIAL).
+// staffId normalized to Int? (from BIGINT) to match CenterStaff.id (Int PK).
+// documentType kept as String (Sequelize uses validate-only, not a DB ENUM).
+model CenterStaffVerification {
+  id                BigInt           @id @default(autoincrement())
+  staffId           Int              @map("staff_id")
+  docIdentityNumber String?          @map("doc_identity_number")
+  documentType      String           @map("document_type")
+  documentUrl       String           @map("document_url")
+  mediaKey          String?          @map("media_key")
+  verificationMode  VerificationMode @default(manual) @map("verification_mode")
+  isVerified        Boolean          @default(false) @map("is_verified")
+  verifiedBy        Int?             @map("verified_by")
+  createdBy         Int?             @map("created_by")
+  lastModifiedBy    Int?             @map("last_modified_by")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+
+  staff CenterStaff @relation(fields: [staffId], references: [id])
+
+  @@map("center_staff_verification")
+}
+
+// Explicit many-to-many junction: Center ↔ Ameneties.
+// Composite PK mirrors the Sequelize dual-primaryKey definition.
+model CenterAmenities {
+  centerId  Int
+  amenityId Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  center  Center    @relation(fields: [centerId], references: [id])
+  amenity Ameneties @relation(fields: [amenityId], references: [id])
+
+  @@id([centerId, amenityId])
+  @@map("center_amenities")
+}
+
+// Explicit many-to-many junction: Center ↔ Services.
+model CenterServices {
+  centerId  Int
+  serviceId Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  center  Center   @relation(fields: [centerId], references: [id])
+  service Services @relation(fields: [serviceId], references: [id])
+
+  @@id([centerId, serviceId])
+  @@map("center_services")
+}
+
+// createdBy / lastModifiedBy reference center_staff.id but are kept as plain
+// scalars to avoid a third relation between CenterHasManyStaff and CenterStaff.
+model CenterHasManyStaff {
+  id             Int             @id @default(autoincrement())
+  centerId       Int             @map("center_id")
+  staffId        Int             @map("staff_id")
+  role           CenterStaffRole
+  joinedOn       DateTime?       @map("joined_on")
+  isActive       Boolean         @default(true) @map("is_active")
+  createdBy      Int?            @map("created_by")
+  lastModifiedBy Int?            @map("last_modified_by")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  center Center      @relation(fields: [centerId], references: [id])
+  staff  CenterStaff @relation(fields: [staffId], references: [id])
+
+  @@map("center_has_many_staff")
+}
+
+// timestamps: false in the original Sequelize model.
+model CenterHasManyExperts {
+  id         Int       @id @default(autoincrement())
+  centerId   Int       @map("center_id")
+  expertId   Int       @map("expert_id")
+  joinedOn   DateTime? @map("joined_on")
+  isActive   Boolean   @default(false) @map("is_active")
+  isVerified Boolean   @default(false) @map("is_verified")
+
+  center Center  @relation(fields: [centerId], references: [id])
+  expert Experts @relation(fields: [expertId], references: [id])
+
+  @@unique([centerId, expertId], name: "center_expert_unique")
+  @@map("center_has_many_experts")
+}
+
+model CenterInquiryNote {
+  id              Int      @id @default(autoincrement())
+  centerInquiryId Int      @map("center_inquiry_id")
+  note            String
+  adminId         Int?     @map("admin_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  centerInquiry CenterInquiries @relation(fields: [centerInquiryId], references: [id])
+
+  @@map("center_inquiry_note")
+}
+
+// id is BIGINT PK (BIGSERIAL in DB).
+// serviceId / centerId normalized to Int? (from BIGINT) to match their respective Int PKs.
+model FutureProposedActivities {
+  id        BigInt   @id @default(autoincrement())
+  serviceId Int?     @map("service_id")
+  activity  String?  @db.VarChar(255)
+  centerId  Int?     @map("center_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  service Services? @relation(fields: [serviceId], references: [id])
+  center  Center?   @relation(fields: [centerId], references: [id])
+
+  @@map("future_proposed_activities")
+}
+
+// amenities / services store arrays of IDs (denormalised snapshot of the request).
+// centerMedia / centerVerification store arrays of JSONB objects (inline doc snapshots).
+// geoLocation uses PostGIS geometry — geo queries must use $queryRaw.
+// establishedDate uses @db.Date (DATE without time, Sequelize DATEONLY).
+// approvedBy / rejectedBy reference AppAdminStaff; createdBy references CenterStaff — all plain scalars.
+model UpdateCenterDetailsRequest {
+  id                          Int                                   @id @default(autoincrement())
+  centerId                    Int                                   @map("center_id")
+  centerName                  String?                               @map("center_name")
+  establishedDate             DateTime?                             @map("established_date") @db.Date
+  numberOfEmployees           Int?                                  @map("number_of_employees")
+  email                       String?
+  phoneNumber                 String?                               @map("phone_number")
+  dailyOperatingHours         Json?                                 @map("daily_operating_hours")
+  address                     Json?
+  geoLocation                 Unsupported("geometry(Point, 4326)")? @map("geo_location")
+  website                     String?
+  centerType                  CenterType?                           @map("center_type")
+  operatingEntity             CenterOperatingEntity?                @map("operating_entity")
+  isNotifyByEmail             Boolean?                              @map("is_notify_by_email")
+  isNotifyByPushAlert         Boolean?                              @map("is_notify_by_push_alert")
+  isNotifyBySms               Boolean?                              @map("is_notify_by_sms")
+  isNotifyByWhatsapp          Boolean?                              @map("is_notify_by_whatsapp")
+  isPublic                    Boolean?                              @default(true) @map("is_public")
+  amenities                   Int[]
+  services                    Int[]
+  centerDescription           String?                               @map("center_description")
+  vision                      String?
+  centerBankAccountHolderName String?                               @map("center_bank_account_holder_name")
+  centerBankAccountNumber     String?                               @map("center_bank_account_number")
+  centerBankName              String?                               @map("center_bank_name")
+  centerIfscCode              String?                               @map("center_ifsc_code")
+  centerBranchAddress         Json?                                 @map("center_branch_address")
+  centerMedia                 Json[]                                @map("center_media")
+  centerVerification          Json[]                                @map("center_verification")
+  status                      UpdateRequestStatus                   @default(PENDING)
+  rejectionReason             String?                               @map("rejection_reason")
+  approvedOn                  DateTime?                             @map("approved_on")
+  rejectedOn                  DateTime?                             @map("rejected_on")
+  approvedBy                  Int?                                  @map("approved_by")
+  rejectedBy                  Int?                                  @map("rejected_by")
+  createdBy                   Int?                                  @map("created_by")
+  createdAt                   DateTime                              @default(now()) @map("created_at")
+  updatedAt                   DateTime                              @updatedAt @map("updated_at")
+
+  center Center @relation(fields: [centerId], references: [id])
+
+  @@map("update_center_details_request")
+}
+
+// centerId is UNIQUE — one WhatsApp config per center (one-to-one).
+// Table name is center_whatsapp_configs (not whatsapp_config).
+model WhatsappConfig {
+  id                 Int                @id @default(autoincrement())
+  centerId           Int                @unique @map("center_id")
+  wabaId             String             @map("waba_id")
+  phoneNumberId      String             @map("phone_number_id")
+  displayNumber      String             @map("display_number")
+  businessName       String?            @map("business_name")
+  isActive           Boolean            @default(false) @map("is_active")
+  templateSyncStatus TemplateSyncStatus @default(pending) @map("template_sync_status")
+  lastSyncedAt       DateTime?          @map("last_synced_at")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  center Center @relation(fields: [centerId], references: [id])
+
+  @@index([centerId])
+  @@index([wabaId])
+  @@map("center_whatsapp_configs")
+}
+
+model ExpertAbout {
+  id                Int      @id @default(autoincrement())
+  expertId          Int      @map("expert_id")
+  expertDescription String   @map("expert_description")
+  createdBy         Int?     @map("created_by")
+  lastModifiedBy    Int?     @map("last_modified_by")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  expert Experts @relation(fields: [expertId], references: [id])
+
+  @@map("expert_about")
+}
+
+// timestamps: false in the original Sequelize model — no createdAt/updatedAt.
+// expertId normalized to Int (from BIGINT) to match Experts.id (Int PK).
+model ExpertMedia {
+  id             Int             @id @default(autoincrement())
+  expertId       Int             @map("expert_id")
+  mediaType      ExpertMediaType @map("media_type")
+  mediaUrl       String          @map("media_url")
+  mediaKey       String          @map("media_key")
+  createdBy      Int?            @map("created_by")
+  lastModifiedBy Int?            @map("last_modified_by")
+
+  expert Experts @relation(fields: [expertId], references: [id])
+
+  @@map("expert_media")
+}
+
+model ExpertKycVerification {
+  id               Int                @id @default(autoincrement())
+  expertId         Int                @map("expert_id")
+  documentType     ExpertDocumentType @map("document_type")
+  documentNumber   String             @map("document_number")
+  documentUrl      String             @map("document_url")
+  mediaKey         String             @map("media_key")
+  isVerified       Boolean            @default(false) @map("is_verified")
+  verifiedBy       Int?               @map("verified_by")
+  verificationMode VerificationMode   @default(manual) @map("verification_mode")
+  createdBy        Int?               @map("created_by")
+  lastModifiedBy   Int?               @map("last_modified_by")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  expert Experts @relation(fields: [expertId], references: [id])
+
+  @@map("expert_kyc_verification")
+}
+
+// expertiesId is an intentional typo preserved from the original Sequelize model
+// for DB column compatibility (the DB column is expert_ies_id / experties_id).
+model ExpertExperties {
+  id              Int      @id @default(autoincrement())
+  expertId        Int      @map("expert_id")
+  expertiesId     Int      @map("experties_id")
+  experienceYears Int      @map("experience_years")
+  createdBy       Int?     @map("created_by")
+  lastModifiedBy  Int?     @map("last_modified_by")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  expert  Experts  @relation(fields: [expertId], references: [id])
+  service Services @relation(fields: [expertiesId], references: [id])
+
+  @@map("expert_experties")
+}
+
+// expertId / centerId normalized to Int (from BIGINT) to match their Int PKs.
+// InterestStatus and InterestInitiator are local enums defined only in this model file.
+model ExpertCenterInterest {
+  id                        Int               @id @default(autoincrement())
+  expertId                  Int               @map("expert_id")
+  centerId                  Int               @map("center_id")
+  initiator                 InterestInitiator
+  status                    InterestStatus    @default(pending)
+  message                   String?
+  preferredWorkingTimeSlots Json?             @map("preferred_working_time_slots")
+  experienceYears           Int?              @map("experience_years")
+  expectedCompensation      Decimal?          @map("expected_compensation") @db.Decimal(15, 2)
+  offeredCompensation       Decimal?          @map("offered_compensation") @db.Decimal(15, 2)
+  responseMessage           String?           @map("response_message")
+  responseDate              DateTime?         @map("response_date")
+  createdAt                 DateTime          @default(now()) @map("created_at")
+  updatedAt                 DateTime          @updatedAt @map("updated_at")
+
+  expert           Experts                  @relation(fields: [expertId], references: [id])
+  center           Center                   @relation(fields: [centerId], references: [id])
+  interestServices ExpertInterestServices[]
+
+  @@map("expert_center_interest")
+}
+
+// Ternary relationship: ExpertCenterInterest × Service.
+// @@unique mirrors the Sequelize unique index on [interest_id, service_id].
+model ExpertInterestServices {
+  id                  Int      @id @default(autoincrement())
+  interestId          Int      @map("interest_id")
+  serviceId           Int      @map("service_id")
+  experienceYears     Int?     @map("experience_years")
+  preferredForService Boolean  @default(false) @map("preferred_for_service")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  interest ExpertCenterInterest @relation(fields: [interestId], references: [id])
+  service  Services             @relation(fields: [serviceId], references: [id])
+
+  @@unique([interestId, serviceId], name: "interest_service_unique")
+  @@map("expert_interest_services")
+}
+
+model Batches {
+  id                        Int         @id @default(autoincrement())
+  expertId                  Int         @map("expert_id")
+  centerId                  Int         @map("center_id")
+  serviceId                 Int         @map("service_id")
+  batchName                 String      @map("batch_name")
+  description               String?
+  batchType                 BatchType   @map("batch_type")
+  venue                     String?
+  startDate                 DateTime    @map("start_date")
+  endDate                   DateTime?   @map("end_date")
+  frequency                 Json
+  numberOfClasses           Int?        @map("number_of_classes")
+  expertPayPerClass         Decimal?    @map("expert_pay_per_class") @db.Decimal(10, 2)
+  basePrice                 Decimal     @map("base_price") @db.Decimal(10, 2)
+  allowMidTermJoining       Boolean     @map("allow_mid_term_joining")
+  requireExpertConfirmation Boolean     @map("require_expert_confirmation")
+  minimumClassesBooking     Int         @default(1) @map("minimum_classes_booking")
+  numberOfSeats             Int?        @map("number_of_seats")
+  status                    BatchStatus @default(active)
+  minimumClassesCutoffDate  DateTime?   @map("minimum_classes_cutoff_date")
+  createdBy                 Int?        @map("created_by")
+  lastModifiedBy            Int?        @map("last_modified_by")
+  createdAt                 DateTime    @default(now()) @map("created_at")
+  updatedAt                 DateTime    @updatedAt @map("updated_at")
+
+  expert  Experts  @relation(fields: [expertId], references: [id])
+  center  Center   @relation(fields: [centerId], references: [id])
+  service Services @relation(fields: [serviceId], references: [id])
+
+  classes     BatchClasses[]
+  enrollments BatchEnrollments[]
+  media       BatchMedia[]
+  benefits    BatchBenefits[]
+  request     BatchRequests?
+
+  trialRequests TrialRequests[]
+
+  coupons Coupon[]
+
+  @@map("batches")
+}
+
+// classDate is DATE (no time component); startTime/endTime are TIME without date.
+// createdBy / lastModifiedBy reference experts but are plain scalars to avoid a
+// third named relation on top of expertId.
+model BatchClasses {
+  id             Int         @id @default(autoincrement())
+  batchId        Int         @map("batch_id")
+  classDate      DateTime    @map("class_date") @db.Date
+  startTime      DateTime    @map("start_time") @db.Time(6)
+  endTime        DateTime    @map("end_time") @db.Time(6)
+  status         ClassStatus @default(scheduled)
+  expertId       Int?        @map("expert_id")
+  classType      ClassType   @default(regular) @map("class_type")
+  createdBy      Int?        @map("created_by")
+  lastModifiedBy Int?        @map("last_modified_by")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  batch  Batches  @relation(fields: [batchId], references: [id])
+  expert Experts? @relation(fields: [expertId], references: [id])
+
+  history               BatchClassHistory[]
+  scheduledAttendance   BatchClassAttendence[] @relation("AttendanceClass")
+  rescheduledAttendance BatchClassAttendence[] @relation("AttendanceRescheduledClass")
+  classMedia            BatchClassMedia[]
+
+  rescheduleRequests ClassRescheduleRequests[]
+  polls              ReschedulePolls[]
+
+  @@map("batch_classes")
+}
+
+// expertId / createdBy / lastModifiedBy all reference experts — three named
+// @relation pairs are required to avoid Prisma's ambiguous-relation error.
+model BatchClassHistory {
+  id             Int         @id @default(autoincrement())
+  batchClassId   Int         @map("batch_class_id")
+  status         ClassStatus
+  classDate      DateTime    @map("class_date")
+  startTime      DateTime    @map("start_time") @db.Time(6)
+  endTime        DateTime    @map("end_time") @db.Time(6)
+  expertId       Int?        @map("expert_id")
+  createdBy      Int?        @map("created_by")
+  lastModifiedBy Int?        @map("last_modified_by")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  batchClass BatchClasses @relation(fields: [batchClassId], references: [id])
+  expert     Experts?     @relation("BatchClassHistoryExpert", fields: [expertId], references: [id])
+  creator    Experts?     @relation("BatchClassHistoryCreatedBy", fields: [createdBy], references: [id])
+  modifier   Experts?     @relation("BatchClassHistoryModifiedBy", fields: [lastModifiedBy], references: [id])
+
+  @@map("batch_class_history")
+}
+
+model BatchEnrollments {
+  id                  Int              @id @default(autoincrement())
+  batchId             Int              @map("batch_id")
+  learnerProfileId    Int              @map("learner_profile_id")
+  startDate           DateTime         @map("start_date")
+  endDate             DateTime         @map("end_date")
+  paidAmount          Decimal          @map("paid_amount") @db.Decimal(10, 2)
+  numberOfClassesPaid Int              @map("number_of_classes_paid")
+  status              EnrollmentStatus
+  createdBy           Int?             @map("created_by")
+  lastModifiedBy      Int?             @map("last_modified_by")
+  createdAt           DateTime         @default(now()) @map("created_at")
+  updatedAt           DateTime         @updatedAt @map("updated_at")
+
+  batch          Batches         @relation(fields: [batchId], references: [id])
+  learnerProfile LearnerProfiles @relation(fields: [learnerProfileId], references: [id])
+
+  attendance BatchClassAttendence[]
+
+  payments       Payment[]
+  refundRequests EnrollmentRefundRequests[]
+
+  @@map("batch_enrollments")
+}
+
+// batchClassId and rescheduledClassId both reference batch_classes — named relations required.
+// reschedulingRequestId is a plain scalar FK to class_reschedule_requests (Phase 7).
+// attendanceMarkedBy is a plain scalar FK to experts (audit field).
+model BatchClassAttendence {
+  id                    Int              @id @default(autoincrement())
+  learnerProfileId      Int              @map("learner_profile_id")
+  batchEnrollmentId     Int              @map("batch_enrollment_id")
+  batchClassId          Int              @map("batch_class_id")
+  attendanceStatus      AttendanceStatus @default(pending) @map("attendance_status")
+  rescheduledClassId    Int?             @map("rescheduled_class_id")
+  reschedulingReason    String?          @map("rescheduling_reason")
+  reschedulingRequestId Int?             @map("rescheduling_request_id")
+  attendanceMarkedBy    Int?             @map("attendance_marked_by")
+  attendanceMarkedAt    DateTime?        @map("attendance_marked_at")
+  notes                 String?
+  createdAt             DateTime         @default(now()) @map("created_at")
+  updatedAt             DateTime         @updatedAt @map("updated_at")
+
+  learnerProfile    LearnerProfiles          @relation(fields: [learnerProfileId], references: [id])
+  batchEnrollment   BatchEnrollments         @relation(fields: [batchEnrollmentId], references: [id])
+  batchClass        BatchClasses             @relation("AttendanceClass", fields: [batchClassId], references: [id])
+  rescheduledClass  BatchClasses?            @relation("AttendanceRescheduledClass", fields: [rescheduledClassId], references: [id])
+  rescheduleRequest ClassRescheduleRequests? @relation(fields: [reschedulingRequestId], references: [id])
+
+  @@map("batch_class_attendence")
+}
+
+model BatchMedia {
+  id               Int            @id @default(autoincrement())
+  batchId          Int            @map("batch_id")
+  mediaType        BatchMediaType @map("media_type")
+  mediaUrl         String         @map("media_url")
+  mediaKey         String         @map("media_key")
+  mediaTitle       String?        @map("media_title")
+  mediaDescription String?        @map("media_description")
+  contentType      String?        @map("content_type")
+  fileSize         BigInt?        @map("file_size")
+  isPublic         Boolean        @default(true) @map("is_public")
+  displayOrder     Int?           @default(0) @map("display_order")
+  createdBy        Int?           @map("created_by")
+  lastModifiedBy   Int?           @map("last_modified_by")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  batch Batches @relation(fields: [batchId], references: [id])
+
+  @@index([batchId])
+  @@index([mediaType])
+  @@index([isPublic])
+  @@map("batch_media")
+}
+
+model BatchBenefits {
+  id                 Int         @id @default(autoincrement())
+  batchId            Int         @map("batch_id")
+  benefitTitle       String      @map("benefit_title")
+  benefitDescription String?     @map("benefit_description")
+  benefitType        BenefitType @default(other) @map("benefit_type")
+  isActive           Boolean     @default(true) @map("is_active")
+  displayOrder       Int?        @default(0) @map("display_order")
+  createdBy          Int?        @map("created_by")
+  lastModifiedBy     Int?        @map("last_modified_by")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+
+  batch Batches @relation(fields: [batchId], references: [id])
+
+  @@index([batchId])
+  @@index([benefitType])
+  @@index([isActive])
+  @@map("batch_benefits")
+}
+
+// batchType is stored as VARCHAR (Sequelize DataTypes.STRING + validate) — use String, not BatchType enum.
+// batchId is nullable unique: in PostgreSQL a UNIQUE constraint allows multiple NULLs, so @unique is correct.
+// approvedBy is a plain scalar FK to center_staff (audit field).
+// Sequelize hooks (beforeCreate / beforeUpdate) move to service layer.
+model BatchRequests {
+  id                        Int                @id @default(autoincrement())
+  expertId                  Int                @map("expert_id")
+  centerId                  Int                @map("center_id")
+  serviceId                 Int                @map("service_id")
+  batchName                 String             @map("batch_name")
+  description               String?
+  batchType                 String             @map("batch_type")
+  venue                     String?
+  startDate                 DateTime           @map("start_date")
+  endDate                   DateTime?          @map("end_date")
+  frequency                 Json
+  numberOfClasses           Int?               @map("number_of_classes")
+  expertPayPerClass         Decimal            @map("expert_pay_per_class") @db.Decimal(10, 2)
+  basePrice                 Decimal            @map("base_price") @db.Decimal(10, 2)
+  allowMidTermJoining       Boolean            @default(false) @map("allow_mid_term_joining")
+  requireExpertConfirmation Boolean            @default(true) @map("require_expert_confirmation")
+  minimumClassesBooking     Int                @default(1) @map("minimum_classes_booking")
+  numberOfSeats             Int?               @map("number_of_seats")
+  requestStatus             BatchRequestStatus @default(pending) @map("request_status")
+  requestMessage            String?            @map("request_message")
+  rejectionReason           String?            @map("rejection_reason")
+  approvedBy                Int?               @map("approved_by")
+  approvedAt                DateTime?          @map("approved_at")
+  batchId                   Int?               @unique @map("batch_id")
+  notes                     String?
+  metadata                  Json?
+  benefits                  Json?
+  media                     Json?
+  createdAt                 DateTime           @default(now()) @map("created_at")
+  updatedAt                 DateTime           @updatedAt @map("updated_at")
+
+  expert  Experts  @relation(fields: [expertId], references: [id])
+  center  Center   @relation(fields: [centerId], references: [id])
+  service Services @relation(fields: [serviceId], references: [id])
+  batch   Batches? @relation(fields: [batchId], references: [id])
+
+  @@index([expertId], name: "batch_requests_expert_id_idx")
+  @@index([centerId], name: "batch_requests_center_id_idx")
+  @@index([requestStatus], name: "batch_requests_status_idx")
+  @@index([expertId, centerId], name: "batch_requests_expert_center_idx")
+  @@index([expertId, requestStatus], name: "batch_requests_expert_status_idx")
+  @@index([centerId, requestStatus], name: "batch_requests_center_status_idx")
+  @@index([createdAt], name: "batch_requests_created_at_idx")
+  @@index([startDate], name: "batch_requests_start_date_idx")
+  @@map("batch_requests")
+}
+
+// mediaVisibility = "all" means no access records needed; "specific" requires BatchClassMediaAccess rows.
+model BatchClassMedia {
+  id              Int                 @id @default(autoincrement())
+  batchClassId    Int                 @map("batch_class_id")
+  expertId        Int                 @map("expert_id")
+  mediaType       BatchClassMediaType @map("media_type")
+  mediaUrl        String              @map("media_url")
+  mediaKey        String              @map("media_key")
+  fileName        String              @map("file_name")
+  fileSize        BigInt?             @map("file_size")
+  mimeType        String?             @map("mime_type")
+  title           String?
+  description     String?
+  uploadedAt      DateTime            @default(now()) @map("uploaded_at")
+  isActive        Boolean             @default(true) @map("is_active")
+  metadata        Json?
+  mediaVisibility MediaVisibility     @default(all) @map("media_visibility")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  batchClass    BatchClasses            @relation(fields: [batchClassId], references: [id])
+  expert        Experts                 @relation(fields: [expertId], references: [id])
+  accessRecords BatchClassMediaAccess[]
+
+  @@map("batch_class_media")
+}
+
+// grantedBy is a plain scalar BigInt (can reference any user type — expert or admin).
+model BatchClassMediaAccess {
+  id                Int             @id @default(autoincrement())
+  batchClassMediaId Int             @map("batch_class_media_id")
+  learnerProfileId  Int             @map("learner_profile_id")
+  grantedAt         DateTime        @default(now()) @map("granted_at")
+  grantedBy         BigInt?         @map("granted_by")
+  accessType        MediaAccessType @default(full) @map("access_type")
+  expiresAt         DateTime?       @map("expires_at")
+  isActive          Boolean         @default(true) @map("is_active")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  batchClassMedia BatchClassMedia @relation(fields: [batchClassMediaId], references: [id])
+  learnerProfile  LearnerProfiles @relation(fields: [learnerProfileId], references: [id])
+
+  @@map("batch_class_media_access")
+}
+
+// requesterId is polymorphic — kept as plain scalar BigInt, resolved in service layer.
+model ClassRescheduleRequests {
+  id               Int                     @id @default(autoincrement())
+  centerId         Int                     @map("center_id")
+  batchClassId     Int                     @map("batch_class_id")
+  requesterType    RequesterType           @map("requester_type")
+  requesterId      BigInt                  @map("requester_id")
+  reason           String
+  status           RescheduleRequestStatus @default(pending)
+  proposedSchedule Json?                   @map("proposed_schedule")
+  adminNotes       String?                 @map("admin_notes")
+  reviewedBy       Int?                    @map("reviewed_by")
+  reviewedAt       DateTime?               @map("reviewed_at")
+  createdAt        DateTime                @default(now()) @map("created_at")
+  updatedAt        DateTime                @updatedAt @map("updated_at")
+
+  center     Center       @relation(fields: [centerId], references: [id])
+  batchClass BatchClasses @relation(fields: [batchClassId], references: [id])
+
+  attendances BatchClassAttendence[]
+  polls       ReschedulePolls[]
+
+  @@index([batchClassId])
+  @@index([requesterType, requesterId])
+  @@index([status])
+  @@map("class_reschedule_requests")
+}
+
+model ReschedulePolls {
+  id                  Int        @id @default(autoincrement())
+  rescheduleRequestId Int?       @map("reschedule_request_id")
+  pollStatus          PollStatus @default(active) @map("poll_status")
+  closingDate         DateTime   @map("closing_date")
+  title               String
+  description         String?
+  centerId            Int?       @map("center_id")
+  batchClassId        Int?       @map("batch_class_id")
+  createdAt           DateTime   @default(now()) @map("created_at")
+  updatedAt           DateTime   @updatedAt @map("updated_at")
+
+  rescheduleRequest ClassRescheduleRequests? @relation(fields: [rescheduleRequestId], references: [id])
+  center            Center?                  @relation(fields: [centerId], references: [id])
+  batchClass        BatchClasses?            @relation(fields: [batchClassId], references: [id])
+
+  options ReschedulePollOptions[]
+
+  @@map("reschedule_polls")
+}
+
+model ReschedulePollOptions {
+  id                Int      @id @default(autoincrement())
+  pollId            Int      @map("poll_id")
+  proposedDate      DateTime @map("proposed_date")
+  proposedStartTime DateTime @map("proposed_start_time") @db.Time(6)
+  proposedEndTime   DateTime @map("proposed_end_time") @db.Time(6)
+  optionOrder       Int      @default(0) @map("option_order")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  poll      ReschedulePolls           @relation(fields: [pollId], references: [id])
+  responses ReschedulePollResponses[]
+
+  @@map("reschedule_poll_options")
+}
+
+model ReschedulePollResponses {
+  id               Int          @id @default(autoincrement())
+  pollOptionId     Int          @map("poll_option_id")
+  learnerProfileId Int          @map("learner_profile_id")
+  response         PollResponse
+  comments         String?
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  pollOption     ReschedulePollOptions @relation(fields: [pollOptionId], references: [id])
+  learnerProfile LearnerProfiles       @relation(fields: [learnerProfileId], references: [id])
+
+  @@unique([pollOptionId, learnerProfileId])
+  @@map("reschedule_poll_responses")
+}
+
+// notes is a PostgreSQL TEXT ARRAY (DataTypes.ARRAY(DataTypes.TEXT) in Sequelize).
+// createdBy / lastModifiedBy also reference learner_profiles but are kept as plain
+// scalars — adding @relation for all three would require three named relations.
+model TrialRequests {
+  id               Int                @id @default(autoincrement())
+  learnerProfileId Int                @map("learner_profile_id")
+  batchId          Int                @map("batch_id")
+  status           TrialRequestStatus @default(pending)
+  requestedAt      DateTime           @default(now()) @map("requested_at")
+  notes            String[]
+  createdBy        Int?               @map("created_by")
+  lastModifiedBy   Int?               @map("last_modified_by")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  learnerProfile LearnerProfiles @relation(fields: [learnerProfileId], references: [id])
+  batch          Batches         @relation(fields: [batchId], references: [id])
+
+  @@map("trial_requests")
+}
+
+model Payment {
+  id                      Int               @id @default(autoincrement())
+  paymentType             PaymentType       @map("payment_type")
+  enrollmentId            Int?              @map("enrollment_id")
+  learnerProfileId        Int?              @map("learner_profile_id")
+  centerId                Int?              @map("center_id")
+  expertId                Int?              @map("expert_id")
+  orderId                 String            @unique @map("order_id")
+  orderToken              String?           @map("order_token")
+  baseAmount              Decimal           @map("base_amount") @db.Decimal(10, 2)
+  convenienceFee          Decimal           @default(0.00) @map("convenience_fee") @db.Decimal(10, 2)
+  platformFee             Decimal           @default(0.00) @map("platform_fee") @db.Decimal(10, 2)
+  discount                Decimal           @default(0.00) @db.Decimal(10, 2)
+  commission              Decimal           @default(0.00) @db.Decimal(10, 2)
+  totalAmount             Decimal           @map("total_amount") @db.Decimal(10, 2)
+  amount                  Decimal           @db.Decimal(10, 2)
+  currency                String            @default("INR")
+  paymentMethod           String?           @map("payment_method")
+  paymentDate             DateTime?         @map("payment_date")
+  status                  PaymentStatus     @default(pending)
+  transactionId           String?           @map("transaction_id")
+  paymentGatewayResponse  Json?             @map("payment_gateway_response")
+  receiptUrl              String?           @map("receipt_url")
+  refundId                String?           @map("refund_id")
+  refundStatus            String?           @map("refund_status")
+  refundAmount            Decimal?          @map("refund_amount") @db.Decimal(10, 2)
+  refundDate              DateTime?         @map("refund_date")
+  subscriptionPeriodStart DateTime?         @map("subscription_period_start")
+  subscriptionPeriodEnd   DateTime?         @map("subscription_period_end")
+  subscriptionType        SubscriptionType? @map("subscription_type")
+  notes                   String?
+  metadata                Json?
+  invoiceNumber           String?           @unique @map("invoice_number")
+  invoiceUrl              String?           @map("invoice_url")
+  invoiceKey              String?           @map("invoice_key")
+  invoiceGeneratedAt      DateTime?         @map("invoice_generated_at")
+  invoiceStatus           InvoiceStatus     @default(pending) @map("invoice_status")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @updatedAt @map("updated_at")
+
+  enrollment     BatchEnrollments? @relation(fields: [enrollmentId], references: [id])
+  learnerProfile LearnerProfiles?  @relation(fields: [learnerProfileId], references: [id])
+  center         Center?           @relation(fields: [centerId], references: [id])
+  expert         Experts?          @relation(fields: [expertId], references: [id])
+
+  transactions      Transaction[]
+  couponRedemptions CouponRedemption[]
+
+  @@index([paymentType])
+  @@index([status])
+  @@index([enrollmentId])
+  @@index([learnerProfileId])
+  @@index([centerId])
+  @@index([expertId])
+  @@index([paymentDate])
+  @@index([subscriptionPeriodStart, subscriptionPeriodEnd])
+  @@map("payment")
+}
+
+model Transaction {
+  id                      Int               @id @default(autoincrement())
+  paymentId               Int               @map("payment_id")
+  orderId                 String            @map("order_id")
+  orderAmount             Float             @map("order_amount")
+  orderCurrency           String            @default("INR") @map("order_currency")
+  orderTags               Json?             @map("order_tags")
+  cfPaymentId             String            @map("cf_payment_id")
+  paymentStatus           TransactionStatus @map("payment_status")
+  paymentAmount           Float             @map("payment_amount")
+  paymentCurrency         String            @default("INR") @map("payment_currency")
+  paymentMessage          String?           @map("payment_message")
+  paymentTime             DateTime?         @map("payment_time")
+  bankReference           String?           @map("bank_reference")
+  authId                  String?           @map("auth_id")
+  paymentMethod           Json?             @map("payment_method")
+  paymentGroup            PaymentGroup?     @map("payment_group")
+  customerName            String?           @map("customer_name")
+  customerId              String?           @map("customer_id")
+  customerEmail           String?           @map("customer_email")
+  customerPhone           String?           @map("customer_phone")
+  errorDetails            Json?             @map("error_details")
+  gatewayName             String?           @map("gateway_name")
+  gatewayOrderId          String?           @map("gateway_order_id")
+  gatewayPaymentId        String?           @map("gateway_payment_id")
+  gatewayOrderReferenceId String?           @map("gateway_order_reference_id")
+  gatewaySettlement       String?           @map("gateway_settlement")
+  gatewayStatusCode       String?           @map("gateway_status_code")
+  paymentOffers           Json?             @map("payment_offers")
+  cfRefundId              String?           @map("cf_refund_id")
+  refundId                String?           @map("refund_id")
+  refundAmount            Float?            @map("refund_amount")
+  refundCurrency          String?           @map("refund_currency")
+  refundType              String?           @map("refund_type")
+  refundArn               String?           @map("refund_arn")
+  refundStatus            String?           @map("refund_status")
+  statusDescription       String?           @map("status_description")
+  refundCreatedAt         DateTime?         @map("refund_created_at")
+  refundProcessedAt       DateTime?         @map("refund_processed_at")
+  refundCharge            Float?            @map("refund_charge")
+  refundNote              String?           @map("refund_note")
+  refundSplits            Json?             @map("refund_splits")
+  refundMode              String?           @map("refund_mode")
+  refundReason            String?           @map("refund_reason")
+  eventTime               DateTime?         @map("event_time")
+  eventType               String?           @map("event_type")
+  webhookResponse         Json?             @map("webhook_response")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @updatedAt @map("updated_at")
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  @@map("transaction")
+}
+
+// startDate / endDate are DATEONLY → @db.Date.
+// learnerId references learner_profiles (not learners).
+// createdBy / lastModifiedBy are plain scalars (admin-side audit fields).
+// Hooks (uppercase code, deplete on limit) move to CouponService.
+model Coupon {
+  id                  Int               @id @default(autoincrement())
+  code                String            @unique @db.VarChar(50)
+  description         String?
+  type                CouponType        @default(percentage)
+  value               Decimal           @db.Decimal(10, 2)
+  minPurchaseAmount   Decimal?          @map("min_purchase_amount") @db.Decimal(10, 2)
+  maxDiscountAmount   Decimal?          @map("max_discount_amount") @db.Decimal(10, 2)
+  startDate           DateTime          @map("start_date") @db.Date
+  endDate             DateTime          @map("end_date") @db.Date
+  usageLimit          Int?              @map("usage_limit")
+  usageCount          Int               @default(0) @map("usage_count")
+  userUsageLimit      Int?              @map("user_usage_limit")
+  status              CouponStatus      @default(active)
+  applicableTo        CouponApplication @default(all) @map("applicable_to")
+  centerId            Int?              @map("center_id")
+  learnerId           Int?              @map("learner_id")
+  expertId            Int?              @map("expert_id")
+  batchId             Int?              @map("batch_id")
+  isFirstPurchaseOnly Boolean           @default(false) @map("is_first_purchase_only")
+  createdBy           Int?              @map("created_by")
+  lastModifiedBy      Int?              @map("last_modified_by")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  center         Center?          @relation(fields: [centerId], references: [id])
+  learnerProfile LearnerProfiles? @relation(fields: [learnerId], references: [id])
+  expert         Experts?         @relation(fields: [expertId], references: [id])
+  batch          Batches?         @relation(fields: [batchId], references: [id])
+
+  redemptions CouponRedemption[]
+
+  referrals Referral[]
+
+  @@index([code], name: "idx_coupon_code")
+  @@index([status], name: "idx_coupon_status")
+  @@index([applicableTo], name: "idx_coupon_applicable_to")
+  @@index([centerId], name: "idx_coupon_center_id")
+  @@index([learnerId], name: "idx_coupon_learner_id")
+  @@index([expertId], name: "idx_coupon_expert_id")
+  @@index([batchId], name: "idx_coupon_batch_id")
+  @@map("coupon")
+}
+
+// learnerId references learners (not learner_profiles) — Sequelize model explicit.
+model CouponRedemption {
+  id             Int          @id @default(autoincrement())
+  couponId       Int          @map("coupon_id")
+  learnerId      Int?         @map("learner_id")
+  centerId       Int?         @map("center_id")
+  expertId       Int?         @map("expert_id")
+  paymentId      Int?         @map("payment_id")
+  discountAmount Decimal      @map("discount_amount") @db.Decimal(10, 2)
+  originalAmount Decimal      @map("original_amount") @db.Decimal(10, 2)
+  finalAmount    Decimal      @map("final_amount") @db.Decimal(10, 2)
+  isFullPayment  Boolean      @default(false) @map("is_full_payment")
+  redeemedAt     DateTime     @default(now()) @map("redeemed_at")
+  module         CouponModule
+  metadata       Json?
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  coupon  Coupon    @relation(fields: [couponId], references: [id])
+  learner Learners? @relation(fields: [learnerId], references: [id])
+  center  Center?   @relation(fields: [centerId], references: [id])
+  expert  Experts?  @relation(fields: [expertId], references: [id])
+  payment Payment?  @relation(fields: [paymentId], references: [id])
+
+  @@index([couponId], name: "idx_coupon_redemption_coupon_id")
+  @@index([learnerId], name: "idx_coupon_redemption_learner_id")
+  @@index([centerId], name: "idx_coupon_redemption_center_id")
+  @@index([expertId], name: "idx_coupon_redemption_expert_id")
+  @@index([paymentId], name: "idx_coupon_redemption_payment_id")
+  @@map("coupon_redemption")
+}
+
+// approvedBy / rejectedBy / processedBy all reference center_staff — kept as
+// plain scalar Int? to avoid three named relations between this model and CenterStaff.
+// status is RefundStatus enum (Sequelize used DataTypes.STRING for fewer migrations).
+// afterUpdate hook (cancel enrollment on approval) moves to RefundService.
+model EnrollmentRefundRequests {
+  id                    Int          @id @default(autoincrement())
+  enrollmentId          Int          @map("enrollment_id")
+  requestReason         String       @map("request_reason")
+  refundAmount          Decimal      @map("refund_amount") @db.Decimal(10, 2)
+  status                RefundStatus @default(pending)
+  requestedBy           Int          @map("requested_by")
+  requestedAt           DateTime     @default(now()) @map("requested_at")
+  approvedBy            Int?         @map("approved_by")
+  approvedAt            DateTime?    @map("approved_at")
+  rejectedBy            Int?         @map("rejected_by")
+  rejectedAt            DateTime?    @map("rejected_at")
+  rejectionReason       String?      @map("rejection_reason")
+  processedBy           Int?         @map("processed_by")
+  processedAt           DateTime?    @map("processed_at")
+  processedAmount       Decimal?     @map("processed_amount") @db.Decimal(10, 2)
+  processNotes          String?      @map("process_notes")
+  supportingDocument    String?      @map("supporting_document")
+  supportingDocumentKey String?      @map("supporting_document_key")
+  createdAt             DateTime     @default(now()) @map("created_at")
+  updatedAt             DateTime     @updatedAt @map("updated_at")
+
+  enrollment BatchEnrollments @relation(fields: [enrollmentId], references: [id])
+  requester  LearnerProfiles  @relation(fields: [requestedBy], references: [id])
+
+  @@map("enrollment_refund_requests")
+}
+
+// id is BigInt (BIGSERIAL) matching the Sequelize DataTypes.BIGINT PK.
+// userId is BigInt plain scalar; userType is String (DataTypes.STRING in Sequelize).
+model Notifications {
+  id        BigInt             @id @default(autoincrement())
+  userType  String             @map("user_type")
+  userId    BigInt             @map("user_id")
+  title     String
+  body      String
+  data      Json?
+  status    NotificationStatus @default(pending)
+  sentAt    DateTime?          @map("sent_at")
+  readAt    DateTime?          @map("read_at")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  @@index([userType, userId])
+  @@index([status])
+  @@map("notifications")
+}
+
+// userId is plain scalar Int; userType uses FcmUserType enum (v2 normalisation of
+// v1 values "appadmin"/"centerstaff" → admin/center).
+model FirebaseToken {
+  id          Int         @id @default(autoincrement())
+  userId      Int         @map("user_id")
+  userType    FcmUserType @map("user_type")
+  deviceToken String      @map("device_token")
+  deviceType  DeviceType? @map("device_type")
+  deviceInfo  Json?       @map("device_info")
+  isActive    Boolean     @default(true) @map("is_active")
+  lastUsedAt  DateTime    @default(now()) @map("last_used_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  @@index([userId, userType])
+  @@map("firebase_token")
+}
+
+// referrerId / refereeId are plain scalar Int (polymorphic — learner, expert, or center).
+// couponCode is a non-id FK to coupon.code (@unique field) — Prisma supports this.
+model Referral {
+  id           Int                @id @default(autoincrement())
+  referrerId   Int                @map("referrer_id")
+  referrerType ReferralEntityType @map("referrer_type")
+  refereeId    Int                @map("referee_id")
+  refereeType  ReferralEntityType @map("referee_type")
+  referralCode String             @map("referral_code") @db.VarChar(8)
+  status       ReferralStatus     @default(pending)
+  rewardType   String?            @map("reward_type") @db.VarChar(50)
+  rewardValue  Decimal?           @map("reward_value") @db.Decimal(10, 2)
+  couponCode   String?            @map("coupon_code") @db.VarChar(50)
+  rewardedAt   DateTime?          @map("rewarded_at")
+  usedAt       DateTime?          @map("used_at")
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  coupon Coupon? @relation(fields: [couponCode], references: [code])
+
+  @@index([referralCode])
+  @@index([referrerType, referrerId])
+  @@index([refereeType, refereeId])
+  @@index([status])
+  @@map("referral")
+}
+
+// centerId is required; signedBy* fields are nullable — only one is set per agreement type.
+// rejectionReason is a PostgreSQL TEXT ARRAY (DataTypes.ARRAY(DataTypes.TEXT)).
+// signedByLearner references learners (not learner_profiles) per the Sequelize model.
+model Agreements {
+  id                  Int             @id @default(autoincrement())
+  agreementType       AgreementType   @map("agreement_type")
+  agreementTitle      String?         @map("agreement_title")
+  centerId            Int             @map("center_id")
+  signedByCenterStaff Int?            @map("signed_by_center_staff")
+  signedByExpert      Int?            @map("signed_by_expert")
+  signedByLearner     Int?            @map("signed_by_learner")
+  documentUrl         String          @map("document_url")
+  mediaKey            String?         @map("media_key")
+  status              AgreementStatus @default(pending)
+  approvedOn          DateTime?       @map("approved_on")
+  rejectedOn          DateTime?       @map("rejected_on")
+  rejectionReason     String[]        @map("rejection_reason")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+
+  center      Center       @relation(fields: [centerId], references: [id])
+  centerStaff CenterStaff? @relation(fields: [signedByCenterStaff], references: [id])
+  expert      Experts?     @relation(fields: [signedByExpert], references: [id])
+  learner     Learners?    @relation(fields: [signedByLearner], references: [id])
+
+  @@map("agreements")
+}
+
+// learnerProfileId column name preserved from Sequelize even though it references
+// learners.id — the original model has this naming mismatch.
+model LearnerMedia {
+  id               Int              @id @default(autoincrement())
+  learnerProfileId Int              @map("learner_profile_id")
+  mediaType        LearnerMediaType @map("media_type")
+  mediaUrl         String           @map("media_url")
+  mediaKey         String           @map("media_key")
+  createdBy        Int?             @map("created_by")
+  lastModifiedBy   Int?             @map("last_modified_by")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  learner Learners @relation(fields: [learnerProfileId], references: [id])
+
+  @@map("learner_media")
+}
+
+// timestamps: false — no createdAt / updatedAt columns.
+// verifiedBy / createdBy / lastModifiedBy all reference center_staff — plain
+// scalars to avoid three named relations to the same table.
+model LearnerProfileKycVerifications {
+  id               Int                    @id @default(autoincrement())
+  learnerProfileId Int                    @map("learner_profile_id")
+  documentType     LearnerKycDocumentType @map("document_type")
+  documentNumber   String?                @map("document_number")
+  documentUrl      String                 @map("document_url")
+  mediaKey         String                 @map("media_key")
+  isVerified       Boolean                @default(false) @map("is_verified")
+  verifiedBy       Int?                   @map("verified_by")
+  verificationMode VerificationMode       @default(manual) @map("verification_mode")
+  createdBy        Int?                   @map("created_by")
+  lastModifiedBy   Int?                   @map("last_modified_by")
+
+  learnerProfile LearnerProfiles @relation(fields: [learnerProfileId], references: [id])
+
+  @@map("learner_profile_kyc_verifications")
+}
+
+// id is BigInt (BIGSERIAL) — Sequelize defines it as DataTypes.BIGINT PK.
+// timestamps: false — no createdAt / updatedAt columns.
+model LearnerHasManyProfiles {
+  id               BigInt @id @default(autoincrement())
+  learnerId        Int    @map("learner_id")
+  learnerProfileId Int    @map("learner_profile_id")
+
+  learner        Learners        @relation(fields: [learnerId], references: [id])
+  learnerProfile LearnerProfiles @relation(fields: [learnerProfileId], references: [id])
+
+  @@map("learner_has_many_profiles")
+}
+
+// timestamps: false — no createdAt / updatedAt columns.
+// createdBy / lastModifiedBy reference center_staff — plain scalars (audit pattern).
+model LearnerProfileHasManyCenters {
+  id               Int     @id @default(autoincrement())
+  learnerProfileId Int     @map("learner_profile_id")
+  centerId         Int     @map("center_id")
+  isActive         Boolean @default(true) @map("is_active")
+  isVerified       Boolean @default(false) @map("is_verified")
+  createdBy        Int?    @map("created_by")
+  lastModifiedBy   Int?    @map("last_modified_by")
+
+  learnerProfile LearnerProfiles @relation(fields: [learnerProfileId], references: [id])
+  center         Center          @relation(fields: [centerId], references: [id])
+
+  @@map("learner_profile_has_many_centers")
+}
+
+// approvedBy is a proper @relation to CenterStaff — it records who actioned the request.
+// verificationDocuments / metadata are JSONB fields.
+model LearnerCenterAccessRequests {
+  id                    Int                 @id @default(autoincrement())
+  learnerProfileId      Int                 @map("learner_profile_id")
+  centerId              Int                 @map("center_id")
+  requestStatus         AccessRequestStatus @default(pending) @map("request_status")
+  requestMessage        String?             @map("request_message")
+  rejectionReason       String?             @map("rejection_reason")
+  approvedBy            Int?                @map("approved_by")
+  approvedAt            DateTime?           @map("approved_at")
+  relationshipType      RelationshipType?   @map("relationship_type")
+  verificationDocuments Json?               @map("verification_documents")
+  metadata              Json?
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+
+  learnerProfile LearnerProfiles @relation(fields: [learnerProfileId], references: [id])
+  center         Center          @relation(fields: [centerId], references: [id])
+  approver       CenterStaff?    @relation(fields: [approvedBy], references: [id])
+
+  @@map("learner_center_access_requests")
+}
+
+// Explicit many-to-many junction: LearnerProfiles ↔ Services.
+// timestamps: true (underscored: true in Sequelize — same effect as @map).
+model LearnersInterest {
+  id               Int      @id @default(autoincrement())
+  learnerProfileId Int?     @map("learner_profile_id")
+  serviceId        Int?     @map("service_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  learnerProfile LearnerProfiles? @relation(fields: [learnerProfileId], references: [id])
+  service        Services?        @relation(fields: [serviceId], references: [id])
+
+  @@map("learners_interest")
 }
