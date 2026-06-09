@@ -9,7 +9,9 @@ import { RedisService } from './redis.service.js';
     {
       provide: 'REDIS_CLIENT',
       useFactory: (config: ConfigService) => {
-        return new Redis(config.get<string>('redis.url') ?? 'redis://localhost:6379');
+        return new Redis(
+          config.get<string>('redis.url') ?? 'redis://localhost:6379',
+        );
       },
       inject: [ConfigService],
     },

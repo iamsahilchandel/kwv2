@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { Public } from '@core/guards/api-key.guard.js';
+import { Public } from '@/core/guards/api-key.guard.js';
 import { HealthService } from '../../application/health.service.js';
 
 @Controller('health')
