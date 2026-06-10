@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ExpertController } from './controllers/expert.controller.js';
-import { ExpertService } from './services/expert.service.js';
-import { ExpertAuthGuard } from '@/core/guards/expert-auth.guard.js';
+import { ExpertAuthModule } from './auth/expert-auth.module.js';
+import { ExpertProfileModule } from './profile/expert-profile.module.js';
 
+/**
+ * Expert portal root module.
+ * Import all expert sub-modules here as they are implemented.
+ */
 @Module({
-  controllers: [ExpertController],
-  providers: [ExpertService, ExpertAuthGuard],
+  imports: [ExpertAuthModule, ExpertProfileModule],
 })
 export class ExpertModule {}

@@ -6,6 +6,10 @@ import { appConfig } from '@/config/app.config.js';
 import { databaseConfig } from '@/config/database.config.js';
 import { redisConfig } from '@/config/redis.config.js';
 import { firebaseConfig } from '@/config/firebase.config.js';
+import { awsConfig } from '@/config/aws.config.js';
+import { cashfreeConfig } from '@/config/cashfree.config.js';
+import { googleMapsConfig } from '@/config/google-maps.config.js';
+import { govPicklistConfig } from '@/config/gov-picklist.config.js';
 import { DatabaseModule } from '@/core/database/database.module.js';
 import { RedisModule } from '@/core/redis/redis.module.js';
 import { ApiKeyGuard } from '@/core/guards/api-key.guard.js';
@@ -15,14 +19,18 @@ import { HttpExceptionFilter } from '@/core/filters/http-exception.filter.js';
 import { ResponseInterceptor } from '@/core/interceptors/response.interceptor.js';
 import { FirebaseModule } from '@/core/firebase/firebase.module.js';
 import { HealthModule } from '@/modules/health/health.module.js';
-import { AuthModule } from '@/modules/auth/auth.module.js';
+import { AdminModule } from '@/modules/admin/admin.module.js';
+import { CenterModule } from '@/modules/center/center.module.js';
 import { ExpertModule } from '@/modules/expert/expert.module.js';
+import { LearnerModule } from '@/modules/learner/learner.module.js';
+import { PublicPortalModule } from '@/modules/public/public.module.js';
+import { SharedModule } from '@/modules/shared/shared.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, redisConfig, firebaseConfig],
+      load: [appConfig, databaseConfig, redisConfig, firebaseConfig, awsConfig, cashfreeConfig, googleMapsConfig, govPicklistConfig],
     }),
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
@@ -39,8 +47,12 @@ import { ExpertModule } from '@/modules/expert/expert.module.js';
     RedisModule,
     FirebaseModule,
     HealthModule,
-    AuthModule,
+    AdminModule,
+    CenterModule,
     ExpertModule,
+    LearnerModule,
+    PublicPortalModule,
+    SharedModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

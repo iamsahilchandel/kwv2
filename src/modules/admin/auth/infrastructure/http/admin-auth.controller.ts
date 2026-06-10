@@ -1,0 +1,51 @@
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Public } from '@/core/guards/api-key.guard.js';
+import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
+import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
+import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { AdminAuthService } from '../../application/admin-auth.service.js';
+import {
+  AdminVerifyNumberSchema,
+  AdminLoginSchema,
+  type AdminVerifyNumberBody,
+  type AdminLoginBody,
+} from './dto/admin-auth.dto.js';
+import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+
+@ApiTags('Admin - Authentication')
+@Controller('admin/auth')
+export class AdminAuthController {
+  constructor(private readonly adminAuthService: AdminAuthService) {}
+
+  @ApiOperation({ summary: 'Verify admin phone number before login' })
+  @Post('verify-number')
+  @Public()
+  verifyNumber(
+    @Body(new ZodValidationPipe(AdminVerifyNumberSchema)) body: AdminVerifyNumberBody,
+  ) {
+    return this.adminAuthService.verifyNumber(body.phoneNumber);
+  }
+
+  @ApiOperation({ summary: 'Admin login with Firebase token' })
+  @ApiBearerAuth('firebase-token')
+  @Post('login')
+  @UseGuards(AdminAuthGuard)
+  login(
+    @CurrentUser() user: IAuthUser,
+    @Body(new ZodValidationPipe(AdminLoginSchema)) body: AdminLoginBody,
+  ) {
+    return this.adminAuthService.login(user, body.fcmToken);
+  }
+
+  @ApiOperation({ summary: 'Admin logout and revoke Firebase token' })
+  @ApiBearerAuth('firebase-token')
+  @Post('logout')
+  @UseGuards(AdminAuthGuard)
+  logout(
+    @CurrentUser() user: IAuthUser,
+    @Body(new ZodValidationPipe(AdminLoginSchema)) body: AdminLoginBody,
+  ) {
+    return this.adminAuthService.logout(user, body.fcmToken);
+  }
+}
