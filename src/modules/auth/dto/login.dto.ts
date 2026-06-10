@@ -1,0 +1,13 @@
+import { z } from 'zod';
+
+export const LoginBodySchema = z.object({
+  fcmToken: z.string().min(1),
+});
+
+export type LoginBody = z.infer<typeof LoginBodySchema>;
+
+export const VerifyNumberSchema = z.object({
+  phoneNumber: z.string().length(10),
+});
+
+export type VerifyNumberBody = z.infer<typeof VerifyNumberSchema>;
