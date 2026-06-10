@@ -16,6 +16,7 @@ import { ResponseInterceptor } from '@/core/interceptors/response.interceptor.js
 import { FirebaseModule } from '@/core/firebase/firebase.module.js';
 import { HealthModule } from '@/modules/health/health.module.js';
 import { AuthModule } from '@/modules/auth/auth.module.js';
+import { ExpertModule } from '@/modules/expert/expert.module.js';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AuthModule } from '@/modules/auth/auth.module.js';
     FirebaseModule,
     HealthModule,
     AuthModule,
+    ExpertModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
