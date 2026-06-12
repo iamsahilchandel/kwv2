@@ -6,10 +6,7 @@ import { S3_PORT } from './application/ports/s3.port.js';
 
 @Module({
   controllers: [S3Controller],
-  providers: [
-    S3Service,
-    { provide: S3_PORT, useClass: AwsS3Adapter },
-  ],
+  providers: [S3Service, { provide: S3_PORT, useClass: AwsS3Adapter }],
   exports: [S3Service],
 })
 export class S3Module {}

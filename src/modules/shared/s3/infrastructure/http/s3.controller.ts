@@ -8,7 +8,13 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
 import { S3Service } from '../../application/s3.service.js';
 import { DeleteFilesDto, GetPresignedUrlsDto } from './dto/s3.dto.js';
@@ -20,33 +26,58 @@ import { DeleteFilesDto, GetPresignedUrlsDto } from './dto/s3.dto.js';
 export class S3Controller {
   constructor(private readonly s3Service: S3Service) {}
 
-  @ApiOperation({ summary: 'Upload files as public (publicly accessible URLs)' })
+  @ApiOperation({
+    summary: 'Upload files as public (publicly accessible URLs)',
+  })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ schema: { type: 'object', properties: { files: { type: 'array', items: { type: 'string', format: 'binary' } } } } })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: { type: 'array', items: { type: 'string', format: 'binary' } },
+      },
+    },
+  })
   @Post('public')
   @UseInterceptors(AnyFilesInterceptor())
   async uploadPublic(@UploadedFiles() files: Express.Multer.File[]) {
     if (!files?.length) {
       throw new BadRequestException('No files provided');
     }
-    const results = await Promise.all(files.map((f) => this.s3Service.uploadPublic(f)));
+    const results = await Promise.all(
+      files.map((f) => this.s3Service.uploadPublic(f)),
+    );
     return { results, message: 'Files uploaded successfully' };
   }
 
-  @ApiOperation({ summary: 'Upload files as private (requires presigned URL to access)' })
+  @ApiOperation({
+    summary: 'Upload files as private (requires presigned URL to access)',
+  })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ schema: { type: 'object', properties: { files: { type: 'array', items: { type: 'string', format: 'binary' } } } } })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: { type: 'array', items: { type: 'string', format: 'binary' } },
+      },
+    },
+  })
   @Post('upload')
   @UseInterceptors(AnyFilesInterceptor())
   async uploadPrivate(@UploadedFiles() files: Express.Multer.File[]) {
     if (!files?.length) {
       throw new BadRequestException('No files provided');
     }
-    const results = await Promise.all(files.map((f) => this.s3Service.uploadPrivate(f)));
+    const results = await Promise.all(
+      files.map((f) => this.s3Service.uploadPrivate(f)),
+    );
     // Generate presigned URLs so caller can immediately view the files
     const keys = results.map((r) => r.key);
     const urlMap = await this.s3Service.getPresignedUrls(keys);
-    const enriched = results.map((r) => ({ ...r, presignedUrl: urlMap[r.key] ?? null }));
+    const enriched = results.map((r) => ({
+      ...r,
+      presignedUrl: urlMap[r.key] ?? null,
+    }));
     return { results: enriched, message: 'Files uploaded successfully' };
   }
 

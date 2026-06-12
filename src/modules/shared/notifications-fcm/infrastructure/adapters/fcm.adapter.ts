@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import type { IFcmPort, FcmMessage, FcmSendResult } from '../../application/ports/fcm.port.js';
+import type {
+  IFcmPort,
+  FcmMessage,
+  FcmSendResult,
+} from '../../application/ports/fcm.port.js';
 
 const BATCH_SIZE = 500;
 
@@ -8,8 +12,15 @@ const BATCH_SIZE = 500;
 export class FcmAdapter implements IFcmPort {
   private readonly logger = new Logger(FcmAdapter.name);
 
-  async sendMulticast(tokens: string[], message: FcmMessage): Promise<FcmSendResult> {
-    const result: FcmSendResult = { successCount: 0, failureCount: 0, failedTokens: [] };
+  async sendMulticast(
+    tokens: string[],
+    message: FcmMessage,
+  ): Promise<FcmSendResult> {
+    const result: FcmSendResult = {
+      successCount: 0,
+      failureCount: 0,
+      failedTokens: [],
+    };
 
     const basePayload: Omit<admin.messaging.MulticastMessage, 'tokens'> = {
       notification: {
@@ -30,7 +41,11 @@ export class FcmAdapter implements IFcmPort {
       },
       apns: {
         payload: {
-          aps: { alert: { title: message.title, body: message.body }, badge: 1, sound: 'default' },
+          aps: {
+            alert: { title: message.title, body: message.body },
+            badge: 1,
+            sound: 'default',
+          },
           ...(message.actionUrl && { url: message.actionUrl }),
         },
       },
@@ -49,19 +64,29 @@ export class FcmAdapter implements IFcmPort {
     for (let i = 0; i < tokens.length; i += BATCH_SIZE) {
       const batch = tokens.slice(i, i + BATCH_SIZE);
       try {
-        const response = await admin.messaging().sendEachForMulticast({ ...basePayload, tokens: batch });
+        const response = await admin
+          .messaging()
+          .sendEachForMulticast({ ...basePayload, tokens: batch });
         result.successCount += response.successCount;
         result.failureCount += response.failureCount;
 
         response.responses.forEach((resp, idx) => {
           if (!resp.success && resp.error) {
-            result.failedTokens.push({ token: batch[idx], errorCode: resp.error.code ?? 'UNKNOWN' });
+            result.failedTokens.push({
+              token: batch[idx],
+              errorCode: resp.error.code ?? 'UNKNOWN',
+            });
           }
         });
       } catch (err) {
-        this.logger.error(`FCM multicast batch failed at offset ${i}`, (err as Error).stack);
+        this.logger.error(
+          `FCM multicast batch failed at offset ${i}`,
+          (err as Error).stack,
+        );
         result.failureCount += batch.length;
-        batch.forEach((token) => result.failedTokens.push({ token, errorCode: 'BATCH_ERROR' }));
+        batch.forEach((token) =>
+          result.failedTokens.push({ token, errorCode: 'BATCH_ERROR' }),
+        );
       }
     }
 
@@ -70,11 +95,16 @@ export class FcmAdapter implements IFcmPort {
 
   async validateToken(token: string): Promise<boolean> {
     try {
-      await admin.messaging().send({ data: { test: 'validation' }, token }, true); // dryRun = true
+      await admin
+        .messaging()
+        .send({ data: { test: 'validation' }, token }, true); // dryRun = true
       return true;
     } catch (err) {
       const code = (err as any).code ?? '';
-      if (code === 'messaging/invalid-registration-token' || code === 'messaging/registration-token-not-registered') {
+      if (
+        code === 'messaging/invalid-registration-token' ||
+        code === 'messaging/registration-token-not-registered'
+      ) {
         return false;
       }
       // Other errors (auth, network) — assume token is still valid

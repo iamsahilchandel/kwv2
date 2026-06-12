@@ -8,8 +8,11 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { extname } from 'path';
-import type { IS3Port, UploadResult, DeleteResult } from '../../application/ports/s3.port.js';
+import type {
+  IS3Port,
+  UploadResult,
+  DeleteResult,
+} from '../../application/ports/s3.port.js';
 
 // Field-specific size limits in bytes (mirrors V1 config)
 const FIELD_SIZE_LIMITS: Record<string, number> = {
@@ -28,13 +31,23 @@ const FIELD_SIZE_LIMITS: Record<string, number> = {
 };
 
 export const ALLOWED_MIME_TYPES = new Set([
-  'image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp',
-  'application/pdf', 'application/msword',
+  'image/jpeg',
+  'image/png',
+  'image/jpg',
+  'image/gif',
+  'image/webp',
+  'application/pdf',
+  'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv', 'video/webm',
+  'video/mp4',
+  'video/quicktime',
+  'video/x-msvideo',
+  'video/x-ms-wmv',
+  'video/webm',
   'application/vnd.ms-excel',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'text/plain', 'text/csv',
+  'text/plain',
+  'text/csv',
 ]);
 
 @Injectable()
@@ -54,7 +67,9 @@ export class AwsS3Adapter implements IS3Port {
         accessKeyId: config.get<string>('aws.accessKeyId') ?? '',
         secretAccessKey: config.get<string>('aws.secretAccessKey') ?? '',
       },
-      ...(config.get<string>('aws.endpoint') && { endpoint: config.get<string>('aws.endpoint') }),
+      ...(config.get<string>('aws.endpoint') && {
+        endpoint: config.get<string>('aws.endpoint'),
+      }),
       forcePathStyle: true,
     });
   }
@@ -67,7 +82,10 @@ export class AwsS3Adapter implements IS3Port {
     return this.upload(file, 'private');
   }
 
-  private async upload(file: Express.Multer.File, acl: 'public-read' | 'private'): Promise<UploadResult> {
+  private async upload(
+    file: Express.Multer.File,
+    acl: 'public-read' | 'private',
+  ): Promise<UploadResult> {
     this.validateFile(file);
 
     const folder = file.fieldname?.includes('Video') ? 'videos' : 'uploads';
@@ -83,7 +101,10 @@ export class AwsS3Adapter implements IS3Port {
         Body: file.buffer,
         ContentType: file.mimetype,
         ACL: acl,
-        Metadata: { fieldName: file.fieldname ?? '', contentType: file.mimetype },
+        Metadata: {
+          fieldName: file.fieldname ?? '',
+          contentType: file.mimetype,
+        },
       }),
     );
 
@@ -104,10 +125,15 @@ export class AwsS3Adapter implements IS3Port {
 
     if (keys.length === 1) {
       try {
-        await this.s3.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: keys[0] }));
+        await this.s3.send(
+          new DeleteObjectCommand({ Bucket: this.bucket, Key: keys[0] }),
+        );
         return { deleted: [keys[0]], failed: [] };
       } catch (err) {
-        return { deleted: [], failed: [{ key: keys[0], error: (err as Error).message }] };
+        return {
+          deleted: [],
+          failed: [{ key: keys[0], error: (err as Error).message }],
+        };
       }
     }
 
@@ -120,26 +146,42 @@ export class AwsS3Adapter implements IS3Port {
 
     return {
       deleted: result.Deleted?.map((d) => d.Key ?? '') ?? [],
-      failed: result.Errors?.map((e) => ({ key: e.Key ?? '', error: e.Message ?? 'Unknown error' })) ?? [],
+      failed:
+        result.Errors?.map((e) => ({
+          key: e.Key ?? '',
+          error: e.Message ?? 'Unknown error',
+        })) ?? [],
     };
   }
 
   async getPresignedUrl(key: string, expiresInSeconds = 300): Promise<string> {
-    return getSignedUrl(this.s3, new GetObjectCommand({ Bucket: this.bucket, Key: key }), {
-      expiresIn: expiresInSeconds,
-    });
+    return getSignedUrl(
+      this.s3,
+      new GetObjectCommand({ Bucket: this.bucket, Key: key }),
+      {
+        expiresIn: expiresInSeconds,
+      },
+    );
   }
 
-  async getPresignedUrls(keys: string[], expiresInSeconds = 300): Promise<Record<string, string>> {
+  async getPresignedUrls(
+    keys: string[],
+    expiresInSeconds = 300,
+  ): Promise<Record<string, string>> {
     const results = await Promise.allSettled(
-      keys.map(async (key) => ({ key, url: await this.getPresignedUrl(key, expiresInSeconds) })),
+      keys.map(async (key) => ({
+        key,
+        url: await this.getPresignedUrl(key, expiresInSeconds),
+      })),
     );
 
     return results.reduce<Record<string, string>>((acc, result) => {
       if (result.status === 'fulfilled') {
         acc[result.value.key] = result.value.url;
       } else {
-        this.logger.warn('Failed to generate presigned URL', { reason: result.reason });
+        this.logger.warn('Failed to generate presigned URL', {
+          reason: result.reason,
+        });
       }
       return acc;
     }, {});
@@ -150,7 +192,9 @@ export class AwsS3Adapter implements IS3Port {
       throw new Error(`File type ${file.mimetype} is not allowed`);
     }
 
-    const fieldLimit = FIELD_SIZE_LIMITS[file.fieldname ?? 'default'] ?? FIELD_SIZE_LIMITS.default;
+    const fieldLimit =
+      FIELD_SIZE_LIMITS[file.fieldname ?? 'default'] ??
+      FIELD_SIZE_LIMITS.default;
     if (file.size > fieldLimit) {
       throw new Error(
         `File "${file.originalname}" exceeds size limit of ${(fieldLimit / 1024 / 1024).toFixed(0)}MB`,
