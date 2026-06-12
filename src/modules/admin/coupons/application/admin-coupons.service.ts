@@ -4,10 +4,10 @@ import { PrismaService } from '@/core/database/prisma.service.js';
 import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
 import { CouponStatus } from '@/generated/prisma/enums.js';
 import { CouponNotFoundException, CouponCodeAlreadyExistsException } from '../domain/errors/coupon.errors.js';
-import type { CreateCouponDto } from '../infrastructure/http/dto/create-coupon.dto.js';
-import type { CreateCouponBatchDto } from '../infrastructure/http/dto/create-coupon-batch.dto.js';
-import type { UpdateCouponDto } from '../infrastructure/http/dto/update-coupon.dto.js';
-import type { QueryCouponsDto } from '../infrastructure/http/dto/query-coupons.dto.js';
+import type { CreateCouponBody } from '../infrastructure/http/dto/create-coupon.dto.js';
+import type { CreateCouponBatchBody } from '../infrastructure/http/dto/create-coupon-batch.dto.js';
+import type { UpdateCouponBody } from '../infrastructure/http/dto/update-coupon.dto.js';
+import type { QueryCouponsQuery } from '../infrastructure/http/dto/query-coupons.dto.js';
 
 @Injectable()
 export class AdminCouponsService {
@@ -15,7 +15,7 @@ export class AdminCouponsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateCouponDto, adminId: number) {
+  async create(dto: CreateCouponBody, adminId: number) {
     const code = dto.code ? dto.code.toUpperCase() : this.generateCode(8);
 
     this.logger.log('Creating coupon', { adminId, code });
@@ -42,7 +42,7 @@ export class AdminCouponsService {
     return coupon;
   }
 
-  async generateBatch(dto: CreateCouponBatchDto, adminId: number) {
+  async generateBatch(dto: CreateCouponBatchBody, adminId: number) {
     this.logger.log('Generating coupon batch', { adminId, count: dto.count });
     this.validateCouponValues(dto.type, dto.value, dto.startDate, dto.endDate);
 
@@ -87,7 +87,7 @@ export class AdminCouponsService {
     return { count: totalCreated };
   }
 
-  async findAll(query: QueryCouponsDto) {
+  async findAll(query: QueryCouponsQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { status, type, applicableTo, centerId, batchId, search } = query;
 
@@ -149,7 +149,7 @@ export class AdminCouponsService {
     };
   }
 
-  async update(id: number, dto: UpdateCouponDto, adminId: number) {
+  async update(id: number, dto: UpdateCouponBody, adminId: number) {
     const coupon = await this.prisma.coupon.findUnique({ where: { id } });
     if (!coupon) throw new CouponNotFoundException(id);
 

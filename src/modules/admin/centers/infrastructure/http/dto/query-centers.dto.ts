@@ -1,39 +1,14 @@
-import { IsOptional, IsBoolean, IsString, IsEnum } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto.js';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
 import { CenterType, CenterOperatingEntity } from '@/generated/prisma/enums.js';
 
-export class QueryCentersDto extends PaginationQueryDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
-  isActive?: boolean;
+export const QueryCentersSchema = PaginationQuerySchema.extend({
+  isActive: z.preprocess((v) => v === 'true' || v === true, z.boolean()).optional(),
+  isVerified: z.preprocess((v) => v === 'true' || v === true, z.boolean()).optional(),
+  centerType: z.nativeEnum(CenterType).optional(),
+  operatingEntity: z.nativeEnum(CenterOperatingEntity).optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
-  isVerified?: boolean;
-
-  @ApiPropertyOptional({ enum: CenterType })
-  @IsOptional()
-  @IsEnum(CenterType)
-  centerType?: CenterType;
-
-  @ApiPropertyOptional({ enum: CenterOperatingEntity })
-  @IsOptional()
-  @IsEnum(CenterOperatingEntity)
-  operatingEntity?: CenterOperatingEntity;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  city?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state?: string;
-}
+export type QueryCentersQuery = z.infer<typeof QueryCentersSchema>;

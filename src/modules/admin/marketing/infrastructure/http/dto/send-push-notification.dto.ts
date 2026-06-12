@@ -1,5 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsUrl, MaxLength, MinLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
 export enum MarketingUserType {
   appadmin = 'appadmin',
@@ -14,30 +13,12 @@ export enum NotificationPriority {
   low = 'low',
 }
 
-export class SendPushNotificationDto {
-  @ApiProperty({ example: 'Summer Sale!' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(100)
-  title: string;
+export const SendPushNotificationSchema = z.object({
+  title: z.string().min(1).max(100),
+  body: z.string().min(1).max(500),
+  imageUrl: z.string().url().optional(),
+  userType: z.nativeEnum(MarketingUserType),
+  priority: z.nativeEnum(NotificationPriority).optional(),
+});
 
-  @ApiProperty({ example: 'Get 20% off on all courses this week.' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(500)
-  body: string;
-
-  @ApiPropertyOptional({ example: 'https://cdn.example.com/notification.jpg' })
-  @IsOptional()
-  @IsUrl()
-  imageUrl?: string;
-
-  @ApiProperty({ enum: MarketingUserType })
-  @IsEnum(MarketingUserType)
-  userType: MarketingUserType;
-
-  @ApiPropertyOptional({ enum: NotificationPriority, default: NotificationPriority.normal })
-  @IsOptional()
-  @IsEnum(NotificationPriority)
-  priority?: NotificationPriority;
-}
+export type SendPushNotificationBody = z.infer<typeof SendPushNotificationSchema>;

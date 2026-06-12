@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
 import { AdvertisingBannerNotFoundException } from '../domain/errors/advertising-banner.errors.js';
-import type { CreateAdvertisingBannerDto } from '../infrastructure/http/dto/create-advertising-banner.dto.js';
-import type { UpdateAdvertisingBannerDto } from '../infrastructure/http/dto/update-advertising-banner.dto.js';
-import type { QueryAdvertisingBannersDto } from '../infrastructure/http/dto/query-advertising-banners.dto.js';
+import type { CreateAdvertisingBannerBody } from '../infrastructure/http/dto/create-advertising-banner.dto.js';
+import type { UpdateAdvertisingBannerBody } from '../infrastructure/http/dto/update-advertising-banner.dto.js';
+import type { QueryAdvertisingBannersQuery } from '../infrastructure/http/dto/query-advertising-banners.dto.js';
 
 @Injectable()
 export class AdminAdvertisingBannersService {
@@ -12,7 +12,7 @@ export class AdminAdvertisingBannersService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: QueryAdvertisingBannersDto) {
+  async findAll(query: QueryAdvertisingBannersQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { type, isActive, search } = query;
 
@@ -29,14 +29,14 @@ export class AdminAdvertisingBannersService {
     return buildPaginatedResult(items, total, page, limit);
   }
 
-  async create(dto: CreateAdvertisingBannerDto, adminId: number) {
+  async create(dto: CreateAdvertisingBannerBody, adminId: number) {
     this.logger.log('Creating advertising banner', { adminId, title: dto.title });
     const banner = await this.prisma.advertisingBanners.create({ data: dto });
     this.logger.log('Advertising banner created', { bannerId: banner.id });
     return banner;
   }
 
-  async update(id: number, dto: UpdateAdvertisingBannerDto) {
+  async update(id: number, dto: UpdateAdvertisingBannerBody) {
     const banner = await this.prisma.advertisingBanners.findUnique({ where: { id } });
     if (!banner) throw new AdvertisingBannerNotFoundException(id);
 

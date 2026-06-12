@@ -1,40 +1,13 @@
-import { IsString, IsEmail, IsEnum, IsOptional, IsInt, IsBoolean, Min, MaxLength } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 import { AdminRole } from '@/generated/prisma/enums.js';
 
-export class UpdateAdminUserDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  fullName?: string;
+export const UpdateAdminUserSchema = z.object({
+  fullName: z.string().max(50).optional(),
+  email: z.string().email().optional(),
+  phoneNumber: z.string().max(15).optional(),
+  role: z.nativeEnum(AdminRole).optional(),
+  reportsTo: z.coerce.number().int().min(1).optional(),
+  isActive: z.boolean().optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(15)
-  phoneNumber?: string;
-
-  @ApiPropertyOptional({ enum: AdminRole })
-  @IsOptional()
-  @IsEnum(AdminRole)
-  role?: AdminRole;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10))
-  reportsTo?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-}
+export type UpdateAdminUserBody = z.infer<typeof UpdateAdminUserSchema>;

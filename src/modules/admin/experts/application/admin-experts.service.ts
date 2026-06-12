@@ -4,8 +4,8 @@ import { PrismaService } from '@/core/database/prisma.service.js';
 import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
 import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
 import { ExpertNotFoundException } from '../domain/errors/expert.errors.js';
-import type { QueryExpertsDto } from '../infrastructure/http/dto/query-experts.dto.js';
-import type { UpdateExpertDto } from '../infrastructure/http/dto/update-expert.dto.js';
+import type { QueryExpertsQuery } from '../infrastructure/http/dto/query-experts.dto.js';
+import type { UpdateExpertBody } from '../infrastructure/http/dto/update-expert.dto.js';
 
 @Injectable()
 export class AdminExpertsService {
@@ -13,7 +13,7 @@ export class AdminExpertsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: QueryExpertsDto) {
+  async findAll(query: QueryExpertsQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { tab, isActive, isVerified, search, startDate, endDate } = query;
 
@@ -66,7 +66,7 @@ export class AdminExpertsService {
     return expert;
   }
 
-  async update(id: number, dto: UpdateExpertDto) {
+  async update(id: number, dto: UpdateExpertBody) {
     const expert = await this.prisma.experts.findUnique({ where: { id } });
     if (!expert) throw new ExpertNotFoundException(id);
 

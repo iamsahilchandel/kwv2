@@ -1,10 +1,7 @@
-import { IsString, IsOptional, IsArray } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class PaymentRejectDto {
-  @ApiPropertyOptional({ type: [String], description: 'Reasons for rejection' })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  reasons?: string[];
-}
+export const PaymentRejectSchema = z.object({
+  reasons: z.array(z.string()).optional(),
+});
+
+export type PaymentRejectBody = z.infer<typeof PaymentRejectSchema>;

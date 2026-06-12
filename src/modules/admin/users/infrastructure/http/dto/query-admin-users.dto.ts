@@ -1,38 +1,14 @@
-import { IsOptional, IsBoolean, IsEnum, IsInt, Min } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto.js';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
 import { AdminRole } from '@/generated/prisma/enums.js';
 
-export class QueryAdminUsersDto extends PaginationQueryDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
-  isActive?: boolean;
+export const QueryAdminUsersSchema = PaginationQuerySchema.extend({
+  isActive: z.preprocess((v) => v === 'true' || v === true, z.boolean()).optional(),
+  role: z.nativeEnum(AdminRole).optional(),
+  reportsTo: z.coerce.number().int().min(1).optional(),
+  tab: z.enum(['active', 'inactive']).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
 
-  @ApiPropertyOptional({ enum: AdminRole })
-  @IsOptional()
-  @IsEnum(AdminRole)
-  role?: AdminRole;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10))
-  reportsTo?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsEnum(['active', 'inactive'])
-  tab?: 'active' | 'inactive';
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  startDate?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  endDate?: string;
-}
+export type QueryAdminUsersQuery = z.infer<typeof QueryAdminUsersSchema>;

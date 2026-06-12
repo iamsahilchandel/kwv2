@@ -1,11 +1,10 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { z } from 'zod';
 
-export class CashfreeWebhookHeadersDto {
-  @IsString()
-  @IsNotEmpty()
-  'x-webhook-signature': string;
+export const CashfreeWebhookHeadersSchema = z.object({
+  'x-webhook-signature': z.string().min(1),
+  'x-webhook-timestamp': z.string().min(1),
+});
 
-  @IsString()
-  @IsNotEmpty()
-  'x-webhook-timestamp': string;
-}
+export type CashfreeWebhookHeaders = z.infer<
+  typeof CashfreeWebhookHeadersSchema
+>;

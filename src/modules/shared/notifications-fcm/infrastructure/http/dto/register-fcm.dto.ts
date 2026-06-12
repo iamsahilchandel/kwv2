@@ -1,6 +1,4 @@
-import { IsString, IsNotEmpty, IsInt, IsPositive, IsEnum, IsOptional, IsObject, MinLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { z } from 'zod';
 
 export enum UserType {
   AppAdmin = 'appadmin',
@@ -16,30 +14,12 @@ export enum DeviceType {
   Desktop = 'desktop',
 }
 
-export class RegisterFcmTokenDto {
-  @ApiProperty()
-  @IsString()
-  @MinLength(100, { message: 'FCM token appears invalid (too short)' })
-  @IsNotEmpty()
-  fcmToken: string;
+export const RegisterFcmTokenSchema = z.object({
+  fcmToken: z.string().min(100, 'FCM token appears invalid (too short)'),
+  userId: z.number().int().positive(),
+  userType: z.nativeEnum(UserType),
+  deviceType: z.nativeEnum(DeviceType).optional(),
+  deviceInfo: z.record(z.unknown()).optional(),
+});
 
-  @ApiProperty({ description: 'Database user ID (not firebase UID)' })
-  @Type(() => Number)
-  @IsInt()
-  @IsPositive()
-  userId: number;
-
-  @ApiProperty({ enum: UserType })
-  @IsEnum(UserType)
-  userType: UserType;
-
-  @ApiPropertyOptional({ enum: DeviceType })
-  @IsOptional()
-  @IsEnum(DeviceType)
-  deviceType?: DeviceType;
-
-  @ApiPropertyOptional({ description: 'Additional device metadata (max 5KB)' })
-  @IsOptional()
-  @IsObject()
-  deviceInfo?: Record<string, unknown>;
-}
+export type RegisterFcmTokenBody = z.infer<typeof RegisterFcmTokenSchema>;

@@ -5,11 +5,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
 import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
 import { AdminCenterInquiriesService } from '../../application/admin-center-inquiries.service.js';
-import { CreateCenterInquiryDto } from './dto/create-center-inquiry.dto.js';
-import { UpdateCenterInquiryDto } from './dto/update-center-inquiry.dto.js';
-import { QueryCenterInquiriesDto } from './dto/query-center-inquiries.dto.js';
-import { CenterInquiryNoteDto } from './dto/center-inquiry-note.dto.js';
+import { CreateCenterInquirySchema, type CreateCenterInquiryBody } from './dto/create-center-inquiry.dto.js';
+import { UpdateCenterInquirySchema, type UpdateCenterInquiryBody } from './dto/update-center-inquiry.dto.js';
+import { QueryCenterInquiriesSchema, type QueryCenterInquiriesQuery } from './dto/query-center-inquiries.dto.js';
+import { CenterInquiryNoteSchema, type CenterInquiryNoteBody } from './dto/center-inquiry-note.dto.js';
 
 @ApiTags('Admin - Center Inquiries')
 @ApiBearerAuth()
@@ -19,12 +20,12 @@ export class AdminCenterInquiriesController {
   constructor(private readonly service: AdminCenterInquiriesService) {}
 
   @Post()
-  create(@Body() dto: CreateCenterInquiryDto, @CurrentUser() user: IAuthUser) {
+  create(@Body(new ZodValidationPipe(CreateCenterInquirySchema)) dto: CreateCenterInquiryBody, @CurrentUser() user: IAuthUser) {
     return this.service.create(dto, user);
   }
 
   @Get()
-  findAll(@Query() query: QueryCenterInquiriesDto) {
+  findAll(@Query(new ZodValidationPipe(QueryCenterInquiriesSchema)) query: QueryCenterInquiriesQuery) {
     return this.service.findAll(query);
   }
 
@@ -36,7 +37,7 @@ export class AdminCenterInquiriesController {
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateCenterInquiryDto,
+    @Body(new ZodValidationPipe(UpdateCenterInquirySchema)) dto: UpdateCenterInquiryBody,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.update(id, dto, user);
@@ -59,7 +60,7 @@ export class AdminCenterInquiriesController {
   @Post(':id/notes')
   addNote(
     @Param('id', ParseIntPipe) inquiryId: number,
-    @Body() dto: CenterInquiryNoteDto,
+    @Body(new ZodValidationPipe(CenterInquiryNoteSchema)) dto: CenterInquiryNoteBody,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.addNote(inquiryId, dto, user);
@@ -73,7 +74,7 @@ export class AdminCenterInquiriesController {
   @Put(':id/notes/:noteId')
   updateNote(
     @Param('noteId', ParseIntPipe) noteId: number,
-    @Body() dto: CenterInquiryNoteDto,
+    @Body(new ZodValidationPipe(CenterInquiryNoteSchema)) dto: CenterInquiryNoteBody,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.updateNote(noteId, dto, user);

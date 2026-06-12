@@ -8,9 +8,9 @@ import {
   AdminUserAlreadyExistsException,
   AdminUserCannotBeDeletedException,
 } from '../domain/errors/admin-user.errors.js';
-import type { CreateAdminUserDto } from '../infrastructure/http/dto/create-admin-user.dto.js';
-import type { UpdateAdminUserDto } from '../infrastructure/http/dto/update-admin-user.dto.js';
-import type { QueryAdminUsersDto } from '../infrastructure/http/dto/query-admin-users.dto.js';
+import type { CreateAdminUserBody } from '../infrastructure/http/dto/create-admin-user.dto.js';
+import type { UpdateAdminUserBody } from '../infrastructure/http/dto/update-admin-user.dto.js';
+import type { QueryAdminUsersQuery } from '../infrastructure/http/dto/query-admin-users.dto.js';
 import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
 
 const SAFE_SELECT = {
@@ -24,7 +24,7 @@ export class AdminUsersService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateAdminUserDto, currentUser: IAuthUser) {
+  async create(dto: CreateAdminUserBody, currentUser: IAuthUser) {
     this.logger.log('Creating admin user', { createdBy: currentUser.id, role: dto.role });
 
     // Role hierarchy enforcement
@@ -52,7 +52,7 @@ export class AdminUsersService {
     return user;
   }
 
-  async findAll(query: QueryAdminUsersDto) {
+  async findAll(query: QueryAdminUsersQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { tab, isActive, role, reportsTo, search, startDate, endDate } = query;
 
@@ -117,7 +117,7 @@ export class AdminUsersService {
     return user;
   }
 
-  async update(id: number, dto: UpdateAdminUserDto, currentUser: IAuthUser) {
+  async update(id: number, dto: UpdateAdminUserBody, currentUser: IAuthUser) {
     const user = await this.prisma.appAdminStaff.findUnique({ where: { id } });
     if (!user) throw new AdminUserNotFoundException(id);
 

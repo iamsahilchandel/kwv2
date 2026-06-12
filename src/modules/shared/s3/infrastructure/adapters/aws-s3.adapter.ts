@@ -180,7 +180,10 @@ export class AwsS3Adapter implements IS3Port {
         acc[result.value.key] = result.value.url;
       } else {
         this.logger.warn('Failed to generate presigned URL', {
-          reason: result.reason,
+          reason:
+            result.reason instanceof Error
+              ? result.reason.message
+              : String(result.reason),
         });
       }
       return acc;

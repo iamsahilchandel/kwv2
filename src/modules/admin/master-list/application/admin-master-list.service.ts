@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { AmenityNotFoundException, ServiceNotFoundException } from '../domain/errors/master-list.errors.js';
-import type { CreateAmenityDto } from '../infrastructure/http/dto/create-amenity.dto.js';
-import type { UpdateAmenityDto } from '../infrastructure/http/dto/update-amenity.dto.js';
-import type { CreateServiceDto } from '../infrastructure/http/dto/create-service.dto.js';
-import type { UpdateServiceDto } from '../infrastructure/http/dto/update-service.dto.js';
+import type { CreateAmenityBody } from '../infrastructure/http/dto/create-amenity.dto.js';
+import type { UpdateAmenityBody } from '../infrastructure/http/dto/update-amenity.dto.js';
+import type { CreateServiceBody } from '../infrastructure/http/dto/create-service.dto.js';
+import type { UpdateServiceBody } from '../infrastructure/http/dto/update-service.dto.js';
 
 @Injectable()
 export class AdminMasterListService {
@@ -18,7 +18,7 @@ export class AdminMasterListService {
     return this.prisma.ameneties.findMany({ orderBy: { amenityName: 'asc' } });
   }
 
-  async createAmenity(dto: CreateAmenityDto, adminId: number) {
+  async createAmenity(dto: CreateAmenityBody, adminId: number) {
     this.logger.log('Creating amenity', { adminId, name: dto.amenityName });
     const amenity = await this.prisma.ameneties.create({
       data: { ...dto, createdBy: adminId },
@@ -27,7 +27,7 @@ export class AdminMasterListService {
     return amenity;
   }
 
-  async updateAmenity(id: number, dto: UpdateAmenityDto, adminId: number) {
+  async updateAmenity(id: number, dto: UpdateAmenityBody, adminId: number) {
     const amenity = await this.prisma.ameneties.findUnique({ where: { id } });
     if (!amenity) throw new AmenityNotFoundException(id);
 
@@ -53,7 +53,7 @@ export class AdminMasterListService {
     return this.prisma.services.findMany({ orderBy: { serviceName: 'asc' } });
   }
 
-  async createService(dto: CreateServiceDto, adminId: number) {
+  async createService(dto: CreateServiceBody, adminId: number) {
     this.logger.log('Creating service', { adminId, name: dto.serviceName });
     const service = await this.prisma.services.create({
       data: { ...dto, createdBy: adminId },
@@ -62,7 +62,7 @@ export class AdminMasterListService {
     return service;
   }
 
-  async updateService(id: number, dto: UpdateServiceDto, adminId: number) {
+  async updateService(id: number, dto: UpdateServiceBody, adminId: number) {
     const service = await this.prisma.services.findUnique({ where: { id } });
     if (!service) throw new ServiceNotFoundException(id);
 

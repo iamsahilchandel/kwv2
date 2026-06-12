@@ -1,10 +1,7 @@
-import { IsString, MaxLength, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class CenterInquiryNoteDto {
-  @ApiProperty({ example: 'Called the center, interested in onboarding.' })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(2000)
-  note: string;
-}
+export const CenterInquiryNoteSchema = z.object({
+  note: z.string().min(1).max(2000),
+});
+
+export type CenterInquiryNoteBody = z.infer<typeof CenterInquiryNoteSchema>;

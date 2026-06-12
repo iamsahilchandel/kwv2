@@ -1,39 +1,14 @@
-import { IsOptional, IsString, IsEnum, IsInt, Min } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto.js';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
 import { CenterInquiryStatus } from '@/generated/prisma/enums.js';
 
-export class QueryCenterInquiriesDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ enum: CenterInquiryStatus })
-  @IsOptional()
-  @IsEnum(CenterInquiryStatus)
-  status?: CenterInquiryStatus;
+export const QueryCenterInquiriesSchema = PaginationQuerySchema.extend({
+  status: z.nativeEnum(CenterInquiryStatus).optional(),
+  assignedTo: z.coerce.number().int().min(1).optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10))
-  assignedTo?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  city?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  startDate?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  endDate?: string;
-}
+export type QueryCenterInquiriesQuery = z.infer<typeof QueryCenterInquiriesSchema>;

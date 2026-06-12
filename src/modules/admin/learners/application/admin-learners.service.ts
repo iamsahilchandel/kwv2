@@ -3,8 +3,8 @@ import { omit } from 'lodash';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
 import { LearnerNotFoundException } from '../domain/errors/learner.errors.js';
-import type { QueryLearnersDto } from '../infrastructure/http/dto/query-learners.dto.js';
-import type { UpdateLearnerDto } from '../infrastructure/http/dto/update-learner.dto.js';
+import type { QueryLearnersQuery } from '../infrastructure/http/dto/query-learners.dto.js';
+import type { UpdateLearnerBody } from '../infrastructure/http/dto/update-learner.dto.js';
 
 @Injectable()
 export class AdminLearnersService {
@@ -12,7 +12,7 @@ export class AdminLearnersService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: QueryLearnersDto) {
+  async findAll(query: QueryLearnersQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { search, startDate, endDate } = query;
 
@@ -56,7 +56,7 @@ export class AdminLearnersService {
     return learner;
   }
 
-  async update(id: number, dto: UpdateLearnerDto) {
+  async update(id: number, dto: UpdateLearnerBody) {
     const learner = await this.prisma.learners.findUnique({ where: { id } });
     if (!learner) throw new LearnerNotFoundException(id);
 

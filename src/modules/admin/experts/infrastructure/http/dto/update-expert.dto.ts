@@ -1,14 +1,8 @@
-import { IsBoolean, IsOptional } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class UpdateExpertDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+export const UpdateExpertSchema = z.object({
+  isActive: z.boolean().optional(),
+  isVerified: z.boolean().optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isVerified?: boolean;
-}
+export type UpdateExpertBody = z.infer<typeof UpdateExpertSchema>;

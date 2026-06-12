@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
-import type { GovPicklistQueryDto } from '../infrastructure/http/dto/gov-picklist.dto.js';
+import type { GovPicklistQuery } from '../infrastructure/http/dto/gov-picklist.dto.js';
 
 const STATES_RESOURCE_ID = 'a71e60f0-a21d-43de-a6c5-fa5d21600cdb';
 const DISTRICTS_RESOURCE_ID = '7f1a6b38-3c26-4bd3-b91e-2e8e06c1b57c';
@@ -16,15 +16,15 @@ export class GovPicklistService {
     this.apiKey = this.config.get<string>('govPicklist.apiKey') ?? '';
   }
 
-  async getStates(query: GovPicklistQueryDto) {
+  async getStates(query: GovPicklistQuery) {
     return this.fetchPicklist(STATES_RESOURCE_ID, query);
   }
 
-  async getDistricts(query: GovPicklistQueryDto) {
+  async getDistricts(query: GovPicklistQuery) {
     return this.fetchPicklist(DISTRICTS_RESOURCE_ID, query);
   }
 
-  private async fetchPicklist(resourceId: string, query: GovPicklistQueryDto) {
+  private async fetchPicklist(resourceId: string, query: GovPicklistQuery) {
     const params: Record<string, string> = {
       'api-key': this.apiKey,
       format: query.format ?? 'json',

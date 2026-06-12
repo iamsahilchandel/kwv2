@@ -1,5 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumberString, IsEnum } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
 export enum TravelMode {
   Driving = 'driving',
@@ -8,134 +7,60 @@ export enum TravelMode {
   Transit = 'transit',
 }
 
-export class GeocodeQueryDto {
-  @ApiProperty({ description: 'Address to geocode' })
-  @IsString()
-  @IsNotEmpty()
-  address: string;
-}
+export const GeocodeQuerySchema = z.object({
+  address: z.string().min(1),
+});
 
-export class LatLngQueryDto {
-  @ApiProperty()
-  @IsNumberString()
-  lat: string;
+export const LatLngQuerySchema = z.object({
+  lat: z.string().regex(/^-?\d+(\.\d+)?$/),
+  lng: z.string().regex(/^-?\d+(\.\d+)?$/),
+});
 
-  @ApiProperty()
-  @IsNumberString()
-  lng: string;
-}
+export const DirectionsQuerySchema = z.object({
+  origin: z.string().min(1),
+  destination: z.string().min(1),
+  mode: z.nativeEnum(TravelMode).optional(),
+  avoidTolls: z.string().optional(),
+});
 
-export class DirectionsQueryDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  origin: string;
+export const DistanceMatrixQuerySchema = z.object({
+  origins: z.string().min(1),
+  destinations: z.string().min(1),
+  mode: z.nativeEnum(TravelMode).optional(),
+});
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  destination: string;
+export const NearbyPlacesQuerySchema = z.object({
+  lat: z.string().regex(/^-?\d+(\.\d+)?$/),
+  lng: z.string().regex(/^-?\d+(\.\d+)?$/),
+  radius: z.string().regex(/^\d+$/),
+  type: z.string().optional(),
+});
 
-  @ApiPropertyOptional({ enum: TravelMode })
-  @IsOptional()
-  @IsEnum(TravelMode)
-  mode?: TravelMode;
+export const PlaceDetailsQuerySchema = z.object({
+  placeId: z.string().min(1),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  avoidTolls?: string;
-}
+export const AutocompleteQuerySchema = z.object({
+  input: z.string().min(1),
+  types: z.string().optional(),
+  location: z.string().optional(),
+  radius: z.string().optional(),
+  language: z.string().optional(),
+  sessionToken: z.string().optional(),
+});
 
-export class DistanceMatrixQueryDto {
-  @ApiProperty({ description: 'Pipe-separated origins (e.g. "12.97,77.59|13.08,80.27")' })
-  @IsString()
-  @IsNotEmpty()
-  origins: string;
+export const StaticMapQuerySchema = z.object({
+  center: z.string().min(1),
+  zoom: z.string(),
+  size: z.string(),
+  markers: z.string().optional(),
+});
 
-  @ApiProperty({ description: 'Pipe-separated destinations' })
-  @IsString()
-  @IsNotEmpty()
-  destinations: string;
-
-  @ApiPropertyOptional({ enum: TravelMode })
-  @IsOptional()
-  @IsEnum(TravelMode)
-  mode?: TravelMode;
-}
-
-export class NearbyPlacesQueryDto {
-  @ApiProperty()
-  @IsNumberString()
-  lat: string;
-
-  @ApiProperty()
-  @IsNumberString()
-  lng: string;
-
-  @ApiProperty({ description: 'Search radius in meters' })
-  @IsNumberString()
-  radius: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  type?: string;
-}
-
-export class PlaceDetailsQueryDto {
-  @ApiProperty({ description: 'Google Place ID' })
-  @IsString()
-  @IsNotEmpty()
-  placeId: string;
-}
-
-export class AutocompleteQueryDto {
-  @ApiProperty({ description: 'Partial address or query input' })
-  @IsString()
-  @IsNotEmpty()
-  input: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  types?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  location?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  radius?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  language?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  sessionToken?: string;
-}
-
-export class StaticMapQueryDto {
-  @ApiProperty({ description: 'Map center (lat,lng)' })
-  @IsString()
-  @IsNotEmpty()
-  center: string;
-
-  @ApiProperty({ description: 'Zoom level (0–21)' })
-  @IsString()
-  zoom: string;
-
-  @ApiProperty({ description: 'Image size, e.g. "600x400"' })
-  @IsString()
-  size: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  markers?: string;
-}
+export type GeocodeQuery = z.infer<typeof GeocodeQuerySchema>;
+export type LatLngQuery = z.infer<typeof LatLngQuerySchema>;
+export type DirectionsQuery = z.infer<typeof DirectionsQuerySchema>;
+export type DistanceMatrixQuery = z.infer<typeof DistanceMatrixQuerySchema>;
+export type NearbyPlacesQuery = z.infer<typeof NearbyPlacesQuerySchema>;
+export type PlaceDetailsQuery = z.infer<typeof PlaceDetailsQuerySchema>;
+export type AutocompleteQuery = z.infer<typeof AutocompleteQuerySchema>;
+export type StaticMapQuery = z.infer<typeof StaticMapQuerySchema>;

@@ -1,7 +1,7 @@
-import type { PaginationQueryDto } from '../dto/pagination.dto.js';
+import type { PaginationQuery } from '../dto/pagination.dto.js';
 import type { PaginatedResult } from '../types/paginated-result.type.js';
 
-export function paginationParams(dto: PaginationQueryDto) {
+export function paginationParams(dto: PaginationQuery) {
   const page = dto.page ?? 1;
   const limit = dto.limit ?? 20;
   return {

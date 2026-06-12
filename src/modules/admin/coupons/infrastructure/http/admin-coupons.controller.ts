@@ -3,11 +3,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
 import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
 import { AdminCouponsService } from '../../application/admin-coupons.service.js';
-import { CreateCouponDto } from './dto/create-coupon.dto.js';
-import { CreateCouponBatchDto } from './dto/create-coupon-batch.dto.js';
-import { UpdateCouponDto } from './dto/update-coupon.dto.js';
-import { QueryCouponsDto } from './dto/query-coupons.dto.js';
+import { CreateCouponSchema, type CreateCouponBody } from './dto/create-coupon.dto.js';
+import { CreateCouponBatchSchema, type CreateCouponBatchBody } from './dto/create-coupon-batch.dto.js';
+import { UpdateCouponSchema, type UpdateCouponBody } from './dto/update-coupon.dto.js';
+import { QueryCouponsSchema, type QueryCouponsQuery } from './dto/query-coupons.dto.js';
 
 @ApiTags('Admin - Coupons')
 @ApiBearerAuth()
@@ -22,24 +23,24 @@ export class AdminCouponsController {
   }
 
   @Get()
-  findAll(@Query() query: QueryCouponsDto) {
+  findAll(@Query(new ZodValidationPipe(QueryCouponsSchema)) query: QueryCouponsQuery) {
     return this.service.findAll(query);
   }
 
   @Post()
-  create(@Body() dto: CreateCouponDto, @CurrentUser() user: IAuthUser) {
+  create(@Body(new ZodValidationPipe(CreateCouponSchema)) dto: CreateCouponBody, @CurrentUser() user: IAuthUser) {
     return this.service.create(dto, user.id);
   }
 
   @Post('batch')
-  generateBatch(@Body() dto: CreateCouponBatchDto, @CurrentUser() user: IAuthUser) {
+  generateBatch(@Body(new ZodValidationPipe(CreateCouponBatchSchema)) dto: CreateCouponBatchBody, @CurrentUser() user: IAuthUser) {
     return this.service.generateBatch(dto, user.id);
   }
 
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateCouponDto,
+    @Body(new ZodValidationPipe(UpdateCouponSchema)) dto: UpdateCouponBody,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.update(id, dto, user.id);

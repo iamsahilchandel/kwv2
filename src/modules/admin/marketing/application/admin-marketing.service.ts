@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { NotificationsFcmService } from '@/modules/shared/notifications-fcm/application/notifications-fcm.service.js';
-import type { SendPushNotificationDto } from '../infrastructure/http/dto/send-push-notification.dto.js';
+import type { SendPushNotificationBody } from '../infrastructure/http/dto/send-push-notification.dto.js';
 import { MarketingUserType } from '../infrastructure/http/dto/send-push-notification.dto.js';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class AdminMarketingService {
     private readonly fcm: NotificationsFcmService,
   ) {}
 
-  async sendPushNotification(dto: SendPushNotificationDto, adminId: number) {
+  async sendPushNotification(dto: SendPushNotificationBody, adminId: number) {
     this.logger.log('Sending marketing push notification', {
       adminId,
       userType: dto.userType,

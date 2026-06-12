@@ -1,9 +1,10 @@
-import { IsOptional, IsDateString } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class LogsQueryDto {
-  @ApiPropertyOptional({ description: 'Date in YYYY-MM-DD format. Defaults to today.' })
-  @IsOptional()
-  @IsDateString()
-  date?: string;
-}
+export const LogsQuerySchema = z.object({
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+});
+
+export type LogsQuery = z.infer<typeof LogsQuerySchema>;

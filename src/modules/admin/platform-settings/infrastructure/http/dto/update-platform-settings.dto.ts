@@ -1,15 +1,8 @@
-import { IsString, IsOptional, MaxLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class UpdatePlatformSettingsDto {
-  @ApiProperty({ example: '500' })
-  @IsString()
-  @MaxLength(5000)
-  value: string;
+export const UpdatePlatformSettingsSchema = z.object({
+  value: z.string().max(5000),
+  description: z.string().max(1000).optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(1000)
-  description?: string;
-}
+export type UpdatePlatformSettingsBody = z.infer<typeof UpdatePlatformSettingsSchema>;

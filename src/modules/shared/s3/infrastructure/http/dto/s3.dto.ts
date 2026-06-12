@@ -1,28 +1,12 @@
-import { IsArray, IsString, ArrayMinSize, ArrayMaxSize } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class DeleteFilesDto {
-  @ApiProperty({
-    type: [String],
-    description: 'S3 object keys to delete',
-    minItems: 1,
-    maxItems: 100,
-  })
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMinSize(1)
-  @ArrayMaxSize(100)
-  keys: string[];
-}
+export const DeleteFilesSchema = z.object({
+  keys: z.array(z.string()).min(1).max(100),
+});
 
-export class GetPresignedUrlsDto {
-  @ApiProperty({
-    type: [String],
-    description: 'S3 object keys to generate presigned URLs for',
-    minItems: 1,
-  })
-  @IsArray()
-  @IsString({ each: true })
-  @ArrayMinSize(1)
-  keys: string[];
-}
+export const GetPresignedUrlsSchema = z.object({
+  keys: z.array(z.string()).min(1),
+});
+
+export type DeleteFilesBody = z.infer<typeof DeleteFilesSchema>;
+export type GetPresignedUrlsBody = z.infer<typeof GetPresignedUrlsSchema>;

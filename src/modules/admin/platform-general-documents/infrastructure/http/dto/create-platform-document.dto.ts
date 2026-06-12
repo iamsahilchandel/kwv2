@@ -1,23 +1,10 @@
-import { IsString, IsOptional, IsUrl, MaxLength } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class CreatePlatformDocumentDto {
-  @ApiProperty({ example: 'Terms and Conditions' })
-  @IsString()
-  @MaxLength(200)
-  documentTitle: string;
+export const CreatePlatformDocumentSchema = z.object({
+  documentTitle: z.string().max(200),
+  documentUrl: z.string().url(),
+  documentKey: z.string().min(1),
+  documentType: z.string().max(100).optional(),
+});
 
-  @ApiProperty({ example: 'https://cdn.example.com/docs/tnc.pdf' })
-  @IsUrl()
-  documentUrl: string;
-
-  @ApiProperty({ example: 'docs/tnc.pdf' })
-  @IsString()
-  documentKey: string;
-
-  @ApiPropertyOptional({ example: 'terms' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  documentType?: string;
-}
+export type CreatePlatformDocumentBody = z.infer<typeof CreatePlatformDocumentSchema>;

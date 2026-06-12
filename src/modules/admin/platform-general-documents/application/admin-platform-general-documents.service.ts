@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { PlatformGeneralDocumentNotFoundException } from '../domain/errors/platform-general-document.errors.js';
-import type { CreatePlatformDocumentDto } from '../infrastructure/http/dto/create-platform-document.dto.js';
-import type { UpdatePlatformDocumentDto } from '../infrastructure/http/dto/update-platform-document.dto.js';
+import type { CreatePlatformDocumentBody } from '../infrastructure/http/dto/create-platform-document.dto.js';
+import type { UpdatePlatformDocumentBody } from '../infrastructure/http/dto/update-platform-document.dto.js';
 
 @Injectable()
 export class AdminPlatformGeneralDocumentsService {
@@ -14,14 +14,14 @@ export class AdminPlatformGeneralDocumentsService {
     return this.prisma.platformGeneralDocuments.findMany({ orderBy: { createdAt: 'desc' } });
   }
 
-  async create(dto: CreatePlatformDocumentDto) {
+  async create(dto: CreatePlatformDocumentBody) {
     this.logger.log('Creating platform general document', { title: dto.documentTitle });
     const doc = await this.prisma.platformGeneralDocuments.create({ data: dto });
     this.logger.log('Platform general document created', { docId: doc.id });
     return doc;
   }
 
-  async update(id: number, dto: UpdatePlatformDocumentDto) {
+  async update(id: number, dto: UpdatePlatformDocumentBody) {
     const doc = await this.prisma.platformGeneralDocuments.findUnique({ where: { id } });
     if (!doc) throw new PlatformGeneralDocumentNotFoundException(id);
 

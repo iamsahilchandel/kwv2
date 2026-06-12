@@ -1,16 +1,8 @@
-import { IsString, IsOptional, MaxLength } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class UpdateAmenityDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  amenityName?: string;
+export const UpdateAmenitySchema = z.object({
+  amenityName: z.string().max(100).optional(),
+  description: z.string().max(500).optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  description?: string;
-}
+export type UpdateAmenityBody = z.infer<typeof UpdateAmenitySchema>;

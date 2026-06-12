@@ -1,31 +1,12 @@
-import { IsString, IsEmail, IsEnum, IsOptional, IsInt, Min, MaxLength } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 import { AdminRole } from '@/generated/prisma/enums.js';
 
-export class CreateAdminUserDto {
-  @ApiProperty({ example: 'John Doe' })
-  @IsString()
-  @MaxLength(50)
-  fullName: string;
+export const CreateAdminUserSchema = z.object({
+  fullName: z.string().max(50),
+  email: z.string().email(),
+  phoneNumber: z.string().max(15),
+  role: z.nativeEnum(AdminRole),
+  reportsTo: z.coerce.number().int().min(1).optional(),
+});
 
-  @ApiProperty({ example: 'john.doe@example.com' })
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({ example: '9876543210' })
-  @IsString()
-  @MaxLength(15)
-  phoneNumber: string;
-
-  @ApiProperty({ enum: AdminRole })
-  @IsEnum(AdminRole)
-  role: AdminRole;
-
-  @ApiPropertyOptional({ description: 'ID of the manager this user reports to' })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10))
-  reportsTo?: number;
-}
+export type CreateAdminUserBody = z.infer<typeof CreateAdminUserSchema>;

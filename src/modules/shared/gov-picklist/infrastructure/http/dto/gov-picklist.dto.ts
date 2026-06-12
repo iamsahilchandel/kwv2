@@ -1,69 +1,19 @@
-import { IsOptional, IsString, IsNumberString } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class GovPicklistQueryDto {
-  @ApiPropertyOptional({ description: 'Response format', default: 'json' })
-  @IsOptional()
-  @IsString()
-  format?: string;
+export const GovPicklistQuerySchema = z.object({
+  format: z.string().optional(),
+  offset: z.string().optional(),
+  limit: z.string().optional(),
+  document_id: z.string().optional(),
+  state_code: z.string().optional(),
+  state_name_english: z.string().optional(),
+  state_name_local: z.string().optional(),
+  state_census2011_code: z.string().optional(),
+  state_or_ut: z.string().optional(),
+  district_code: z.string().optional(),
+  district_name_english: z.string().optional(),
+  district_name_local: z.string().optional(),
+  district_census2011_code: z.string().optional(),
+});
 
-  @ApiPropertyOptional({ description: 'Pagination offset', default: 0 })
-  @IsOptional()
-  @IsNumberString()
-  offset?: string;
-
-  @ApiPropertyOptional({ description: 'Number of records to return', default: 40 })
-  @IsOptional()
-  @IsNumberString()
-  limit?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  document_id?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state_code?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state_name_english?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state_name_local?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state_census2011_code?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  state_or_ut?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  district_code?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  district_name_english?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  district_name_local?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  district_census2011_code?: string;
-}
+export type GovPicklistQuery = z.infer<typeof GovPicklistQuerySchema>;

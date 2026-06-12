@@ -1,33 +1,12 @@
-import { IsOptional, IsBoolean, IsString } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto.js';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
 
-export class QueryExpertsDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ enum: ['active', 'inactive', 'verified', 'unverified'] })
-  @IsOptional()
-  @IsString()
-  tab?: string;
+export const QueryExpertsSchema = PaginationQuerySchema.extend({
+  tab: z.string().optional(),
+  isActive: z.preprocess((v) => v === 'true' || v === true, z.boolean()).optional(),
+  isVerified: z.preprocess((v) => v === 'true' || v === true, z.boolean()).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
-  isActive?: boolean;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
-  isVerified?: boolean;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  startDate?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  endDate?: string;
-}
+export type QueryExpertsQuery = z.infer<typeof QueryExpertsSchema>;

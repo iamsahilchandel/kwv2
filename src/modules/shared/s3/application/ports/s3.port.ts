@@ -18,7 +18,10 @@ export interface IS3Port {
   uploadPrivate(file: Express.Multer.File): Promise<UploadResult>;
   deleteFiles(keys: string[]): Promise<DeleteResult>;
   getPresignedUrl(key: string, expiresInSeconds?: number): Promise<string>;
-  getPresignedUrls(keys: string[], expiresInSeconds?: number): Promise<Record<string, string>>;
+  getPresignedUrls(
+    keys: string[],
+    expiresInSeconds?: number,
+  ): Promise<Record<string, string>>;
 }
 
 export const S3_PORT = Symbol('IS3Port');

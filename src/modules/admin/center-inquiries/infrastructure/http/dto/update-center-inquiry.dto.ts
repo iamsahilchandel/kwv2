@@ -1,10 +1,8 @@
-import { IsString, IsEmail, IsOptional, IsEnum, IsArray, MaxLength, IsObject } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 import { CenterInquiryStatus } from '@/generated/prisma/enums.js';
-import type { CenterAddressDto } from './create-center-inquiry.dto.js';
+import { CenterAddressSchema } from './create-center-inquiry.dto.js';
 
-// Status values allowed via direct update (not onboarded/verified/verification-rejected)
-const ALLOWED_STATUS_UPDATES: CenterInquiryStatus[] = [
+export const ALLOWED_STATUS_UPDATES = [
   CenterInquiryStatus.new,
   CenterInquiryStatus.contacted,
   CenterInquiryStatus.interested,
@@ -16,45 +14,20 @@ const ALLOWED_STATUS_UPDATES: CenterInquiryStatus[] = [
   CenterInquiryStatus.no_response,
   CenterInquiryStatus.duplicate,
   CenterInquiryStatus.converted,
-];
-export { ALLOWED_STATUS_UPDATES };
+] as const satisfies CenterInquiryStatus[];
 
-export class UpdateCenterInquiryDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  centerName?: string;
+export const UpdateCenterInquirySchema = z.object({
+  centerName: z.string().max(200).optional(),
+  email: z.string().email().optional(),
+  phoneNumber: z.string().max(15).optional(),
+  address: CenterAddressSchema.optional(),
+  website: z.string().optional(),
+  status: z.nativeEnum(CenterInquiryStatus)
+    .refine((v) => (ALLOWED_STATUS_UPDATES as readonly CenterInquiryStatus[]).includes(v), {
+      message: `Status must be one of: ${ALLOWED_STATUS_UPDATES.join(', ')}`,
+    })
+    .optional(),
+  servicesAvailable: z.array(z.string()).optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(15)
-  phoneNumber?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsObject()
-  address?: CenterAddressDto;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  website?: string;
-
-  @ApiPropertyOptional({ enum: ALLOWED_STATUS_UPDATES })
-  @IsOptional()
-  @IsEnum(ALLOWED_STATUS_UPDATES)
-  status?: CenterInquiryStatus;
-
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  servicesAvailable?: string[];
-}
+export type UpdateCenterInquiryBody = z.infer<typeof UpdateCenterInquirySchema>;

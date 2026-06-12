@@ -1,9 +1,7 @@
-import { IsBoolean, IsOptional } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class UpdateLearnerDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  termsAccepted?: boolean;
-}
+export const UpdateLearnerSchema = z.object({
+  termsAccepted: z.boolean().optional(),
+});
+
+export type UpdateLearnerBody = z.infer<typeof UpdateLearnerSchema>;

@@ -1,50 +1,15 @@
-import { IsString, IsOptional, IsEnum, IsInt, IsBoolean, IsNumber, Min, IsDateString, MaxLength } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 import { CouponStatus } from '@/generated/prisma/enums.js';
 
-export class UpdateCouponDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  description?: string;
+export const UpdateCouponSchema = z.object({
+  description: z.string().max(500).optional(),
+  minPurchaseAmount: z.number().min(0).optional(),
+  maxDiscountAmount: z.number().min(0).optional(),
+  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  status: z.nativeEnum(CouponStatus).optional(),
+  usageLimit: z.number().int().min(1).optional(),
+  userUsageLimit: z.number().int().min(1).optional(),
+  isFirstPurchaseOnly: z.boolean().optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  minPurchaseAmount?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  maxDiscountAmount?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsDateString()
-  endDate?: string;
-
-  @ApiPropertyOptional({ enum: CouponStatus })
-  @IsOptional()
-  @IsEnum(CouponStatus)
-  status?: CouponStatus;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  usageLimit?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  userUsageLimit?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isFirstPurchaseOnly?: boolean;
-}
+export type UpdateCouponBody = z.infer<typeof UpdateCouponSchema>;

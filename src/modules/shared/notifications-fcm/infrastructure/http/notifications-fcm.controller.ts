@@ -1,8 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Public } from '@/core/decorators/public.decorator.js';
+import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
 import { NotificationsFcmService } from '../../application/notifications-fcm.service.js';
-import { RegisterFcmTokenDto } from './dto/register-fcm.dto.js';
+import { RegisterFcmTokenSchema, type RegisterFcmTokenBody } from './dto/register-fcm.dto.js';
 
 @ApiTags('Shared - FCM Notifications')
 @Controller('notification')
@@ -13,7 +14,7 @@ export class NotificationsFcmController {
   @Public()
   @Post('register-fcm')
   @HttpCode(HttpStatus.OK)
-  async registerFcmToken(@Body() dto: RegisterFcmTokenDto) {
+  async registerFcmToken(@Body(new ZodValidationPipe(RegisterFcmTokenSchema)) dto: RegisterFcmTokenBody) {
     const result = await this.fcmService.registerDevice(
       dto.userType,
       dto.userId,

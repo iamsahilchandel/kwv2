@@ -1,26 +1,9 @@
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class PaginationQueryDto {
-  @ApiPropertyOptional({ default: 1, minimum: 1 })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10))
-  page?: number = 1;
+export const PaginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).optional().default(1),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+  search: z.string().max(100).optional(),
+});
 
-  @ApiPropertyOptional({ default: 20, minimum: 1, maximum: 100 })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  @Transform(({ value }) => parseInt(value, 10))
-  limit?: number = 20;
-
-  @ApiPropertyOptional({ description: 'Search keyword' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  search?: string;
-}
+export type PaginationQuery = z.infer<typeof PaginationQuerySchema>;

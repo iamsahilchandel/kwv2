@@ -1,56 +1,24 @@
-import { IsString, IsEmail, IsOptional, IsInt, Min, IsArray, MaxLength, IsObject } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class CenterAddressDto {
-  @IsString() streetAddress: string;
-  @IsOptional() @IsString() locality?: string;
-  @IsString() city: string;
-  @IsString() state: string;
-  @IsString() pincode: string;
-  @IsOptional() @IsString() country?: string;
-}
+export const CenterAddressSchema = z.object({
+  streetAddress: z.string().min(1),
+  locality: z.string().optional(),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  pincode: z.string().min(1),
+  country: z.string().optional(),
+});
 
-export class CreateCenterInquiryDto {
-  @ApiProperty({ example: 'ABC Fitness Center' })
-  @IsString()
-  @MaxLength(200)
-  centerName: string;
+export const CreateCenterInquirySchema = z.object({
+  centerName: z.string().max(200),
+  email: z.string().email(),
+  phoneNumber: z.string().max(15),
+  address: CenterAddressSchema,
+  website: z.string().optional(),
+  servicesAvailable: z.array(z.string()).optional(),
+  note: z.string().max(2000).optional(),
+  assignedTo: z.coerce.number().int().min(1).optional(),
+});
 
-  @ApiProperty()
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({ example: '9876543210' })
-  @IsString()
-  @MaxLength(15)
-  phoneNumber: string;
-
-  @ApiProperty()
-  @IsObject()
-  address: CenterAddressDto;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  website?: string;
-
-  @ApiPropertyOptional({ type: [String] })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  servicesAvailable?: string[];
-
-  @ApiPropertyOptional({ description: 'First note on the inquiry' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(2000)
-  note?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10))
-  assignedTo?: number;
-}
+export type CenterAddress = z.infer<typeof CenterAddressSchema>;
+export type CreateCenterInquiryBody = z.infer<typeof CreateCenterInquirySchema>;

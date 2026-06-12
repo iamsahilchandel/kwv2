@@ -1,17 +1,9 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationQueryDto } from '@/common/dto/pagination.dto.js';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
 
-export class QueryPlatformSettingsDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ example: 'payments' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  category?: string;
+export const QueryPlatformSettingsSchema = PaginationQuerySchema.extend({
+  category: z.string().max(100).optional(),
+  valueType: z.string().max(50).optional(),
+});
 
-  @ApiPropertyOptional({ example: 'string' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  valueType?: string;
-}
+export type QueryPlatformSettingsQuery = z.infer<typeof QueryPlatformSettingsSchema>;

@@ -1,5 +1,4 @@
-import { IsString, IsUrl, IsOptional, IsEnum, IsBoolean } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 
 export enum BannerType {
   center = 'center',
@@ -8,30 +7,13 @@ export enum BannerType {
   all = 'all',
 }
 
-export class CreateAdvertisingBannerDto {
-  @ApiProperty({ example: 'Summer Sale' })
-  @IsString()
-  title: string;
+export const CreateAdvertisingBannerSchema = z.object({
+  title: z.string().min(1),
+  imageUrl: z.string().url(),
+  imageKey: z.string().min(1),
+  linkUrl: z.string().url().optional(),
+  type: z.nativeEnum(BannerType),
+  isActive: z.boolean().optional(),
+});
 
-  @ApiProperty({ example: 'https://cdn.example.com/banner.jpg' })
-  @IsUrl()
-  imageUrl: string;
-
-  @ApiProperty({ example: 'banners/summer-sale.jpg' })
-  @IsString()
-  imageKey: string;
-
-  @ApiPropertyOptional({ example: 'https://example.com/offer' })
-  @IsOptional()
-  @IsUrl()
-  linkUrl?: string;
-
-  @ApiProperty({ enum: BannerType })
-  @IsEnum(BannerType)
-  type: BannerType;
-
-  @ApiPropertyOptional({ default: true })
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-}
+export type CreateAdvertisingBannerBody = z.infer<typeof CreateAdvertisingBannerSchema>;

@@ -1,42 +1,14 @@
-import {
-  IsString, IsOptional, IsBoolean, IsEnum, IsInt, IsNumber, Min, MaxLength,
-} from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 import { CenterType, CenterOperatingEntity } from '@/generated/prisma/enums.js';
 
-export class UpdateCenterDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+export const UpdateCenterSchema = z.object({
+  isActive: z.boolean().optional(),
+  isVerified: z.boolean().optional(),
+  isPublic: z.boolean().optional(),
+  centerType: z.nativeEnum(CenterType).optional(),
+  operatingEntity: z.nativeEnum(CenterOperatingEntity).optional(),
+  commissionPercentage: z.number().min(0).optional(),
+  reasonForNotVerified: z.array(z.string()).optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isVerified?: boolean;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  isPublic?: boolean;
-
-  @ApiPropertyOptional({ enum: CenterType })
-  @IsOptional()
-  @IsEnum(CenterType)
-  centerType?: CenterType;
-
-  @ApiPropertyOptional({ enum: CenterOperatingEntity })
-  @IsOptional()
-  @IsEnum(CenterOperatingEntity)
-  operatingEntity?: CenterOperatingEntity;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  commissionPercentage?: number;
-
-  @ApiPropertyOptional({ description: 'Reasons if not verified (array of strings)' })
-  @IsOptional()
-  reasonForNotVerified?: string[];
-}
+export type UpdateCenterBody = z.infer<typeof UpdateCenterSchema>;

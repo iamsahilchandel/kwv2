@@ -1,22 +1,10 @@
-import { IsString, IsOptional, IsEnum, MaxLength } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { z } from 'zod';
 import { ServiceGroup } from '@/generated/prisma/enums.js';
 
-export class UpdateServiceDto {
-  @ApiPropertyOptional({ enum: ServiceGroup })
-  @IsOptional()
-  @IsEnum(ServiceGroup)
-  serviceGroup?: ServiceGroup;
+export const UpdateServiceSchema = z.object({
+  serviceGroup: z.nativeEnum(ServiceGroup).optional(),
+  serviceName: z.string().max(100).optional(),
+  description: z.string().max(500).optional(),
+});
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  serviceName?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  description?: string;
-}
+export type UpdateServiceBody = z.infer<typeof UpdateServiceSchema>;

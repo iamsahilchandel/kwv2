@@ -5,10 +5,11 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
 import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
 import { AdminCentersService } from '../../application/admin-centers.service.js';
-import { QueryCentersDto } from './dto/query-centers.dto.js';
-import { UpdateCenterDto } from './dto/update-center.dto.js';
-import { PaymentRejectDto } from './dto/payment-action.dto.js';
+import { QueryCentersSchema, type QueryCentersQuery } from './dto/query-centers.dto.js';
+import { UpdateCenterSchema, type UpdateCenterBody } from './dto/update-center.dto.js';
+import { PaymentRejectSchema, type PaymentRejectBody } from './dto/payment-action.dto.js';
 
 @ApiTags('Admin - Centers')
 @ApiBearerAuth()
@@ -18,7 +19,7 @@ export class AdminCentersController {
   constructor(private readonly service: AdminCentersService) {}
 
   @Get()
-  findAll(@Query() query: QueryCentersDto) {
+  findAll(@Query(new ZodValidationPipe(QueryCentersSchema)) query: QueryCentersQuery) {
     return this.service.findAll(query);
   }
 
@@ -35,7 +36,7 @@ export class AdminCentersController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateCenterDto,
+    @Body(new ZodValidationPipe(UpdateCenterSchema)) dto: UpdateCenterBody,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.update(id, dto, user.id);
@@ -59,7 +60,7 @@ export class AdminCentersController {
   @Patch(':id/payment/reject')
   rejectPayment(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: PaymentRejectDto,
+    @Body(new ZodValidationPipe(PaymentRejectSchema)) dto: PaymentRejectBody,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.rejectPayment(id, dto, user.id);

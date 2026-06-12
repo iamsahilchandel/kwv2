@@ -4,9 +4,9 @@ import { PrismaService } from '@/core/database/prisma.service.js';
 import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
 import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
 import { CenterNotFoundException, UpdateRequestNotFoundException } from '../domain/errors/center.errors.js';
-import type { QueryCentersDto } from '../infrastructure/http/dto/query-centers.dto.js';
-import type { UpdateCenterDto } from '../infrastructure/http/dto/update-center.dto.js';
-import type { PaymentRejectDto } from '../infrastructure/http/dto/payment-action.dto.js';
+import type { QueryCentersQuery } from '../infrastructure/http/dto/query-centers.dto.js';
+import type { UpdateCenterBody } from '../infrastructure/http/dto/update-center.dto.js';
+import type { PaymentRejectBody } from '../infrastructure/http/dto/payment-action.dto.js';
 
 const SENSITIVE_FIELDS = ['onboardingPaymentSS', 'onboardingPaymentSSKey'] as const;
 
@@ -16,7 +16,7 @@ export class AdminCentersService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: QueryCentersDto) {
+  async findAll(query: QueryCentersQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { isActive, isVerified, centerType, operatingEntity, search, city, state } = query;
 
@@ -70,7 +70,7 @@ export class AdminCentersService {
     return omit(center, SENSITIVE_FIELDS);
   }
 
-  async update(id: number, dto: UpdateCenterDto, adminId: number) {
+  async update(id: number, dto: UpdateCenterBody, adminId: number) {
     const center = await this.prisma.center.findUnique({ where: { id } });
     if (!center) throw new CenterNotFoundException(id);
 
@@ -128,7 +128,7 @@ export class AdminCentersService {
     return omit(updated, SENSITIVE_FIELDS);
   }
 
-  async rejectPayment(centerId: number, dto: PaymentRejectDto, adminId: number) {
+  async rejectPayment(centerId: number, dto: PaymentRejectBody, adminId: number) {
     const center = await this.prisma.center.findUnique({ where: { id: centerId } });
     if (!center) throw new CenterNotFoundException(centerId);
 

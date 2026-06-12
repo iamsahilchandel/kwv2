@@ -1,14 +1,8 @@
-import { IsString, MaxLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { z } from 'zod';
 
-export class CreateAmenityDto {
-  @ApiProperty({ example: 'Parking' })
-  @IsString()
-  @MaxLength(100)
-  amenityName: string;
+export const CreateAmenitySchema = z.object({
+  amenityName: z.string().max(100),
+  description: z.string().max(500),
+});
 
-  @ApiProperty({ example: 'Covered parking facility' })
-  @IsString()
-  @MaxLength(500)
-  description: string;
-}
+export type CreateAmenityBody = z.infer<typeof CreateAmenitySchema>;

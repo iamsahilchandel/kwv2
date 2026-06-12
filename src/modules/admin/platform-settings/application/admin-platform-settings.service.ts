@@ -1,8 +1,8 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
-import type { QueryPlatformSettingsDto } from '../infrastructure/http/dto/query-platform-settings.dto.js';
-import type { UpdatePlatformSettingsDto } from '../infrastructure/http/dto/update-platform-settings.dto.js';
+import type { QueryPlatformSettingsQuery } from '../infrastructure/http/dto/query-platform-settings.dto.js';
+import type { UpdatePlatformSettingsBody } from '../infrastructure/http/dto/update-platform-settings.dto.js';
 import { SettingValueType } from '@/generated/prisma/enums.js';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class AdminPlatformSettingsService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: QueryPlatformSettingsDto) {
+  async findAll(query: QueryPlatformSettingsQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { category, search, valueType } = query;
 
@@ -44,7 +44,7 @@ export class AdminPlatformSettingsService {
     return setting;
   }
 
-  async update(id: number, dto: UpdatePlatformSettingsDto, adminId: number) {
+  async update(id: number, dto: UpdatePlatformSettingsBody, adminId: number) {
     const setting = await this.prisma.platformSettings.findUnique({ where: { id } });
     if (!setting) throw new NotFoundException(`Platform setting with id ${id} not found`);
 

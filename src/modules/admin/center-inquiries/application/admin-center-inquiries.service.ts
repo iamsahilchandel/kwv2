@@ -6,10 +6,10 @@ import {
   CenterInquiryNotFoundException,
   CenterInquiryNoteNotFoundException,
 } from '../domain/errors/center-inquiry.errors.js';
-import type { CreateCenterInquiryDto } from '../infrastructure/http/dto/create-center-inquiry.dto.js';
-import type { UpdateCenterInquiryDto } from '../infrastructure/http/dto/update-center-inquiry.dto.js';
-import type { QueryCenterInquiriesDto } from '../infrastructure/http/dto/query-center-inquiries.dto.js';
-import type { CenterInquiryNoteDto } from '../infrastructure/http/dto/center-inquiry-note.dto.js';
+import type { CreateCenterInquiryBody } from '../infrastructure/http/dto/create-center-inquiry.dto.js';
+import type { UpdateCenterInquiryBody } from '../infrastructure/http/dto/update-center-inquiry.dto.js';
+import type { QueryCenterInquiriesQuery } from '../infrastructure/http/dto/query-center-inquiries.dto.js';
+import type { CenterInquiryNoteBody } from '../infrastructure/http/dto/center-inquiry-note.dto.js';
 import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
 
 const PROTECTED_STATUSES: string[] = [
@@ -24,7 +24,7 @@ export class AdminCenterInquiriesService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateCenterInquiryDto, currentUser: IAuthUser) {
+  async create(dto: CreateCenterInquiryBody, currentUser: IAuthUser) {
     this.logger.log('Creating center inquiry', { adminId: currentUser.id, centerName: dto.centerName });
 
     const { note, assignedTo, ...inquiryData } = dto;
@@ -61,7 +61,7 @@ export class AdminCenterInquiriesService {
     return inquiry;
   }
 
-  async findAll(query: QueryCenterInquiriesDto) {
+  async findAll(query: QueryCenterInquiriesQuery) {
     const { skip, take, page, limit } = paginationParams(query);
     const { status, assignedTo, search, city, state, startDate, endDate } = query;
 
@@ -117,7 +117,7 @@ export class AdminCenterInquiriesService {
     return inquiry;
   }
 
-  async update(id: number, dto: UpdateCenterInquiryDto, currentUser: IAuthUser) {
+  async update(id: number, dto: UpdateCenterInquiryBody, currentUser: IAuthUser) {
     const inquiry = await this.prisma.centerInquiries.findUnique({ where: { id } });
     if (!inquiry) throw new CenterInquiryNotFoundException(id);
 
@@ -186,7 +186,7 @@ export class AdminCenterInquiriesService {
     });
   }
 
-  async addNote(inquiryId: number, dto: CenterInquiryNoteDto, currentUser: IAuthUser) {
+  async addNote(inquiryId: number, dto: CenterInquiryNoteBody, currentUser: IAuthUser) {
     const inquiry = await this.prisma.centerInquiries.findUnique({ where: { id: inquiryId } });
     if (!inquiry) throw new CenterInquiryNotFoundException(inquiryId);
 
@@ -202,7 +202,7 @@ export class AdminCenterInquiriesService {
     });
   }
 
-  async updateNote(noteId: number, dto: CenterInquiryNoteDto, currentUser: IAuthUser) {
+  async updateNote(noteId: number, dto: CenterInquiryNoteBody, currentUser: IAuthUser) {
     const note = await this.prisma.centerInquiryNote.findUnique({ where: { id: noteId } });
     if (!note) throw new CenterInquiryNoteNotFoundException(noteId);
 
