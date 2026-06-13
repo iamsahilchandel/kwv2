@@ -113,6 +113,9 @@ export class ExpertProfileService {
       ...rest
     } = expert;
 
+    // acknowledge unused variable to satisfy linter
+    void _uid;
+
     return {
       ...rest,
       centers: expertMemberships.map((m) => m.center),

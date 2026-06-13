@@ -23,12 +23,12 @@ async function bootstrap() {
     }),
   );
 
-  await setupApp(app);
+  setupApp(app);
 
   // Swagger — protected by basic auth configured in app.setup.ts
   const config = app.get(ConfigService);
   const swaggerUsername = config.get<string>('app.swaggerUsername') ?? 'admin';
-  const swaggerPassword = config.get<string>('app.swaggerPassword') ?? 'admin';
+  // const swaggerPassword = config.get<string>('app.swaggerPassword') ?? 'admin';
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Kreo World API v2')

@@ -4,23 +4,120 @@ import {
   Logger,
   BadRequestException,
 } from '@nestjs/common';
+import {
+  type Prisma,
+  TransactionStatus,
+  PaymentGroup,
+} from '@/generated/prisma/client.js';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { PaymentGatewayException } from '@/common/exceptions/payment.exception.js';
-import { CASHFREE_PORT, type ICashfreePort } from './ports/cashfree.port.js';
+import {
+  CASHFREE_PORT,
+  CashfreeWebhookPayload,
+  type ICashfreePort,
+} from './ports/cashfree.port.js';
+
+interface CfOrder {
+  order_id: string;
+  order_amount: number;
+  order_currency: string;
+  order_tags?: Prisma.InputJsonValue;
+}
+
+interface CfPayment {
+  cf_payment_id: number | string;
+  payment_status: TransactionStatus;
+  payment_amount: number;
+  payment_currency: string;
+  payment_message?: string;
+  payment_time?: string;
+  bank_reference?: string;
+  auth_id?: string;
+  payment_method?: Prisma.InputJsonValue;
+  payment_group?: PaymentGroup;
+}
+
+interface CfCustomer {
+  customer_name?: string;
+  customer_id?: string;
+  customer_email?: string;
+  customer_phone?: string;
+}
+
+interface CfGateway {
+  gateway_name?: string;
+  gateway_order_id?: string;
+  gateway_payment_id?: string;
+  gateway_settlement?: string;
+  gateway_status_code?: string;
+}
+
+interface CfPaymentPayload {
+  order: CfOrder;
+  payment: CfPayment;
+  customer_details?: CfCustomer;
+  payment_gateway_details?: CfGateway;
+  payment_offers?: Prisma.InputJsonValue;
+  error_details?: { error_description?: string };
+  event_time?: string;
+  type: string;
+}
+
+interface CfRefund {
+  cf_payment_id: number | string;
+  cf_refund_id: number | string;
+  refund_id: string;
+  order_id: string;
+  refund_amount: number;
+  refund_currency: string;
+  refund_status: string;
+  status_description?: string;
+}
+
+interface CfRefundPayload {
+  refund: CfRefund;
+  event_time?: string;
+  type: string;
+}
+
+interface CfAutoRefund {
+  cf_payment_id: number | string;
+  cf_refund_id: number | string;
+  order_id: string;
+  refund_amount: number;
+  refund_currency: string;
+  refund_status: string;
+  status_description?: string;
+  bank_reference?: string;
+  refund_reason?: string;
+}
+
+interface CfAutoRefundPayload {
+  auto_refund: CfAutoRefund;
+  event_time?: string;
+  type: string;
+}
+
+// Cashfree sometimes nests the event payload under a `data` key.
+function unwrap<T>(raw: unknown): T {
+  const obj = raw as Record<string, unknown>;
+  return (obj['data'] !== undefined ? obj['data'] : obj) as T;
+}
 
 @Injectable()
 export class CashfreeService {
   private readonly logger = new Logger(CashfreeService.name);
 
   constructor(
-    @Inject(CASHFREE_PORT) private readonly cashfree: ICashfreePort,
+    @Inject(CASHFREE_PORT)
+    private readonly cashfree: ICashfreePort,
     private readonly prisma: PrismaService,
   ) {}
 
   async processWebhook(signature: string, rawBody: string, timestamp: string) {
     this.logger.log('Processing Cashfree webhook');
 
-    let webhookData;
+    let webhookData: CashfreeWebhookPayload | undefined;
     try {
       webhookData = this.cashfree.verifyWebhook(signature, rawBody, timestamp);
     } catch (err) {
@@ -66,7 +163,7 @@ export class CashfreeService {
     return { message: 'Webhook processed successfully' };
   }
 
-  private async processPaymentSuccess(data: any) {
+  private async processPaymentSuccess(raw: unknown) {
     try {
       const {
         order,
@@ -76,7 +173,7 @@ export class CashfreeService {
         payment_offers,
         event_time,
         type,
-      } = data?.data ?? data;
+      } = unwrap<CfPaymentPayload>(raw);
 
       const paymentRecord = await this.prisma.payment.findFirst({
         where: { orderId: order.order_id },
@@ -88,20 +185,23 @@ export class CashfreeService {
           data: { status: 'enrolled' },
         });
 
-        // Link learner profile to the center on successful enrollment
-        await this.prisma.learnerProfileHasManyCenters.upsert({
-          where: {
-            learnerProfileId_centerId: {
+        // Link learner profile to the center on successful enrollment.
+        // No compound unique constraint exists on this table, so we guard with findFirst.
+        const existingMembership =
+          await this.prisma.learnerProfileHasManyCenters.findFirst({
+            where: {
               learnerProfileId: paymentRecord.learnerProfileId!,
               centerId: paymentRecord.centerId!,
             },
-          },
-          update: {},
-          create: {
-            learnerProfileId: paymentRecord.learnerProfileId!,
-            centerId: paymentRecord.centerId!,
-          },
-        });
+          });
+        if (!existingMembership) {
+          await this.prisma.learnerProfileHasManyCenters.create({
+            data: {
+              learnerProfileId: paymentRecord.learnerProfileId!,
+              centerId: paymentRecord.centerId!,
+            },
+          });
+        }
 
         this.logger.log('Enrollment activated', {
           enrollmentId: paymentRecord.enrollmentId,
@@ -110,7 +210,9 @@ export class CashfreeService {
 
       // Handle center onboarding payment
       const onboardingCenter = await this.prisma.center.findFirst({
-        where: { onboardingPaymentOrderId: order.order_id },
+        where: {
+          onboardingPaymentOrderId: order.order_id,
+        },
       });
 
       if (!paymentRecord && !onboardingCenter) {
@@ -119,9 +221,12 @@ export class CashfreeService {
         );
       }
 
+      // At least one is defined due to the guard above.
+      const paymentId = (paymentRecord?.id ?? onboardingCenter?.id)!;
+
       await this.prisma.transaction.create({
         data: this.buildTransactionData(
-          paymentRecord?.id ?? onboardingCenter?.id,
+          paymentId,
           order,
           payment,
           customer_details,
@@ -171,7 +276,7 @@ export class CashfreeService {
     }
   }
 
-  private async processPaymentFailure(data: any) {
+  private async processPaymentFailure(raw: unknown) {
     try {
       const {
         order,
@@ -181,7 +286,7 @@ export class CashfreeService {
         payment_gateway_details,
         event_time,
         type,
-      } = data?.data ?? data;
+      } = unwrap<CfPaymentPayload>(raw);
 
       const paymentRecord = await this.prisma.payment.findFirst({
         where: { orderId: order.order_id },
@@ -200,7 +305,7 @@ export class CashfreeService {
             payment,
             customer_details,
             payment_gateway_details,
-            null,
+            undefined,
             event_time,
             type,
           ),
@@ -231,10 +336,10 @@ export class CashfreeService {
     }
   }
 
-  private async processUserDropped(data: any) {
+  private async processUserDropped(raw: unknown) {
     try {
       const { order, payment, customer_details, event_time, type } =
-        data?.data ?? data;
+        unwrap<CfPaymentPayload>(raw);
 
       const paymentRecord = await this.prisma.payment.findFirst({
         where: { orderId: order.order_id },
@@ -252,7 +357,7 @@ export class CashfreeService {
           payment,
           customer_details,
           null,
-          null,
+          undefined,
           event_time,
           type,
         ),
@@ -283,9 +388,9 @@ export class CashfreeService {
     }
   }
 
-  private async processRefund(data: any) {
+  private async processRefund(raw: unknown) {
     try {
-      const { refund, event_time, type } = data?.data ?? data;
+      const { refund, event_time, type } = unwrap<CfRefundPayload>(raw);
 
       const paymentRecord = await this.prisma.payment.findFirst({
         where: { transactionId: String(refund.cf_payment_id) },
@@ -300,6 +405,7 @@ export class CashfreeService {
         data: {
           paymentId: paymentRecord.id,
           orderId: refund.order_id,
+          orderAmount: refund.refund_amount,
           cfPaymentId: String(refund.cf_payment_id),
           paymentStatus:
             refund.refund_status === 'SUCCESS'
@@ -315,7 +421,7 @@ export class CashfreeService {
           refundStatus: refund.refund_status,
           eventTime: event_time ? new Date(event_time) : new Date(),
           eventType: type,
-          webhookResponse: data,
+          webhookResponse: raw as Prisma.InputJsonValue,
         },
       });
 
@@ -335,9 +441,10 @@ export class CashfreeService {
     }
   }
 
-  private async processAutoRefund(data: any) {
+  private async processAutoRefund(raw: unknown) {
     try {
-      const { auto_refund, event_time, type } = data?.data ?? data;
+      const { auto_refund, event_time, type } =
+        unwrap<CfAutoRefundPayload>(raw);
 
       const paymentRecord = await this.prisma.payment.findFirst({
         where: { transactionId: String(auto_refund.cf_payment_id) },
@@ -352,6 +459,7 @@ export class CashfreeService {
         data: {
           paymentId: paymentRecord.id,
           orderId: auto_refund.order_id,
+          orderAmount: auto_refund.refund_amount,
           cfPaymentId: String(auto_refund.cf_payment_id),
           paymentStatus:
             auto_refund.refund_status === 'SUCCESS'
@@ -366,7 +474,7 @@ export class CashfreeService {
           refundStatus: auto_refund.refund_status,
           eventTime: event_time ? new Date(event_time) : new Date(),
           eventType: type,
-          webhookResponse: data,
+          webhookResponse: raw as Prisma.InputJsonValue,
         },
       });
 
@@ -390,17 +498,17 @@ export class CashfreeService {
   }
 
   private buildTransactionData(
-    paymentId: number | undefined | null,
-    order: any,
-    payment: any,
-    customer: any,
-    gateway: any,
-    offers: any,
-    eventTime: any,
+    paymentId: number,
+    order: CfOrder,
+    payment: CfPayment,
+    customer: CfCustomer | undefined | null,
+    gateway: CfGateway | undefined | null,
+    offers: Prisma.InputJsonValue | undefined,
+    eventTime: string | undefined,
     eventType: string,
   ) {
     return {
-      paymentId: paymentId ?? undefined,
+      paymentId,
       orderId: order.order_id,
       orderAmount: order.order_amount,
       orderCurrency: order.order_currency,
@@ -429,7 +537,11 @@ export class CashfreeService {
       paymentOffers: offers,
       eventTime: eventTime ? new Date(eventTime) : new Date(),
       eventType,
-      webhookResponse: { order, payment, customer_details: customer },
+      webhookResponse: {
+        order,
+        payment,
+        customer_details: customer,
+      } as unknown as Prisma.InputJsonValue,
     };
   }
 }

@@ -1,4 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@/generated/prisma/client.js';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import {
   paginationParams,
@@ -84,7 +85,7 @@ export class AdminPlatformSettingsService {
       case SettingValueType.boolean:
         return { booleanValue: raw === 'true' };
       case SettingValueType.json:
-        return { jsonValue: JSON.parse(raw) };
+        return { jsonValue: JSON.parse(raw) as Prisma.InputJsonValue };
       case SettingValueType.datetime:
         return { datetimeValue: new Date(raw) };
       default:

@@ -39,8 +39,9 @@ export class FirebaseAuthGuard implements CanActivate {
       const phone = rawPhone.replace(/\D/g, '').slice(-10);
 
       request.firebaseUser = { phone, uid: decoded.uid };
-    } catch (err: any) {
-      const code: string = err?.errorInfo?.code ?? err?.code ?? '';
+    } catch (err: unknown) {
+      const e = err as { errorInfo?: { code?: string }; code?: string };
+      const code: string = e?.errorInfo?.code ?? e?.code ?? '';
       if (
         code === 'auth/id-token-expired' ||
         code === 'auth/id-token-revoked'
