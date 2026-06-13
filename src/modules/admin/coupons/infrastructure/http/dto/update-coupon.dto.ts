@@ -9,7 +9,7 @@ export const UpdateCouponSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .optional(),
-  status: z.nativeEnum(CouponStatus).optional(),
+  status: z.enum(CouponStatus).optional(),
   usageLimit: z.number().int().min(1).optional(),
   userUsageLimit: z.number().int().min(1).optional(),
   isFirstPurchaseOnly: z.boolean().optional(),

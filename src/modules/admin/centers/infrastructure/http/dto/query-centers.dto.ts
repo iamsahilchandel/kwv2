@@ -9,8 +9,8 @@ export const QueryCentersSchema = PaginationQuerySchema.extend({
   isVerified: z
     .preprocess((v) => v === 'true' || v === true, z.boolean())
     .optional(),
-  centerType: z.nativeEnum(CenterType).optional(),
-  operatingEntity: z.nativeEnum(CenterOperatingEntity).optional(),
+  centerType: z.enum(CenterType).optional(),
+  operatingEntity: z.enum(CenterOperatingEntity).optional(),
   city: z.string().optional(),
   state: z.string().optional(),
 });

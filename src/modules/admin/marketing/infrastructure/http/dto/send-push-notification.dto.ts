@@ -16,9 +16,9 @@ export enum NotificationPriority {
 export const SendPushNotificationSchema = z.object({
   title: z.string().min(1).max(100),
   body: z.string().min(1).max(500),
-  imageUrl: z.string().url().optional(),
-  userType: z.nativeEnum(MarketingUserType),
-  priority: z.nativeEnum(NotificationPriority).optional(),
+  imageUrl: z.url().optional(),
+  userType: z.enum(MarketingUserType),
+  priority: z.enum(NotificationPriority).optional(),
 });
 
 export type SendPushNotificationBody = z.infer<

@@ -18,12 +18,12 @@ export const ALLOWED_STATUS_UPDATES = [
 
 export const UpdateCenterInquirySchema = z.object({
   centerName: z.string().max(200).optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   phoneNumber: z.string().max(15).optional(),
   address: CenterAddressSchema.optional(),
   website: z.string().optional(),
   status: z
-    .nativeEnum(CenterInquiryStatus)
+    .enum(CenterInquiryStatus)
     .refine(
       (v) =>
         (ALLOWED_STATUS_UPDATES as readonly CenterInquiryStatus[]).includes(v),

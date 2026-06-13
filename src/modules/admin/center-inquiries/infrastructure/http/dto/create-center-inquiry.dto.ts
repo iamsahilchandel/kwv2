@@ -11,7 +11,7 @@ export const CenterAddressSchema = z.object({
 
 export const CreateCenterInquirySchema = z.object({
   centerName: z.string().max(200),
-  email: z.string().email(),
+  email: z.email(),
   phoneNumber: z.string().max(15),
   address: CenterAddressSchema,
   website: z.string().optional(),

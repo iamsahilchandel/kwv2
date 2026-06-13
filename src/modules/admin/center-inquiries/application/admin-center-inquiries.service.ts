@@ -261,11 +261,7 @@ export class AdminCenterInquiriesService {
     });
   }
 
-  async updateNote(
-    noteId: number,
-    dto: CenterInquiryNoteBody,
-    currentUser: IAuthUser,
-  ) {
+  async updateNote(noteId: number, dto: CenterInquiryNoteBody) {
     const note = await this.prisma.centerInquiryNote.findUnique({
       where: { id: noteId },
     });

@@ -3,7 +3,7 @@ import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
 import { CenterInquiryStatus } from '@/generated/prisma/enums.js';
 
 export const QueryCenterInquiriesSchema = PaginationQuerySchema.extend({
-  status: z.nativeEnum(CenterInquiryStatus).optional(),
+  status: z.enum(CenterInquiryStatus).optional(),
   assignedTo: z.coerce.number().int().min(1).optional(),
   city: z.string().optional(),
   state: z.string().optional(),
