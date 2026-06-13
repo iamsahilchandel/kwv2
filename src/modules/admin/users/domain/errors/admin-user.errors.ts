@@ -1,4 +1,8 @@
-import { NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 
 export class AdminUserNotFoundException extends NotFoundException {
   constructor(id: number) {

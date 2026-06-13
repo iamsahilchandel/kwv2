@@ -3,9 +3,9 @@ import { AdminRole } from '@/generated/prisma/enums.js';
 
 export const CreateAdminUserSchema = z.object({
   fullName: z.string().max(50),
-  email: z.string().email(),
+  email: z.email(),
   phoneNumber: z.string().max(15),
-  role: z.nativeEnum(AdminRole),
+  role: z.enum(AdminRole),
   reportsTo: z.coerce.number().int().min(1).optional(),
 });
 
