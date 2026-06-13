@@ -22,7 +22,8 @@ export class CenterAuthController {
   @Post('verify-number')
   @Public()
   verifyNumber(
-    @Body(new ZodValidationPipe(CenterVerifyNumberSchema)) body: CenterVerifyNumberBody,
+    @Body(new ZodValidationPipe(CenterVerifyNumberSchema))
+    body: CenterVerifyNumberBody,
   ) {
     return this.centerAuthService.verifyNumber(body.phoneNumber);
   }

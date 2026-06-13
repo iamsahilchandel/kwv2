@@ -7,4 +7,6 @@ export const UpdatePlatformDocumentSchema = z.object({
   documentType: z.string().max(100).optional(),
 });
 
-export type UpdatePlatformDocumentBody = z.infer<typeof UpdatePlatformDocumentSchema>;
+export type UpdatePlatformDocumentBody = z.infer<
+  typeof UpdatePlatformDocumentSchema
+>;

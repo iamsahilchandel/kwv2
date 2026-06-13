@@ -11,4 +11,6 @@ export const QueryCenterInquiriesSchema = PaginationQuerySchema.extend({
   endDate: z.string().optional(),
 });
 
-export type QueryCenterInquiriesQuery = z.infer<typeof QueryCenterInquiriesSchema>;
+export type QueryCenterInquiriesQuery = z.infer<
+  typeof QueryCenterInquiriesSchema
+>;

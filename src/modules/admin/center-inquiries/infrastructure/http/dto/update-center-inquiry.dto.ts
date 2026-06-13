@@ -22,10 +22,15 @@ export const UpdateCenterInquirySchema = z.object({
   phoneNumber: z.string().max(15).optional(),
   address: CenterAddressSchema.optional(),
   website: z.string().optional(),
-  status: z.nativeEnum(CenterInquiryStatus)
-    .refine((v) => (ALLOWED_STATUS_UPDATES as readonly CenterInquiryStatus[]).includes(v), {
-      message: `Status must be one of: ${ALLOWED_STATUS_UPDATES.join(', ')}`,
-    })
+  status: z
+    .nativeEnum(CenterInquiryStatus)
+    .refine(
+      (v) =>
+        (ALLOWED_STATUS_UPDATES as readonly CenterInquiryStatus[]).includes(v),
+      {
+        message: `Status must be one of: ${ALLOWED_STATUS_UPDATES.join(', ')}`,
+      },
+    )
     .optional(),
   servicesAvailable: z.array(z.string()).optional(),
 });

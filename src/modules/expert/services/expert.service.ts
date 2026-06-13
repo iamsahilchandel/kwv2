@@ -130,7 +130,7 @@ export class ExpertService {
           phoneNumber: firebaseUser.phone,
           firebaseUid: firebaseUser.uid,
           dateOfBirth: new Date(body.dateOfBirth),
-          address: body.address as object,
+          address: body.address,
           gender: body.gender,
           isActive: false,
           isVerified: false,

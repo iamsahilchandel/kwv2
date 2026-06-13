@@ -34,9 +34,16 @@ export class GovPicklistService {
 
     // Add filter params only if provided
     const filterFields = [
-      'document_id', 'state_code', 'state_name_english', 'state_name_local',
-      'state_census2011_code', 'state_or_ut', 'district_code',
-      'district_name_english', 'district_name_local', 'district_census2011_code',
+      'document_id',
+      'state_code',
+      'state_name_english',
+      'state_name_local',
+      'state_census2011_code',
+      'state_or_ut',
+      'district_code',
+      'district_name_english',
+      'district_name_local',
+      'district_census2011_code',
     ] as const;
 
     for (const field of filterFields) {
@@ -53,7 +60,10 @@ export class GovPicklistService {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     } catch (err) {
-      this.logger.error('Gov picklist API request failed', (err as Error).stack);
+      this.logger.error(
+        'Gov picklist API request failed',
+        (err as Error).stack,
+      );
       throw new ExternalServiceException('data.gov.in', (err as Error).message);
     }
   }

@@ -1,4 +1,10 @@
-import { Controller, Get, Param, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
 import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
@@ -66,7 +72,10 @@ export class AdminDashboardController {
   }
 
   @Get('centers/:id')
-  getCenterById(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: IAuthUser) {
+  getCenterById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: IAuthUser,
+  ) {
     return this.service.getCenterById(id, user.id);
   }
 }

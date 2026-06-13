@@ -1,5 +1,13 @@
 import {
-  Controller, Get, Patch, Delete, Body, Param, Query, UseGuards, ParseIntPipe,
+  Controller,
+  Get,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
@@ -7,9 +15,18 @@ import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
 import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
 import { AdminCentersService } from '../../application/admin-centers.service.js';
-import { QueryCentersSchema, type QueryCentersQuery } from './dto/query-centers.dto.js';
-import { UpdateCenterSchema, type UpdateCenterBody } from './dto/update-center.dto.js';
-import { PaymentRejectSchema, type PaymentRejectBody } from './dto/payment-action.dto.js';
+import {
+  QueryCentersSchema,
+  type QueryCentersQuery,
+} from './dto/query-centers.dto.js';
+import {
+  UpdateCenterSchema,
+  type UpdateCenterBody,
+} from './dto/update-center.dto.js';
+import {
+  PaymentRejectSchema,
+  type PaymentRejectBody,
+} from './dto/payment-action.dto.js';
 
 @ApiTags('Admin - Centers')
 @ApiBearerAuth()
@@ -19,7 +36,9 @@ export class AdminCentersController {
   constructor(private readonly service: AdminCentersService) {}
 
   @Get()
-  findAll(@Query(new ZodValidationPipe(QueryCentersSchema)) query: QueryCentersQuery) {
+  findAll(
+    @Query(new ZodValidationPipe(QueryCentersSchema)) query: QueryCentersQuery,
+  ) {
     return this.service.findAll(query);
   }
 
@@ -43,7 +62,10 @@ export class AdminCentersController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: IAuthUser) {
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: IAuthUser,
+  ) {
     return this.service.remove(id, user.id);
   }
 
@@ -53,7 +75,10 @@ export class AdminCentersController {
   }
 
   @Patch(':id/payment/verify')
-  verifyPayment(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: IAuthUser) {
+  verifyPayment(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: IAuthUser,
+  ) {
     return this.service.verifyPayment(id, user.id);
   }
 

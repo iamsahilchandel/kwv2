@@ -1,6 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '@/common/utils/pagination.util.js';
 import type { QueryPlatformSettingsQuery } from '../infrastructure/http/dto/query-platform-settings.dto.js';
 import type { UpdatePlatformSettingsBody } from '../infrastructure/http/dto/update-platform-settings.dto.js';
 import { SettingValueType } from '@/generated/prisma/enums.js';
@@ -39,14 +42,20 @@ export class AdminPlatformSettingsService {
   }
 
   async findOne(id: number) {
-    const setting = await this.prisma.platformSettings.findUnique({ where: { id } });
-    if (!setting) throw new NotFoundException(`Platform setting with id ${id} not found`);
+    const setting = await this.prisma.platformSettings.findUnique({
+      where: { id },
+    });
+    if (!setting)
+      throw new NotFoundException(`Platform setting with id ${id} not found`);
     return setting;
   }
 
   async update(id: number, dto: UpdatePlatformSettingsBody, adminId: number) {
-    const setting = await this.prisma.platformSettings.findUnique({ where: { id } });
-    if (!setting) throw new NotFoundException(`Platform setting with id ${id} not found`);
+    const setting = await this.prisma.platformSettings.findUnique({
+      where: { id },
+    });
+    if (!setting)
+      throw new NotFoundException(`Platform setting with id ${id} not found`);
 
     this.logger.log('Updating platform setting', { settingId: id, adminId });
 
@@ -55,7 +64,11 @@ export class AdminPlatformSettingsService {
 
     const updated = await this.prisma.platformSettings.update({
       where: { id },
-      data: { ...valueUpdate, description: dto.description ?? setting.description, updatedBy: adminId },
+      data: {
+        ...valueUpdate,
+        description: dto.description ?? setting.description,
+        updatedBy: adminId,
+      },
     });
 
     this.logger.log('Platform setting updated', { settingId: id });

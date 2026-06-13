@@ -22,7 +22,8 @@ export class AdminAuthController {
   @Post('verify-number')
   @Public()
   verifyNumber(
-    @Body(new ZodValidationPipe(AdminVerifyNumberSchema)) body: AdminVerifyNumberBody,
+    @Body(new ZodValidationPipe(AdminVerifyNumberSchema))
+    body: AdminVerifyNumberBody,
   ) {
     return this.adminAuthService.verifyNumber(body.phoneNumber);
   }

@@ -1,5 +1,4 @@
 import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
-import { omit } from 'lodash';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import {
   paginationParams,

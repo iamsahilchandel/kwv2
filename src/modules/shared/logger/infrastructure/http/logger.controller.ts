@@ -14,13 +14,17 @@ export class LoggerController {
 
   @ApiOperation({ summary: 'Get application logs for a given date' })
   @Get('logs')
-  async getLogs(@Query(new ZodValidationPipe(LogsQuerySchema)) query: LogsQuery) {
+  async getLogs(
+    @Query(new ZodValidationPipe(LogsQuerySchema)) query: LogsQuery,
+  ) {
     return this.loggerFilesService.getLogs(query.date);
   }
 
   @ApiOperation({ summary: 'Get error logs for a given date' })
   @Get('errors')
-  async getErrors(@Query(new ZodValidationPipe(LogsQuerySchema)) query: LogsQuery) {
+  async getErrors(
+    @Query(new ZodValidationPipe(LogsQuerySchema)) query: LogsQuery,
+  ) {
     return this.loggerFilesService.getErrors(query.date);
   }
 }

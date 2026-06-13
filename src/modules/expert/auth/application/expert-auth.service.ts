@@ -46,7 +46,11 @@ export class ExpertAuthService {
     return { message: 'Logged out successfully' };
   }
 
-  private async upsertFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async upsertFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     const existing = await this.prisma.firebaseToken.findFirst({
       where: { deviceToken },
       select: { id: true },
@@ -64,7 +68,11 @@ export class ExpertAuthService {
     }
   }
 
-  private async deactivateFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async deactivateFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     await this.prisma.firebaseToken.updateMany({
       where: { deviceToken, userId, userType },
       data: { isActive: false },

@@ -4,7 +4,10 @@ import { ExpertAuthGuard } from '@/core/guards/expert-auth.guard.js';
 import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
 import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
 import { ExpertAuthService } from '../../application/expert-auth.service.js';
-import { ExpertLoginSchema, type ExpertLoginBody } from './dto/expert-auth.dto.js';
+import {
+  ExpertLoginSchema,
+  type ExpertLoginBody,
+} from './dto/expert-auth.dto.js';
 import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
 
 @ApiTags('Expert - Authentication')

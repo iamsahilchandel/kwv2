@@ -6,4 +6,6 @@ export const QueryPlatformSettingsSchema = PaginationQuerySchema.extend({
   valueType: z.string().max(50).optional(),
 });
 
-export type QueryPlatformSettingsQuery = z.infer<typeof QueryPlatformSettingsSchema>;
+export type QueryPlatformSettingsQuery = z.infer<
+  typeof QueryPlatformSettingsSchema
+>;

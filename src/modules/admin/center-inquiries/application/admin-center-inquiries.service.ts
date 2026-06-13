@@ -1,6 +1,9 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '@/common/utils/pagination.util.js';
 import { CenterInquiryStatus } from '@/generated/prisma/enums.js';
 import {
   CenterInquiryNotFoundException,
@@ -25,7 +28,10 @@ export class AdminCenterInquiriesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateCenterInquiryBody, currentUser: IAuthUser) {
-    this.logger.log('Creating center inquiry', { adminId: currentUser.id, centerName: dto.centerName });
+    this.logger.log('Creating center inquiry', {
+      adminId: currentUser.id,
+      centerName: dto.centerName,
+    });
 
     const { note, assignedTo, ...inquiryData } = dto;
 
@@ -37,10 +43,12 @@ export class AdminCenterInquiriesService {
         data: {
           centerName: inquiryData.centerName,
           phoneNumber: inquiryData.phoneNumber,
-          address: inquiryData.address as object,
+          address: inquiryData.address,
           email: inquiryData.email,
           ...(inquiryData.website && { website: inquiryData.website }),
-          ...(inquiryData.servicesAvailable && { servicesAvailable: inquiryData.servicesAvailable }),
+          ...(inquiryData.servicesAvailable && {
+            servicesAvailable: inquiryData.servicesAvailable,
+          }),
           status: CenterInquiryStatus.new,
           assignedTo: resolvedAssignedTo,
           assignedBy: resolvedAssignedTo ? currentUser.id : null,
@@ -63,7 +71,8 @@ export class AdminCenterInquiriesService {
 
   async findAll(query: QueryCenterInquiriesQuery) {
     const { skip, take, page, limit } = paginationParams(query);
-    const { status, assignedTo, search, city, state, startDate, endDate } = query;
+    const { status, assignedTo, search, city, state, startDate, endDate } =
+      query;
 
     const where: Record<string, unknown> = {};
 
@@ -71,13 +80,17 @@ export class AdminCenterInquiriesService {
     if (assignedTo) where.assignedTo = assignedTo;
 
     if (startDate && endDate) {
-      where.createdAt = { gte: new Date(startDate), lte: new Date(`${endDate}T23:59:59.999Z`) };
+      where.createdAt = {
+        gte: new Date(startDate),
+        lte: new Date(`${endDate}T23:59:59.999Z`),
+      };
     }
 
     // JSON field filters via raw queries are complex — use Prisma's JSON path filtering
     const jsonFilters: Array<Record<string, unknown>> = [];
     if (city) jsonFilters.push({ address: { path: ['city'], equals: city } });
-    if (state) jsonFilters.push({ address: { path: ['state'], equals: state } });
+    if (state)
+      jsonFilters.push({ address: { path: ['state'], equals: state } });
     if (jsonFilters.length) where.AND = jsonFilters;
 
     if (search) {
@@ -117,40 +130,59 @@ export class AdminCenterInquiriesService {
     return inquiry;
   }
 
-  async update(id: number, dto: UpdateCenterInquiryBody, currentUser: IAuthUser) {
-    const inquiry = await this.prisma.centerInquiries.findUnique({ where: { id } });
+  async update(
+    id: number,
+    dto: UpdateCenterInquiryBody,
+    currentUser: IAuthUser,
+  ) {
+    const inquiry = await this.prisma.centerInquiries.findUnique({
+      where: { id },
+    });
     if (!inquiry) throw new CenterInquiryNotFoundException(id);
 
     if (dto.status && PROTECTED_STATUSES.includes(inquiry.status)) {
-      throw new BadRequestException('Cannot change status of an inquiry in a terminal state');
+      throw new BadRequestException(
+        'Cannot change status of an inquiry in a terminal state',
+      );
     }
 
-    if (dto.status && PROTECTED_STATUSES.includes(dto.status as CenterInquiryStatus)) {
-      throw new BadRequestException('Cannot manually set status to onboarded/verified/verification-rejected');
+    if (dto.status && PROTECTED_STATUSES.includes(dto.status)) {
+      throw new BadRequestException(
+        'Cannot manually set status to onboarded/verified/verification-rejected',
+      );
     }
 
     if (dto.status && !inquiry.assignedTo) {
-      throw new BadRequestException('Inquiry must be assigned before status can be changed');
+      throw new BadRequestException(
+        'Inquiry must be assigned before status can be changed',
+      );
     }
 
-    this.logger.log('Updating center inquiry', { inquiryId: id, adminId: currentUser.id });
+    this.logger.log('Updating center inquiry', {
+      inquiryId: id,
+      adminId: currentUser.id,
+    });
     return this.prisma.centerInquiries.update({
       where: { id },
       data: {
         ...(dto.centerName && { centerName: dto.centerName }),
         ...(dto.email && { email: dto.email }),
         ...(dto.phoneNumber && { phoneNumber: dto.phoneNumber }),
-        ...(dto.address && { address: dto.address as object }),
+        ...(dto.address && { address: dto.address }),
         ...(dto.website !== undefined && { website: dto.website }),
         ...(dto.status && { status: dto.status }),
-        ...(dto.servicesAvailable && { servicesAvailable: dto.servicesAvailable }),
+        ...(dto.servicesAvailable && {
+          servicesAvailable: dto.servicesAvailable,
+        }),
         lastModifiedBy: currentUser.id,
       },
     });
   }
 
   async remove(id: number) {
-    const inquiry = await this.prisma.centerInquiries.findUnique({ where: { id } });
+    const inquiry = await this.prisma.centerInquiries.findUnique({
+      where: { id },
+    });
     if (!inquiry) throw new CenterInquiryNotFoundException(id);
 
     await this.prisma.centerInquiries.delete({ where: { id } });
@@ -159,39 +191,66 @@ export class AdminCenterInquiriesService {
   }
 
   async assign(inquiryId: number, userId: number, currentUser: IAuthUser) {
-    const inquiry = await this.prisma.centerInquiries.findUnique({ where: { id: inquiryId } });
+    const inquiry = await this.prisma.centerInquiries.findUnique({
+      where: { id: inquiryId },
+    });
     if (!inquiry) throw new CenterInquiryNotFoundException(inquiryId);
 
     // userId=0 means unassign
     if (userId === 0) {
-      this.logger.log('Unassigning center inquiry', { inquiryId, adminId: currentUser.id });
+      this.logger.log('Unassigning center inquiry', {
+        inquiryId,
+        adminId: currentUser.id,
+      });
       return this.prisma.centerInquiries.update({
         where: { id: inquiryId },
         data: { assignedTo: null, assignedBy: currentUser.id },
       });
     }
 
-    const assignee = await this.prisma.appAdminStaff.findUnique({ where: { id: userId } });
+    const assignee = await this.prisma.appAdminStaff.findUnique({
+      where: { id: userId },
+    });
     if (!assignee) throw new BadRequestException('Assignee user not found');
 
     const salesRoles = ['sales_head', 'area_sales_manager', 'sales_executive'];
     if (!salesRoles.includes(assignee.role)) {
-      throw new BadRequestException('Inquiries can only be assigned to sales roles');
+      throw new BadRequestException(
+        'Inquiries can only be assigned to sales roles',
+      );
     }
 
-    this.logger.log('Assigning center inquiry', { inquiryId, assignedTo: userId, adminId: currentUser.id });
+    this.logger.log('Assigning center inquiry', {
+      inquiryId,
+      assignedTo: userId,
+      adminId: currentUser.id,
+    });
     return this.prisma.centerInquiries.update({
       where: { id: inquiryId },
-      data: { assignedTo: userId, assignedBy: currentUser.id, lastModifiedBy: currentUser.id },
+      data: {
+        assignedTo: userId,
+        assignedBy: currentUser.id,
+        lastModifiedBy: currentUser.id,
+      },
     });
   }
 
-  async addNote(inquiryId: number, dto: CenterInquiryNoteBody, currentUser: IAuthUser) {
-    const inquiry = await this.prisma.centerInquiries.findUnique({ where: { id: inquiryId } });
+  async addNote(
+    inquiryId: number,
+    dto: CenterInquiryNoteBody,
+    currentUser: IAuthUser,
+  ) {
+    const inquiry = await this.prisma.centerInquiries.findUnique({
+      where: { id: inquiryId },
+    });
     if (!inquiry) throw new CenterInquiryNotFoundException(inquiryId);
 
     return this.prisma.centerInquiryNote.create({
-      data: { centerInquiryId: inquiryId, note: dto.note, adminId: currentUser.id },
+      data: {
+        centerInquiryId: inquiryId,
+        note: dto.note,
+        adminId: currentUser.id,
+      },
     });
   }
 
@@ -202,8 +261,14 @@ export class AdminCenterInquiriesService {
     });
   }
 
-  async updateNote(noteId: number, dto: CenterInquiryNoteBody, currentUser: IAuthUser) {
-    const note = await this.prisma.centerInquiryNote.findUnique({ where: { id: noteId } });
+  async updateNote(
+    noteId: number,
+    dto: CenterInquiryNoteBody,
+    currentUser: IAuthUser,
+  ) {
+    const note = await this.prisma.centerInquiryNote.findUnique({
+      where: { id: noteId },
+    });
     if (!note) throw new CenterInquiryNoteNotFoundException(noteId);
 
     return this.prisma.centerInquiryNote.update({
@@ -213,7 +278,9 @@ export class AdminCenterInquiriesService {
   }
 
   async deleteNote(noteId: number) {
-    const note = await this.prisma.centerInquiryNote.findUnique({ where: { id: noteId } });
+    const note = await this.prisma.centerInquiryNote.findUnique({
+      where: { id: noteId },
+    });
     if (!note) throw new CenterInquiryNoteNotFoundException(noteId);
 
     await this.prisma.centerInquiryNote.delete({ where: { id: noteId } });

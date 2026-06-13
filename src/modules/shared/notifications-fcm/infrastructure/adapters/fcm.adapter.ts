@@ -100,7 +100,7 @@ export class FcmAdapter implements IFcmPort {
         .send({ data: { test: 'validation' }, token }, true); // dryRun = true
       return true;
     } catch (err) {
-      const code = (err as any).code ?? '';
+      const code = err.code ?? '';
       if (
         code === 'messaging/invalid-registration-token' ||
         code === 'messaging/registration-token-not-registered'

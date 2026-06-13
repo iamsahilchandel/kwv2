@@ -1,4 +1,10 @@
-import { Injectable, Inject, Logger, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
 import { FCM_PORT, type IFcmPort, type FcmMessage } from './ports/fcm.port.js';
@@ -37,34 +43,61 @@ export class NotificationsFcmService {
     if (existing) {
       await this.prisma.firebaseToken.update({
         where: { id: existing.id },
-        data: { deviceType, deviceInfo: deviceInfo ?? existing.deviceInfo, isActive: true, lastUsedAt: new Date() },
+        data: {
+          deviceType,
+          deviceInfo: deviceInfo ?? existing.deviceInfo,
+          isActive: true,
+          lastUsedAt: new Date(),
+        },
       });
 
-      this.logger.log('FCM token updated for existing device', { userId, userType });
+      this.logger.log('FCM token updated for existing device', {
+        userId,
+        userType,
+      });
       return { isNewDevice: false, tokenId: existing.id };
     }
 
     // Enforce device limit — evict least-recently-used device when over limit
-    const activeCount = await this.prisma.firebaseToken.count({ where: { userId, userType, isActive: true } });
+    const activeCount = await this.prisma.firebaseToken.count({
+      where: { userId, userType, isActive: true },
+    });
     if (activeCount >= MAX_DEVICES_PER_USER) {
       const oldest = await this.prisma.firebaseToken.findFirst({
         where: { userId, userType, isActive: true },
         orderBy: { lastUsedAt: 'asc' },
       });
       if (oldest) {
-        await this.prisma.firebaseToken.update({ where: { id: oldest.id }, data: { isActive: false } });
-        this.logger.log('Evicted oldest FCM token due to device limit', { userId, userType });
+        await this.prisma.firebaseToken.update({
+          where: { id: oldest.id },
+          data: { isActive: false },
+        });
+        this.logger.log('Evicted oldest FCM token due to device limit', {
+          userId,
+          userType,
+        });
       }
     }
 
     const created = await this.prisma.firebaseToken.create({
-      data: { userId, userType, deviceToken: fcmToken, deviceType, deviceInfo, isActive: true, lastUsedAt: new Date() },
+      data: {
+        userId,
+        userType,
+        deviceToken: fcmToken,
+        deviceType,
+        deviceInfo,
+        isActive: true,
+        lastUsedAt: new Date(),
+      },
     });
 
     // Fire-and-forget: async token validation with Firebase — don't block the response
     this.validateAndDeactivateIfInvalid(fcmToken, created.id).catch(() => {});
 
-    this.logger.log('FCM token registered for new device', { userId, userType });
+    this.logger.log('FCM token registered for new device', {
+      userId,
+      userType,
+    });
     return { isNewDevice: true, tokenId: created.id };
   }
 
@@ -74,7 +107,11 @@ export class NotificationsFcmService {
       data: { isActive: false },
     });
 
-    this.logger.log('FCM token deactivated', { userId, userType, count: result.count });
+    this.logger.log('FCM token deactivated', {
+      userId,
+      userType,
+      count: result.count,
+    });
     return { deactivatedCount: result.count };
   }
 
@@ -85,32 +122,54 @@ export class NotificationsFcmService {
       return { successCount: 0, failureCount: 0, reason: 'NO_ACTIVE_DEVICES' };
     }
 
-    const result = await this.fcm.sendMulticast(tokens, message).catch((err) => {
-      throw new ExternalServiceException('FCM', (err as Error).message);
-    });
+    const result = await this.fcm
+      .sendMulticast(tokens, message)
+      .catch((err) => {
+        throw new ExternalServiceException('FCM', (err as Error).message);
+      });
 
     await this.deactivateInvalidTokens(result.failedTokens);
-    this.logger.log('Notification sent to user', { userId, userType, ...result });
+    this.logger.log('Notification sent to user', {
+      userId,
+      userType,
+      ...result,
+    });
     return result;
   }
 
-  async sendToUsers(userType: UserType, userIds: number[], message: FcmMessage) {
+  async sendToUsers(
+    userType: UserType,
+    userIds: number[],
+    message: FcmMessage,
+  ) {
     const tokens = await this.getActiveTokens(userType, userIds);
     if (!tokens.length) {
-      this.logger.warn('No active FCM tokens for user batch', { count: userIds.length, userType });
+      this.logger.warn('No active FCM tokens for user batch', {
+        count: userIds.length,
+        userType,
+      });
       return { successCount: 0, failureCount: 0, reason: 'NO_ACTIVE_DEVICES' };
     }
 
-    const result = await this.fcm.sendMulticast(tokens, message).catch((err) => {
-      throw new ExternalServiceException('FCM', (err as Error).message);
-    });
+    const result = await this.fcm
+      .sendMulticast(tokens, message)
+      .catch((err) => {
+        throw new ExternalServiceException('FCM', (err as Error).message);
+      });
 
     await this.deactivateInvalidTokens(result.failedTokens);
-    this.logger.log('Notification sent to user batch', { userType, userCount: userIds.length, ...result });
+    this.logger.log('Notification sent to user batch', {
+      userType,
+      userCount: userIds.length,
+      ...result,
+    });
     return result;
   }
 
-  private async getActiveTokens(userType: UserType, userIds: number[]): Promise<string[]> {
+  private async getActiveTokens(
+    userType: UserType,
+    userIds: number[],
+  ): Promise<string[]> {
     const records = await this.prisma.firebaseToken.findMany({
       where: { userType, userId: { in: userIds }, isActive: true },
       select: { deviceToken: true },
@@ -119,7 +178,9 @@ export class NotificationsFcmService {
     return [...new Set(records.map((r) => r.deviceToken))];
   }
 
-  private async deactivateInvalidTokens(failed: Array<{ token: string; errorCode: string }>) {
+  private async deactivateInvalidTokens(
+    failed: Array<{ token: string; errorCode: string }>,
+  ) {
     const invalidTokens = failed
       .filter((f) => INVALID_TOKEN_CODES.has(f.errorCode))
       .map((f) => f.token);
@@ -131,14 +192,22 @@ export class NotificationsFcmService {
       data: { isActive: false },
     });
 
-    this.logger.log('Deactivated invalid FCM tokens', { count: invalidTokens.length });
+    this.logger.log('Deactivated invalid FCM tokens', {
+      count: invalidTokens.length,
+    });
   }
 
   private async validateAndDeactivateIfInvalid(token: string, tokenId: number) {
     const valid = await this.fcm.validateToken(token);
     if (!valid) {
-      await this.prisma.firebaseToken.update({ where: { id: tokenId }, data: { isActive: false } });
-      this.logger.warn('FCM token failed Firebase validation and was deactivated', { tokenId });
+      await this.prisma.firebaseToken.update({
+        where: { id: tokenId },
+        data: { isActive: false },
+      });
+      this.logger.warn(
+        'FCM token failed Firebase validation and was deactivated',
+        { tokenId },
+      );
     }
   }
 
@@ -147,16 +216,28 @@ export class NotificationsFcmService {
 
     switch (userType) {
       case 'appadmin':
-        exists = !!(await this.prisma.appAdminStaff.findUnique({ where: { id: userId }, select: { id: true } }));
+        exists = !!(await this.prisma.appAdminStaff.findUnique({
+          where: { id: userId },
+          select: { id: true },
+        }));
         break;
       case 'centerstaff':
-        exists = !!(await this.prisma.centerStaff.findUnique({ where: { id: userId }, select: { id: true } }));
+        exists = !!(await this.prisma.centerStaff.findUnique({
+          where: { id: userId },
+          select: { id: true },
+        }));
         break;
       case 'expert':
-        exists = !!(await this.prisma.expertProfile.findUnique({ where: { id: userId }, select: { id: true } }));
+        exists = !!(await this.prisma.expertProfile.findUnique({
+          where: { id: userId },
+          select: { id: true },
+        }));
         break;
       case 'learner':
-        exists = !!(await this.prisma.learnerProfile.findUnique({ where: { id: userId }, select: { id: true } }));
+        exists = !!(await this.prisma.learnerProfile.findUnique({
+          where: { id: userId },
+          select: { id: true },
+        }));
         break;
     }
 

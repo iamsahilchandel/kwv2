@@ -23,7 +23,9 @@ export class AdminMarketingService {
     const userIds = await this.getUserIdsByType(dto.userType);
 
     if (!userIds.length) {
-      this.logger.warn('No users found for marketing notification', { userType: dto.userType });
+      this.logger.warn('No users found for marketing notification', {
+        userType: dto.userType,
+      });
       return { successCount: 0, failureCount: 0, targetUserCount: 0 };
     }
 
@@ -50,16 +52,35 @@ export class AdminMarketingService {
     return { ...result, targetUserCount: userIds.length };
   }
 
-  private async getUserIdsByType(userType: MarketingUserType): Promise<number[]> {
+  private async getUserIdsByType(
+    userType: MarketingUserType,
+  ): Promise<number[]> {
     switch (userType) {
       case MarketingUserType.appadmin:
-        return (await this.prisma.appAdminStaff.findMany({ where: { isActive: true }, select: { id: true } })).map((u) => u.id);
+        return (
+          await this.prisma.appAdminStaff.findMany({
+            where: { isActive: true },
+            select: { id: true },
+          })
+        ).map((u) => u.id);
       case MarketingUserType.centerstaff:
-        return (await this.prisma.centerStaff.findMany({ where: { isActive: true }, select: { id: true } })).map((u) => u.id);
+        return (
+          await this.prisma.centerStaff.findMany({
+            where: { isActive: true },
+            select: { id: true },
+          })
+        ).map((u) => u.id);
       case MarketingUserType.expert:
-        return (await this.prisma.experts.findMany({ where: { isActive: true }, select: { id: true } })).map((u) => u.id);
+        return (
+          await this.prisma.experts.findMany({
+            where: { isActive: true },
+            select: { id: true },
+          })
+        ).map((u) => u.id);
       case MarketingUserType.learner:
-        return (await this.prisma.learners.findMany({ select: { id: true } })).map((u) => u.id);
+        return (
+          await this.prisma.learners.findMany({ select: { id: true } })
+        ).map((u) => u.id);
       default:
         return [];
     }

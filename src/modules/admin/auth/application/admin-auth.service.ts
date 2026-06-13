@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, Inject, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Inject,
+  Logger,
+} from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { FIREBASE_AUTH } from '@/core/firebase/firebase.module.js';
@@ -15,7 +20,9 @@ export class AdminAuthService {
   ) {}
 
   async verifyNumber(phoneNumber: string) {
-    this.logger.log('Verifying admin phone number', { phoneNumber: `***${phoneNumber.slice(-4)}` });
+    this.logger.log('Verifying admin phone number', {
+      phoneNumber: `***${phoneNumber.slice(-4)}`,
+    });
 
     const admin = await this.prisma.appAdminStaff.findUnique({
       where: { phoneNumber },
@@ -64,7 +71,11 @@ export class AdminAuthService {
     return { message: 'Logged out successfully' };
   }
 
-  private async upsertFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async upsertFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     const existing = await this.prisma.firebaseToken.findFirst({
       where: { deviceToken },
       select: { id: true },
@@ -82,7 +93,11 @@ export class AdminAuthService {
     }
   }
 
-  private async deactivateFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async deactivateFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     await this.prisma.firebaseToken.updateMany({
       where: { deviceToken, userId, userType },
       data: { isActive: false },

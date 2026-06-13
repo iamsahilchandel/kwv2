@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { omit } from 'lodash';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '@/common/utils/pagination.util.js';
 import { LearnerNotFoundException } from '../domain/errors/learner.errors.js';
 import type { QueryLearnersQuery } from '../infrastructure/http/dto/query-learners.dto.js';
 import type { UpdateLearnerBody } from '../infrastructure/http/dto/update-learner.dto.js';
@@ -27,7 +30,10 @@ export class AdminLearnersService {
     }
 
     if (startDate && endDate) {
-      where.createdAt = { gte: new Date(startDate), lte: new Date(`${endDate}T23:59:59.999Z`) };
+      where.createdAt = {
+        gte: new Date(startDate),
+        lte: new Date(`${endDate}T23:59:59.999Z`),
+      };
     }
 
     const [learners, total] = await Promise.all([
@@ -37,8 +43,13 @@ export class AdminLearnersService {
         take,
         orderBy: { createdAt: 'desc' },
         select: {
-          id: true, firstName: true, lastName: true, email: true,
-          phoneNumber: true, termsAccepted: true, createdAt: true,
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNumber: true,
+          termsAccepted: true,
+          createdAt: true,
         },
       }),
       this.prisma.learners.count({ where }),
@@ -61,7 +72,10 @@ export class AdminLearnersService {
     if (!learner) throw new LearnerNotFoundException(id);
 
     this.logger.log('Updating learner', { learnerId: id });
-    const updated = await this.prisma.learners.update({ where: { id }, data: dto });
+    const updated = await this.prisma.learners.update({
+      where: { id },
+      data: dto,
+    });
     return omit(updated, ['firebaseUid']);
   }
 

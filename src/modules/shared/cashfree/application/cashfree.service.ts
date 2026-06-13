@@ -1,4 +1,9 @@
-import { Injectable, Inject, Logger, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { PaymentGatewayException } from '@/common/exceptions/payment.exception.js';
 import { CASHFREE_PORT, type ICashfreePort } from './ports/cashfree.port.js';
@@ -19,7 +24,9 @@ export class CashfreeService {
     try {
       webhookData = this.cashfree.verifyWebhook(signature, rawBody, timestamp);
     } catch (err) {
-      this.logger.warn('Cashfree webhook signature verification failed', { error: (err as Error).message });
+      this.logger.warn('Cashfree webhook signature verification failed', {
+        error: (err as Error).message,
+      });
       throw new BadRequestException('Invalid webhook signature');
     }
 
@@ -27,7 +34,9 @@ export class CashfreeService {
       throw new BadRequestException('Invalid webhook data format');
     }
 
-    this.logger.log('Cashfree webhook type received', { type: webhookData.type });
+    this.logger.log('Cashfree webhook type received', {
+      type: webhookData.type,
+    });
 
     switch (webhookData.type) {
       case 'PAYMENT_SUCCESS_WEBHOOK':
@@ -46,8 +55,12 @@ export class CashfreeService {
         await this.processAutoRefund(webhookData.object);
         break;
       default:
-        this.logger.warn('Unsupported Cashfree webhook type', { type: webhookData.type });
-        throw new BadRequestException(`Unsupported webhook type: ${webhookData.type}`);
+        this.logger.warn('Unsupported Cashfree webhook type', {
+          type: webhookData.type,
+        });
+        throw new BadRequestException(
+          `Unsupported webhook type: ${webhookData.type}`,
+        );
     }
 
     return { message: 'Webhook processed successfully' };
@@ -55,7 +68,15 @@ export class CashfreeService {
 
   private async processPaymentSuccess(data: any) {
     try {
-      const { order, payment, customer_details, payment_gateway_details, payment_offers, event_time, type } = data?.data ?? data;
+      const {
+        order,
+        payment,
+        customer_details,
+        payment_gateway_details,
+        payment_offers,
+        event_time,
+        type,
+      } = data?.data ?? data;
 
       const paymentRecord = await this.prisma.payment.findFirst({
         where: { orderId: order.order_id },
@@ -82,7 +103,9 @@ export class CashfreeService {
           },
         });
 
-        this.logger.log('Enrollment activated', { enrollmentId: paymentRecord.enrollmentId });
+        this.logger.log('Enrollment activated', {
+          enrollmentId: paymentRecord.enrollmentId,
+        });
       }
 
       // Handle center onboarding payment
@@ -91,11 +114,22 @@ export class CashfreeService {
       });
 
       if (!paymentRecord && !onboardingCenter) {
-        throw new PaymentGatewayException(`Payment record not found for order: ${order.order_id}`);
+        throw new PaymentGatewayException(
+          `Payment record not found for order: ${order.order_id}`,
+        );
       }
 
       await this.prisma.transaction.create({
-        data: this.buildTransactionData(paymentRecord?.id ?? onboardingCenter?.id, order, payment, customer_details, payment_gateway_details, payment_offers, event_time, type),
+        data: this.buildTransactionData(
+          paymentRecord?.id ?? onboardingCenter?.id,
+          order,
+          payment,
+          customer_details,
+          payment_gateway_details,
+          payment_offers,
+          event_time,
+          type,
+        ),
       });
 
       if (paymentRecord) {
@@ -103,7 +137,9 @@ export class CashfreeService {
           where: { id: paymentRecord.id },
           data: {
             status: 'successful',
-            paymentDate: payment.payment_time ? new Date(payment.payment_time) : new Date(),
+            paymentDate: payment.payment_time
+              ? new Date(payment.payment_time)
+              : new Date(),
             transactionId: String(payment.cf_payment_id),
             paymentMethod: payment.payment_group ?? 'other',
           },
@@ -115,7 +151,9 @@ export class CashfreeService {
           where: { id: onboardingCenter.id },
           data: {
             isOnboardingPaymentReceived: true,
-            onboardingPaymentReceivedOn: payment.payment_time ? new Date(payment.payment_time) : new Date(),
+            onboardingPaymentReceivedOn: payment.payment_time
+              ? new Date(payment.payment_time)
+              : new Date(),
             onboardingPaymentMethod: 'gateway',
             isOnboardingPaymentVerified: true,
             onboardingPaymentAmount: payment.payment_amount,
@@ -125,23 +163,47 @@ export class CashfreeService {
 
       this.logger.log('Payment success processed', { orderId: order.order_id });
     } catch (err) {
-      this.logger.error('Error processing payment success', (err as Error).stack);
+      this.logger.error(
+        'Error processing payment success',
+        (err as Error).stack,
+      );
       throw err;
     }
   }
 
   private async processPaymentFailure(data: any) {
     try {
-      const { order, payment, customer_details, error_details, payment_gateway_details, event_time, type } = data?.data ?? data;
+      const {
+        order,
+        payment,
+        customer_details,
+        error_details,
+        payment_gateway_details,
+        event_time,
+        type,
+      } = data?.data ?? data;
 
-      const paymentRecord = await this.prisma.payment.findFirst({ where: { orderId: order.order_id } });
+      const paymentRecord = await this.prisma.payment.findFirst({
+        where: { orderId: order.order_id },
+      });
       if (!paymentRecord) {
-        throw new PaymentGatewayException(`Payment record not found for order: ${order.order_id}`);
+        throw new PaymentGatewayException(
+          `Payment record not found for order: ${order.order_id}`,
+        );
       }
 
       await this.prisma.transaction.create({
         data: {
-          ...this.buildTransactionData(paymentRecord.id, order, payment, customer_details, payment_gateway_details, null, event_time, type),
+          ...this.buildTransactionData(
+            paymentRecord.id,
+            order,
+            payment,
+            customer_details,
+            payment_gateway_details,
+            null,
+            event_time,
+            type,
+          ),
           errorDetails: error_details,
         },
       });
@@ -150,7 +212,9 @@ export class CashfreeService {
         where: { id: paymentRecord.id },
         data: {
           status: 'failed',
-          paymentDate: payment.payment_time ? new Date(payment.payment_time) : new Date(),
+          paymentDate: payment.payment_time
+            ? new Date(payment.payment_time)
+            : new Date(),
           transactionId: String(payment.cf_payment_id),
           paymentMethod: payment.payment_group,
           notes: error_details?.error_description ?? payment.payment_message,
@@ -159,38 +223,62 @@ export class CashfreeService {
 
       this.logger.log('Payment failure processed', { orderId: order.order_id });
     } catch (err) {
-      this.logger.error('Error processing payment failure', (err as Error).stack);
+      this.logger.error(
+        'Error processing payment failure',
+        (err as Error).stack,
+      );
       throw err;
     }
   }
 
   private async processUserDropped(data: any) {
     try {
-      const { order, payment, customer_details, event_time, type } = data?.data ?? data;
+      const { order, payment, customer_details, event_time, type } =
+        data?.data ?? data;
 
-      const paymentRecord = await this.prisma.payment.findFirst({ where: { orderId: order.order_id } });
+      const paymentRecord = await this.prisma.payment.findFirst({
+        where: { orderId: order.order_id },
+      });
       if (!paymentRecord) {
-        throw new PaymentGatewayException(`Payment record not found for order: ${order.order_id}`);
+        throw new PaymentGatewayException(
+          `Payment record not found for order: ${order.order_id}`,
+        );
       }
 
       await this.prisma.transaction.create({
-        data: this.buildTransactionData(paymentRecord.id, order, payment, customer_details, null, null, event_time, type),
+        data: this.buildTransactionData(
+          paymentRecord.id,
+          order,
+          payment,
+          customer_details,
+          null,
+          null,
+          event_time,
+          type,
+        ),
       });
 
       await this.prisma.payment.update({
         where: { id: paymentRecord.id },
         data: {
           status: 'failed',
-          paymentDate: payment.payment_time ? new Date(payment.payment_time) : new Date(),
+          paymentDate: payment.payment_time
+            ? new Date(payment.payment_time)
+            : new Date(),
           transactionId: String(payment.cf_payment_id),
           paymentMethod: payment.payment_group,
           notes: 'User dropped during payment process',
         },
       });
 
-      this.logger.log('User-dropped payment processed', { orderId: order.order_id });
+      this.logger.log('User-dropped payment processed', {
+        orderId: order.order_id,
+      });
     } catch (err) {
-      this.logger.error('Error processing user-dropped payment', (err as Error).stack);
+      this.logger.error(
+        'Error processing user-dropped payment',
+        (err as Error).stack,
+      );
       throw err;
     }
   }
@@ -203,7 +291,9 @@ export class CashfreeService {
         where: { transactionId: String(refund.cf_payment_id) },
       });
       if (!paymentRecord) {
-        throw new PaymentGatewayException(`Payment record not found for cf_payment_id: ${refund.cf_payment_id}`);
+        throw new PaymentGatewayException(
+          `Payment record not found for cf_payment_id: ${refund.cf_payment_id}`,
+        );
       }
 
       await this.prisma.transaction.create({
@@ -211,7 +301,10 @@ export class CashfreeService {
           paymentId: paymentRecord.id,
           orderId: refund.order_id,
           cfPaymentId: String(refund.cf_payment_id),
-          paymentStatus: refund.refund_status === 'SUCCESS' ? 'REFUND_SUCCESS' : 'REFUND_FAILED',
+          paymentStatus:
+            refund.refund_status === 'SUCCESS'
+              ? 'REFUND_SUCCESS'
+              : 'REFUND_FAILED',
           paymentAmount: refund.refund_amount,
           paymentCurrency: refund.refund_currency,
           paymentMessage: refund.status_description,
@@ -250,7 +343,9 @@ export class CashfreeService {
         where: { transactionId: String(auto_refund.cf_payment_id) },
       });
       if (!paymentRecord) {
-        throw new PaymentGatewayException(`Payment record not found for cf_payment_id: ${auto_refund.cf_payment_id}`);
+        throw new PaymentGatewayException(
+          `Payment record not found for cf_payment_id: ${auto_refund.cf_payment_id}`,
+        );
       }
 
       await this.prisma.transaction.create({
@@ -258,7 +353,10 @@ export class CashfreeService {
           paymentId: paymentRecord.id,
           orderId: auto_refund.order_id,
           cfPaymentId: String(auto_refund.cf_payment_id),
-          paymentStatus: auto_refund.refund_status === 'SUCCESS' ? 'AUTO_REFUND_SUCCESS' : 'AUTO_REFUND_FAILED',
+          paymentStatus:
+            auto_refund.refund_status === 'SUCCESS'
+              ? 'AUTO_REFUND_SUCCESS'
+              : 'AUTO_REFUND_FAILED',
           paymentAmount: auto_refund.refund_amount,
           paymentCurrency: auto_refund.refund_currency,
           paymentMessage: auto_refund.status_description,
@@ -282,7 +380,9 @@ export class CashfreeService {
         },
       });
 
-      this.logger.log('Auto-refund processed', { cfRefundId: auto_refund.cf_refund_id });
+      this.logger.log('Auto-refund processed', {
+        cfRefundId: auto_refund.cf_refund_id,
+      });
     } catch (err) {
       this.logger.error('Error processing auto-refund', (err as Error).stack);
       throw err;
@@ -310,7 +410,9 @@ export class CashfreeService {
       paymentAmount: payment.payment_amount,
       paymentCurrency: payment.payment_currency,
       paymentMessage: payment.payment_message,
-      paymentTime: payment.payment_time ? new Date(payment.payment_time) : undefined,
+      paymentTime: payment.payment_time
+        ? new Date(payment.payment_time)
+        : undefined,
       bankReference: payment.bank_reference,
       authId: payment.auth_id,
       paymentMethod: payment.payment_method,

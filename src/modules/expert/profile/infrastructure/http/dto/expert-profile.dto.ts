@@ -24,7 +24,9 @@ export const RegisterExpertSchema = z.object({
   firstName: z.string().min(1).max(100),
   lastName: z.string().min(1).max(100),
   email: z.string().email(),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
   address: AddressSchema,
   gender: z.enum(Gender),
   experties: z.array(ExpertiseItemSchema).optional(),
@@ -32,7 +34,9 @@ export const RegisterExpertSchema = z.object({
   isPublic: z.boolean().optional(),
   isOpenForWork: z.boolean().optional(),
   rangeForWork: z.number().positive().optional(),
-  termsAndConditionsAccepted: z.literal(true, { errorMap: () => ({ message: 'Terms must be accepted' }) }),
+  termsAndConditionsAccepted: z.literal(true, {
+    errorMap: () => ({ message: 'Terms must be accepted' }),
+  }),
   isFreelancer: z.boolean(),
   preferredWorkingTimeSlots: z.array(z.any()).optional(),
   profilePicture: S3FileSchema.optional(),
@@ -57,7 +61,10 @@ export const UpdateExpertProfileSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
   email: z.string().email().optional(),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   address: AddressSchema.optional(),
   gender: z.enum(Gender).optional(),
   experties: z.array(ExpertiseItemSchema).optional(),

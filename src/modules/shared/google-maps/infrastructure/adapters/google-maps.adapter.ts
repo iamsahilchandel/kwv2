@@ -1,9 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
-import type { IGoogleMapsPort, GeocodeResult, PlacePrediction } from '../../application/ports/google-maps.port.js';
+import type {
+  IGoogleMapsPort,
+  GeocodeResult,
+  PlacePrediction,
+} from '../../application/ports/google-maps.port.js';
 
-const PLACES_AUTOCOMPLETE_V2_URL = 'https://places.googleapis.com/v1/places:autocomplete';
+const PLACES_AUTOCOMPLETE_V2_URL =
+  'https://places.googleapis.com/v1/places:autocomplete';
 
 @Injectable()
 export class GoogleMapsAdapter implements IGoogleMapsPort {
@@ -19,7 +24,11 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     const url = `${this.baseUrl}/geocode/json?address=${encodeURIComponent(address)}&key=${this.apiKey}`;
     const data = await this.fetch<any>(url);
 
-    if (data.status !== 'OK') throw new ExternalServiceException('Google Maps', `Geocoding failed: ${data.status}`);
+    if (data.status !== 'OK')
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Geocoding failed: ${data.status}`,
+      );
     return data.results.map((r: any) => ({
       formattedAddress: r.formatted_address,
       latitude: r.geometry.location.lat,
@@ -33,7 +42,11 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     const url = `${this.baseUrl}/geocode/json?latlng=${lat},${lng}&key=${this.apiKey}`;
     const data = await this.fetch<any>(url);
 
-    if (data.status !== 'OK') throw new ExternalServiceException('Google Maps', `Reverse geocoding failed: ${data.status}`);
+    if (data.status !== 'OK')
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Reverse geocoding failed: ${data.status}`,
+      );
     return data.results.map((r: any) => ({
       formattedAddress: r.formatted_address,
       addressComponents: r.address_components,
@@ -42,13 +55,27 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     }));
   }
 
-  async getDirections(origin: string, destination: string, options: { mode?: string; avoidTolls?: boolean } = {}): Promise<unknown> {
-    const params = new URLSearchParams({ origin, destination, key: this.apiKey });
+  async getDirections(
+    origin: string,
+    destination: string,
+    options: { mode?: string; avoidTolls?: boolean } = {},
+  ): Promise<unknown> {
+    const params = new URLSearchParams({
+      origin,
+      destination,
+      key: this.apiKey,
+    });
     if (options.mode) params.append('mode', options.mode);
     if (options.avoidTolls) params.append('avoid', 'tolls');
 
-    const data = await this.fetch<any>(`${this.baseUrl}/directions/json?${params}`);
-    if (data.status !== 'OK') throw new ExternalServiceException('Google Maps', `Directions failed: ${data.status}`);
+    const data = await this.fetch<any>(
+      `${this.baseUrl}/directions/json?${params}`,
+    );
+    if (data.status !== 'OK')
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Directions failed: ${data.status}`,
+      );
 
     return {
       routes: data.routes.map((route: any) => ({
@@ -69,28 +96,61 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     };
   }
 
-  async getDistanceMatrix(origins: string[], destinations: string[], mode?: string): Promise<unknown> {
-    const params = new URLSearchParams({ origins: origins.join('|'), destinations: destinations.join('|'), key: this.apiKey });
+  async getDistanceMatrix(
+    origins: string[],
+    destinations: string[],
+    mode?: string,
+  ): Promise<unknown> {
+    const params = new URLSearchParams({
+      origins: origins.join('|'),
+      destinations: destinations.join('|'),
+      key: this.apiKey,
+    });
     if (mode) params.append('mode', mode);
 
-    const data = await this.fetch<any>(`${this.baseUrl}/distancematrix/json?${params}`);
-    if (data.status !== 'OK') throw new ExternalServiceException('Google Maps', `Distance matrix failed: ${data.status}`);
+    const data = await this.fetch<any>(
+      `${this.baseUrl}/distancematrix/json?${params}`,
+    );
+    if (data.status !== 'OK')
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Distance matrix failed: ${data.status}`,
+      );
 
     return {
       originAddresses: data.origin_addresses,
       destinationAddresses: data.destination_addresses,
       rows: data.rows.map((row: any) => ({
-        elements: row.elements.map((el: any) => ({ distance: el.distance, duration: el.duration, status: el.status })),
+        elements: row.elements.map((el: any) => ({
+          distance: el.distance,
+          duration: el.duration,
+          status: el.status,
+        })),
       })),
     };
   }
 
-  async searchNearbyPlaces(lat: number, lng: number, radius: number, type?: string): Promise<unknown> {
-    const params = new URLSearchParams({ location: `${lat},${lng}`, radius: String(radius), key: this.apiKey });
+  async searchNearbyPlaces(
+    lat: number,
+    lng: number,
+    radius: number,
+    type?: string,
+  ): Promise<unknown> {
+    const params = new URLSearchParams({
+      location: `${lat},${lng}`,
+      radius: String(radius),
+      key: this.apiKey,
+    });
     if (type) params.append('type', type);
 
-    const data = await this.fetch<any>(`${this.baseUrl}/place/nearbysearch/json?${params}`);
-    if (data.status !== 'OK') throw new ExternalServiceException('Google Maps', `Nearby search failed: ${data.status}`);
+    const data = await this.fetch<any>(
+      `${this.baseUrl}/place/nearbysearch/json?${params}`,
+    );
+    if (data.status !== 'OK')
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Nearby search failed: ${data.status}`,
+      );
 
     return {
       places: data.results.map((p: any) => ({
@@ -110,21 +170,32 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
   async getPlaceDetails(placeId: string): Promise<unknown> {
     const params = new URLSearchParams({
       place_id: placeId,
-      fields: 'name,rating,formatted_address,formatted_phone_number,address_components,geometry',
+      fields:
+        'name,rating,formatted_address,formatted_phone_number,address_components,geometry',
       key: this.apiKey,
     });
 
-    const data = await this.fetch<any>(`${this.baseUrl}/place/details/json?${params}`);
-    if (data.status !== 'OK') throw new ExternalServiceException('Google Maps', `Place details failed: ${data.status}`);
+    const data = await this.fetch<any>(
+      `${this.baseUrl}/place/details/json?${params}`,
+    );
+    if (data.status !== 'OK')
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Place details failed: ${data.status}`,
+      );
 
     return { place: data.result };
   }
 
-  async getAddressAutocomplete(input: string, options: Record<string, unknown> = {}): Promise<PlacePrediction[]> {
+  async getAddressAutocomplete(
+    input: string,
+    options: Record<string, unknown> = {},
+  ): Promise<PlacePrediction[]> {
     const headers = new Headers({
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': this.apiKey,
-      'X-Goog-FieldMask': 'suggestions.placePrediction.placeId,suggestions.placePrediction.text.text,suggestions.placePrediction.structuredFormat',
+      'X-Goog-FieldMask':
+        'suggestions.placePrediction.placeId,suggestions.placePrediction.text.text,suggestions.placePrediction.structuredFormat',
     });
 
     const response = await fetch(PLACES_AUTOCOMPLETE_V2_URL, {
@@ -132,7 +203,13 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       headers,
       body: JSON.stringify({
         input,
-        includedPrimaryTypes: ['street_address', 'premise', 'subpremise', 'establishment', 'landmark'],
+        includedPrimaryTypes: [
+          'street_address',
+          'premise',
+          'subpremise',
+          'establishment',
+          'landmark',
+        ],
         regionCode: 'IN',
         locationRestriction: {
           rectangle: {
@@ -144,7 +221,11 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       }),
     });
 
-    if (!response.ok) throw new ExternalServiceException('Google Maps', `Autocomplete request failed: ${response.status}`);
+    if (!response.ok)
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Autocomplete request failed: ${response.status}`,
+      );
 
     const data: any = await response.json();
     return (data.suggestions ?? []).map((s: any) => ({
@@ -154,15 +235,23 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     }));
   }
 
-  async getQueryAutocomplete(input: string, options: Record<string, unknown> = {}): Promise<PlacePrediction[]> {
+  async getQueryAutocomplete(
+    input: string,
+    options: Record<string, unknown> = {},
+  ): Promise<PlacePrediction[]> {
     const params = new URLSearchParams({ input, key: this.apiKey });
     if (options.location) params.append('location', String(options.location));
     if (options.radius) params.append('radius', String(options.radius));
     if (options.language) params.append('language', String(options.language));
 
-    const data = await this.fetch<any>(`${this.baseUrl}/place/queryautocomplete/json?${params}`);
+    const data = await this.fetch<any>(
+      `${this.baseUrl}/place/queryautocomplete/json?${params}`,
+    );
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-      throw new ExternalServiceException('Google Maps', `Query autocomplete failed: ${data.status}`);
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Query autocomplete failed: ${data.status}`,
+      );
     }
 
     return (data.predictions ?? []).map((p: any) => ({
@@ -180,16 +269,41 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
 
   async getTimezone(lat: number, lng: number): Promise<unknown> {
     const timestamp = Math.floor(Date.now() / 1000);
-    const params = new URLSearchParams({ location: `${lat},${lng}`, timestamp: String(timestamp), key: this.apiKey });
+    const params = new URLSearchParams({
+      location: `${lat},${lng}`,
+      timestamp: String(timestamp),
+      key: this.apiKey,
+    });
 
-    const data = await this.fetch<any>(`${this.baseUrl}/timezone/json?${params}`);
-    if (data.status !== 'OK') throw new ExternalServiceException('Google Maps', `Timezone failed: ${data.status}`);
+    const data = await this.fetch<any>(
+      `${this.baseUrl}/timezone/json?${params}`,
+    );
+    if (data.status !== 'OK')
+      throw new ExternalServiceException(
+        'Google Maps',
+        `Timezone failed: ${data.status}`,
+      );
 
-    return { timeZoneId: data.timeZoneId, timeZoneName: data.timeZoneName, dstOffset: data.dstOffset, rawOffset: data.rawOffset };
+    return {
+      timeZoneId: data.timeZoneId,
+      timeZoneName: data.timeZoneName,
+      dstOffset: data.dstOffset,
+      rawOffset: data.rawOffset,
+    };
   }
 
-  getStaticMapUrl(center: string, zoom: string, size: string, markers?: string): string {
-    const params = new URLSearchParams({ center, zoom, size, key: this.apiKey });
+  getStaticMapUrl(
+    center: string,
+    zoom: string,
+    size: string,
+    markers?: string,
+  ): string {
+    const params = new URLSearchParams({
+      center,
+      zoom,
+      size,
+      key: this.apiKey,
+    });
     if (markers) params.append('markers', markers);
     return `${this.baseUrl}/staticmap?${params}`;
   }
@@ -200,7 +314,10 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json() as Promise<T>;
     } catch (err) {
-      this.logger.error(`Google Maps API request failed: ${(err as Error).message}`, url);
+      this.logger.error(
+        `Google Maps API request failed: ${(err as Error).message}`,
+        url,
+      );
       throw new ExternalServiceException('Google Maps', (err as Error).message);
     }
   }

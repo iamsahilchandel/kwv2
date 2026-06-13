@@ -1,14 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { omit } from 'lodash';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '@/common/utils/pagination.util.js';
 import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
-import { CenterNotFoundException, UpdateRequestNotFoundException } from '../domain/errors/center.errors.js';
+import {
+  CenterNotFoundException,
+  UpdateRequestNotFoundException,
+} from '../domain/errors/center.errors.js';
 import type { QueryCentersQuery } from '../infrastructure/http/dto/query-centers.dto.js';
 import type { UpdateCenterBody } from '../infrastructure/http/dto/update-center.dto.js';
 import type { PaymentRejectBody } from '../infrastructure/http/dto/payment-action.dto.js';
 
-const SENSITIVE_FIELDS = ['onboardingPaymentSS', 'onboardingPaymentSSKey'] as const;
+const SENSITIVE_FIELDS = [
+  'onboardingPaymentSS',
+  'onboardingPaymentSSKey',
+] as const;
 
 @Injectable()
 export class AdminCentersService {
@@ -18,7 +27,15 @@ export class AdminCentersService {
 
   async findAll(query: QueryCentersQuery) {
     const { skip, take, page, limit } = paginationParams(query);
-    const { isActive, isVerified, centerType, operatingEntity, search, city, state } = query;
+    const {
+      isActive,
+      isVerified,
+      centerType,
+      operatingEntity,
+      search,
+      city,
+      state,
+    } = query;
 
     const where: Record<string, unknown> = {};
     if (isActive !== undefined) where.isActive = isActive;
@@ -36,7 +53,8 @@ export class AdminCentersService {
 
     const jsonFilters: Array<Record<string, unknown>> = [];
     if (city) jsonFilters.push({ address: { path: ['city'], equals: city } });
-    if (state) jsonFilters.push({ address: { path: ['state'], equals: state } });
+    if (state)
+      jsonFilters.push({ address: { path: ['state'], equals: state } });
     if (jsonFilters.length) where.AND = jsonFilters;
 
     const [items, total] = await Promise.all([
@@ -46,9 +64,16 @@ export class AdminCentersService {
         take,
         orderBy: { createdAt: 'desc' },
         select: {
-          id: true, centerName: true, email: true, phoneNumber: true,
-          isActive: true, isVerified: true, centerType: true, address: true,
-          isOnboardingPaymentReceived: true, createdAt: true,
+          id: true,
+          centerName: true,
+          email: true,
+          phoneNumber: true,
+          isActive: true,
+          isVerified: true,
+          centerType: true,
+          address: true,
+          isOnboardingPaymentReceived: true,
+          createdAt: true,
         },
       }),
       this.prisma.center.count({ where }),
@@ -91,7 +116,10 @@ export class AdminCentersService {
       where: { centerId: id, status: 'active' },
     });
     if (activeBatches > 0) {
-      throw new BusinessRuleException('Cannot delete center with active batches', { centerId: id, activeBatches });
+      throw new BusinessRuleException(
+        'Cannot delete center with active batches',
+        { centerId: id, activeBatches },
+      );
     }
 
     await this.prisma.center.delete({ where: { id } });
@@ -105,11 +133,16 @@ export class AdminCentersService {
       select: { id: true, centerHeadId: true },
     });
     if (!center) throw new CenterNotFoundException(id);
-    return { hasCenterHead: center.centerHeadId !== null, centerHeadId: center.centerHeadId };
+    return {
+      hasCenterHead: center.centerHeadId !== null,
+      centerHeadId: center.centerHeadId,
+    };
   }
 
   async verifyPayment(centerId: number, adminId: number) {
-    const center = await this.prisma.center.findUnique({ where: { id: centerId } });
+    const center = await this.prisma.center.findUnique({
+      where: { id: centerId },
+    });
     if (!center) throw new CenterNotFoundException(centerId);
 
     this.logger.log('Verifying center payment', { centerId, adminId });
@@ -128,8 +161,14 @@ export class AdminCentersService {
     return omit(updated, SENSITIVE_FIELDS);
   }
 
-  async rejectPayment(centerId: number, dto: PaymentRejectBody, adminId: number) {
-    const center = await this.prisma.center.findUnique({ where: { id: centerId } });
+  async rejectPayment(
+    centerId: number,
+    dto: PaymentRejectBody,
+    adminId: number,
+  ) {
+    const center = await this.prisma.center.findUnique({
+      where: { id: centerId },
+    });
     if (!center) throw new CenterNotFoundException(centerId);
 
     this.logger.log('Rejecting center payment', { centerId, adminId });
@@ -151,7 +190,9 @@ export class AdminCentersService {
   }
 
   async getUpdateRequests(centerId: number) {
-    const center = await this.prisma.center.findUnique({ where: { id: centerId } });
+    const center = await this.prisma.center.findUnique({
+      where: { id: centerId },
+    });
     if (!center) throw new CenterNotFoundException(centerId);
 
     return this.prisma.updateCenterDetailsRequest.findMany({
@@ -160,11 +201,22 @@ export class AdminCentersService {
     });
   }
 
-  async approveUpdateRequest(centerId: number, requestId: number, adminId: number) {
-    const request = await this.prisma.updateCenterDetailsRequest.findUnique({ where: { id: requestId } });
-    if (!request || request.centerId !== centerId) throw new UpdateRequestNotFoundException(requestId);
+  async approveUpdateRequest(
+    centerId: number,
+    requestId: number,
+    adminId: number,
+  ) {
+    const request = await this.prisma.updateCenterDetailsRequest.findUnique({
+      where: { id: requestId },
+    });
+    if (!request || request.centerId !== centerId)
+      throw new UpdateRequestNotFoundException(requestId);
 
-    this.logger.log('Approving center update request', { centerId, requestId, adminId });
+    this.logger.log('Approving center update request', {
+      centerId,
+      requestId,
+      adminId,
+    });
 
     // Build update data from request (only non-null fields)
     const updateData: Record<string, unknown> = {};
@@ -174,25 +226,46 @@ export class AdminCentersService {
     if (request.address) updateData.address = request.address;
     if (request.website) updateData.website = request.website;
     if (request.centerType) updateData.centerType = request.centerType;
-    if (request.operatingEntity) updateData.operatingEntity = request.operatingEntity;
-    if (request.dailyOperatingHours) updateData.dailyOperatingHours = request.dailyOperatingHours;
-    if (request.numberOfEmployees) updateData.numberOfEmployees = request.numberOfEmployees;
+    if (request.operatingEntity)
+      updateData.operatingEntity = request.operatingEntity;
+    if (request.dailyOperatingHours)
+      updateData.dailyOperatingHours = request.dailyOperatingHours;
+    if (request.numberOfEmployees)
+      updateData.numberOfEmployees = request.numberOfEmployees;
 
     await this.prisma.$transaction([
-      this.prisma.center.update({ where: { id: centerId }, data: { ...updateData, lastModifiedBy: adminId } }),
-      this.prisma.updateCenterDetailsRequest.delete({ where: { id: requestId } }),
+      this.prisma.center.update({
+        where: { id: centerId },
+        data: { ...updateData, lastModifiedBy: adminId },
+      }),
+      this.prisma.updateCenterDetailsRequest.delete({
+        where: { id: requestId },
+      }),
     ]);
 
     this.logger.log('Center update request approved', { centerId, requestId });
     return { message: 'Update request approved and applied' };
   }
 
-  async rejectUpdateRequest(centerId: number, requestId: number, adminId: number) {
-    const request = await this.prisma.updateCenterDetailsRequest.findUnique({ where: { id: requestId } });
-    if (!request || request.centerId !== centerId) throw new UpdateRequestNotFoundException(requestId);
+  async rejectUpdateRequest(
+    centerId: number,
+    requestId: number,
+    adminId: number,
+  ) {
+    const request = await this.prisma.updateCenterDetailsRequest.findUnique({
+      where: { id: requestId },
+    });
+    if (!request || request.centerId !== centerId)
+      throw new UpdateRequestNotFoundException(requestId);
 
-    this.logger.log('Rejecting center update request', { centerId, requestId, adminId });
-    await this.prisma.updateCenterDetailsRequest.delete({ where: { id: requestId } });
+    this.logger.log('Rejecting center update request', {
+      centerId,
+      requestId,
+      adminId,
+    });
+    await this.prisma.updateCenterDetailsRequest.delete({
+      where: { id: requestId },
+    });
 
     return { message: 'Update request rejected' };
   }

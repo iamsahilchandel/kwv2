@@ -10,4 +10,6 @@ export const UpdateAdvertisingBannerSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export type UpdateAdvertisingBannerBody = z.infer<typeof UpdateAdvertisingBannerSchema>;
+export type UpdateAdvertisingBannerBody = z.infer<
+  typeof UpdateAdvertisingBannerSchema
+>;

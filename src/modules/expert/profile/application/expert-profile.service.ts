@@ -7,9 +7,18 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { ExpertDocumentType, ExpertMediaType } from '@/generated/prisma/enums.js';
-import type { IAuthUser, IFirebaseUser } from '@/common/interfaces/auth-user.interface.js';
-import type { RegisterExpertBody, UpdateExpertProfileBody } from '../infrastructure/http/dto/expert-profile.dto.js';
+import {
+  ExpertDocumentType,
+  ExpertMediaType,
+} from '@/generated/prisma/enums.js';
+import type {
+  IAuthUser,
+  IFirebaseUser,
+} from '@/common/interfaces/auth-user.interface.js';
+import type {
+  RegisterExpertBody,
+  UpdateExpertProfileBody,
+} from '../infrastructure/http/dto/expert-profile.dto.js';
 
 type S3File = { location: string; key: string };
 
@@ -52,7 +61,13 @@ export class ExpertProfileService {
         expertMemberships: {
           select: {
             center: {
-              select: { id: true, centerName: true, phoneNumber: true, email: true, address: true },
+              select: {
+                id: true,
+                centerName: true,
+                phoneNumber: true,
+                email: true,
+                address: true,
+              },
             },
           },
         },
@@ -62,11 +77,20 @@ export class ExpertProfileService {
             id: true,
             expertiesId: true,
             experienceYears: true,
-            service: { select: { id: true, serviceName: true, serviceGroup: true } },
+            service: {
+              select: { id: true, serviceName: true, serviceGroup: true },
+            },
           },
         },
         kycDocs: {
-          select: { id: true, documentType: true, documentNumber: true, documentUrl: true, mediaKey: true, isVerified: true },
+          select: {
+            id: true,
+            documentType: true,
+            documentNumber: true,
+            documentUrl: true,
+            mediaKey: true,
+            isVerified: true,
+          },
         },
         media: {
           select: { id: true, mediaType: true, mediaUrl: true, mediaKey: true },
@@ -79,7 +103,15 @@ export class ExpertProfileService {
     }
 
     // Never return firebaseUid to client
-    const { expertMemberships, about, experties, kycDocs, media, firebaseUid: _uid, ...rest } = expert;
+    const {
+      expertMemberships,
+      about,
+      experties,
+      kycDocs,
+      media,
+      firebaseUid: _uid,
+      ...rest
+    } = expert;
 
     return {
       ...rest,
@@ -92,7 +124,9 @@ export class ExpertProfileService {
   }
 
   async register(firebaseUser: IFirebaseUser, body: RegisterExpertBody) {
-    this.logger.log('Registering new expert', { phone: `***${firebaseUser.phone.slice(-4)}` });
+    this.logger.log('Registering new expert', {
+      phone: `***${firebaseUser.phone.slice(-4)}`,
+    });
 
     const existing = await this.prisma.experts.findUnique({
       where: { phoneNumber: firebaseUser.phone },
@@ -100,7 +134,9 @@ export class ExpertProfileService {
     });
 
     if (existing) {
-      throw new ConflictException('Expert already exists with this phone number');
+      throw new ConflictException(
+        'Expert already exists with this phone number',
+      );
     }
 
     const expert = await this.prisma.$transaction(async (tx) => {
@@ -112,7 +148,7 @@ export class ExpertProfileService {
           phoneNumber: firebaseUser.phone,
           firebaseUid: firebaseUser.uid,
           dateOfBirth: new Date(body.dateOfBirth),
-          address: body.address as object,
+          address: body.address,
           gender: body.gender,
           isActive: false,
           isVerified: false,
@@ -122,7 +158,8 @@ export class ExpertProfileService {
           termsAndConditionsAcceptedOn: new Date(),
           isFreelancer: body.isFreelancer,
           rangeForWork: body.rangeForWork,
-          preferredWorkingTimeSlots: (body.preferredWorkingTimeSlots ?? []) as object,
+          preferredWorkingTimeSlots: (body.preferredWorkingTimeSlots ??
+            []) as object,
           profilePicture: body.profilePicture?.location,
           mediaKey: body.profilePicture?.key,
         },
@@ -130,7 +167,10 @@ export class ExpertProfileService {
 
       if (body.expertDescription) {
         await tx.expertAbout.create({
-          data: { expertId: created.id, expertDescription: body.expertDescription },
+          data: {
+            expertId: created.id,
+            expertDescription: body.expertDescription,
+          },
         });
       }
 
@@ -189,13 +229,21 @@ export class ExpertProfileService {
           ...(body.firstName !== undefined && { firstName: body.firstName }),
           ...(body.lastName !== undefined && { lastName: body.lastName }),
           ...(body.email !== undefined && { email: body.email }),
-          ...(body.dateOfBirth !== undefined && { dateOfBirth: new Date(body.dateOfBirth) }),
+          ...(body.dateOfBirth !== undefined && {
+            dateOfBirth: new Date(body.dateOfBirth),
+          }),
           ...(body.address !== undefined && { address: body.address }),
           ...(body.gender !== undefined && { gender: body.gender }),
           ...(body.isPublic !== undefined && { isPublic: body.isPublic }),
-          ...(body.isOpenForWork !== undefined && { isOpenForWork: body.isOpenForWork }),
-          ...(body.rangeForWork !== undefined && { rangeForWork: body.rangeForWork }),
-          ...(body.isFreelancer !== undefined && { isFreelancer: body.isFreelancer }),
+          ...(body.isOpenForWork !== undefined && {
+            isOpenForWork: body.isOpenForWork,
+          }),
+          ...(body.rangeForWork !== undefined && {
+            rangeForWork: body.rangeForWork,
+          }),
+          ...(body.isFreelancer !== undefined && {
+            isFreelancer: body.isFreelancer,
+          }),
           ...(body.preferredWorkingTimeSlots !== undefined && {
             preferredWorkingTimeSlots: body.preferredWorkingTimeSlots as object,
           }),
@@ -207,7 +255,9 @@ export class ExpertProfileService {
       });
 
       if (body.expertDescription !== undefined) {
-        const about = await tx.expertAbout.findFirst({ where: { expertId: user.id } });
+        const about = await tx.expertAbout.findFirst({
+          where: { expertId: user.id },
+        });
         if (about) {
           await tx.expertAbout.update({
             where: { id: about.id },
@@ -215,7 +265,10 @@ export class ExpertProfileService {
           });
         } else {
           await tx.expertAbout.create({
-            data: { expertId: user.id, expertDescription: body.expertDescription },
+            data: {
+              expertId: user.id,
+              expertDescription: body.expertDescription,
+            },
           });
         }
       }
@@ -237,14 +290,22 @@ export class ExpertProfileService {
             });
           } else {
             await tx.expertExperties.create({
-              data: { expertId: user.id, expertiesId: exp.expertiesId, experienceYears: exp.experienceYears },
+              data: {
+                expertId: user.id,
+                expertiesId: exp.expertiesId,
+                experienceYears: exp.experienceYears,
+              },
             });
           }
         }
 
-        const toDelete = existing.filter((e) => !newIds.has(e.expertiesId)).map((e) => e.id);
+        const toDelete = existing
+          .filter((e) => !newIds.has(e.expertiesId))
+          .map((e) => e.id);
         if (toDelete.length) {
-          await tx.expertExperties.deleteMany({ where: { id: { in: toDelete } } });
+          await tx.expertExperties.deleteMany({
+            where: { id: { in: toDelete } },
+          });
         }
       }
 
@@ -279,7 +340,10 @@ export class ExpertProfileService {
 
     await this.prisma.experts.update({
       where: { id: userId },
-      data: { termsAndConditionsAccepted: true, termsAndConditionsAcceptedOn: new Date() },
+      data: {
+        termsAndConditionsAccepted: true,
+        termsAndConditionsAcceptedOn: new Date(),
+      },
     });
 
     return { message: 'Terms accepted successfully' };
@@ -287,24 +351,61 @@ export class ExpertProfileService {
 
   private buildMediaEntries(
     expertId: number,
-    body: Pick<RegisterExpertBody, 'galleryImage' | 'galleryVideo' | 'testimonialVideo' | 'certificates' | 'demoVideo'>,
+    body: Pick<
+      RegisterExpertBody,
+      | 'galleryImage'
+      | 'galleryVideo'
+      | 'testimonialVideo'
+      | 'certificates'
+      | 'demoVideo'
+    >,
   ) {
-    const entries: { expertId: number; mediaType: ExpertMediaType; mediaUrl: string; mediaKey: string }[] = [];
+    const entries: {
+      expertId: number;
+      mediaType: ExpertMediaType;
+      mediaUrl: string;
+      mediaKey: string;
+    }[] = [];
 
     body.galleryImage?.forEach((f) =>
-      entries.push({ expertId, mediaType: ExpertMediaType.gallery_image, mediaUrl: f.location, mediaKey: f.key }),
+      entries.push({
+        expertId,
+        mediaType: ExpertMediaType.gallery_image,
+        mediaUrl: f.location,
+        mediaKey: f.key,
+      }),
     );
     body.galleryVideo?.forEach((f) =>
-      entries.push({ expertId, mediaType: ExpertMediaType.gallery_video, mediaUrl: f.location, mediaKey: f.key }),
+      entries.push({
+        expertId,
+        mediaType: ExpertMediaType.gallery_video,
+        mediaUrl: f.location,
+        mediaKey: f.key,
+      }),
     );
     body.testimonialVideo?.forEach((f) =>
-      entries.push({ expertId, mediaType: ExpertMediaType.testimonial_video, mediaUrl: f.location, mediaKey: f.key }),
+      entries.push({
+        expertId,
+        mediaType: ExpertMediaType.testimonial_video,
+        mediaUrl: f.location,
+        mediaKey: f.key,
+      }),
     );
     body.certificates?.forEach((f) =>
-      entries.push({ expertId, mediaType: ExpertMediaType.certificates, mediaUrl: f.location, mediaKey: f.key }),
+      entries.push({
+        expertId,
+        mediaType: ExpertMediaType.certificates,
+        mediaUrl: f.location,
+        mediaKey: f.key,
+      }),
     );
     if (body.demoVideo) {
-      entries.push({ expertId, mediaType: ExpertMediaType.demo_video, mediaUrl: body.demoVideo.location, mediaKey: body.demoVideo.key });
+      entries.push({
+        expertId,
+        mediaType: ExpertMediaType.demo_video,
+        mediaUrl: body.demoVideo.location,
+        mediaKey: body.demoVideo.key,
+      });
     }
 
     return entries;
@@ -315,21 +416,54 @@ export class ExpertProfileService {
     expertId: number,
     body: Pick<
       RegisterExpertBody,
-      | 'expertAAdhaarFront' | 'expertAAdhaarBack' | 'expertPanCard' | 'passport' | 'drivingLicense'
-      | 'expertAadhaarNumber' | 'expertPanNumber' | 'expertPassportNumber' | 'expertDrivingLicenseNumber'
+      | 'expertAAdhaarFront'
+      | 'expertAAdhaarBack'
+      | 'expertPanCard'
+      | 'passport'
+      | 'drivingLicense'
+      | 'expertAadhaarNumber'
+      | 'expertPanNumber'
+      | 'expertPassportNumber'
+      | 'expertDrivingLicenseNumber'
     >,
   ) {
-    const docs: { file: S3File; type: ExpertDocumentType; number: string | undefined }[] = [
-      { file: body.expertAAdhaarFront!, type: ExpertDocumentType.aadhaar_front, number: body.expertAadhaarNumber },
-      { file: body.expertAAdhaarBack!, type: ExpertDocumentType.aadhaar_back, number: body.expertAadhaarNumber },
-      { file: body.expertPanCard!, type: ExpertDocumentType.pan_card, number: body.expertPanNumber },
-      { file: body.passport!, type: ExpertDocumentType.passport, number: body.expertPassportNumber },
-      { file: body.drivingLicense!, type: ExpertDocumentType.driving_license, number: body.expertDrivingLicenseNumber },
+    const docs: {
+      file: S3File;
+      type: ExpertDocumentType;
+      number: string | undefined;
+    }[] = [
+      {
+        file: body.expertAAdhaarFront!,
+        type: ExpertDocumentType.aadhaar_front,
+        number: body.expertAadhaarNumber,
+      },
+      {
+        file: body.expertAAdhaarBack!,
+        type: ExpertDocumentType.aadhaar_back,
+        number: body.expertAadhaarNumber,
+      },
+      {
+        file: body.expertPanCard!,
+        type: ExpertDocumentType.pan_card,
+        number: body.expertPanNumber,
+      },
+      {
+        file: body.passport!,
+        type: ExpertDocumentType.passport,
+        number: body.expertPassportNumber,
+      },
+      {
+        file: body.drivingLicense!,
+        type: ExpertDocumentType.driving_license,
+        number: body.expertDrivingLicenseNumber,
+      },
     ].filter((d) => d.file != null);
 
     for (const doc of docs) {
       if (!doc.number) {
-        throw new BadRequestException(`Document number required for ${doc.type}`);
+        throw new BadRequestException(
+          `Document number required for ${doc.type}`,
+        );
       }
 
       const existing = await tx.expertKycVerification.findFirst({
@@ -340,11 +474,21 @@ export class ExpertProfileService {
       if (existing) {
         await tx.expertKycVerification.update({
           where: { id: existing.id },
-          data: { documentNumber: doc.number, documentUrl: doc.file.location, mediaKey: doc.file.key },
+          data: {
+            documentNumber: doc.number,
+            documentUrl: doc.file.location,
+            mediaKey: doc.file.key,
+          },
         });
       } else {
         await tx.expertKycVerification.create({
-          data: { expertId, documentType: doc.type, documentNumber: doc.number, documentUrl: doc.file.location, mediaKey: doc.file.key },
+          data: {
+            expertId,
+            documentType: doc.type,
+            documentNumber: doc.number,
+            documentUrl: doc.file.location,
+            mediaKey: doc.file.key,
+          },
         });
       }
     }

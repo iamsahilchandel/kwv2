@@ -2,7 +2,10 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { FIREBASE_AUTH } from '@/core/firebase/firebase.module.js';
-import type { IAuthUser, IFirebaseUser } from '@/common/interfaces/auth-user.interface.js';
+import type {
+  IAuthUser,
+  IFirebaseUser,
+} from '@/common/interfaces/auth-user.interface.js';
 import { FcmUserType } from '@/generated/prisma/enums.js';
 
 @Injectable()
@@ -15,14 +18,21 @@ export class LearnerAuthService {
   ) {}
 
   async login(firebaseUser: IFirebaseUser, fcmToken: string) {
-    this.logger.log('Learner login attempt', { phone: `***${firebaseUser.phone.slice(-4)}` });
+    this.logger.log('Learner login attempt', {
+      phone: `***${firebaseUser.phone.slice(-4)}`,
+    });
 
     const phoneAsBigInt = BigInt(firebaseUser.phone);
 
     const learner = await this.prisma.$transaction(async (tx) => {
       let existing = await tx.learners.findUnique({
         where: { phoneNumber: phoneAsBigInt },
-        select: { id: true, firstName: true, profileId: true, firebaseUid: true },
+        select: {
+          id: true,
+          firstName: true,
+          profileId: true,
+          firebaseUid: true,
+        },
       });
 
       if (!existing) {
@@ -34,9 +44,16 @@ export class LearnerAuthService {
             firebaseUid: firebaseUser.uid,
             termsAccepted: false,
           },
-          select: { id: true, firstName: true, profileId: true, firebaseUid: true },
+          select: {
+            id: true,
+            firstName: true,
+            profileId: true,
+            firebaseUid: true,
+          },
         });
-        this.logger.log('New learner account created', { learnerId: existing.id });
+        this.logger.log('New learner account created', {
+          learnerId: existing.id,
+        });
       } else if (!existing.firebaseUid) {
         await tx.learners.update({
           where: { id: existing.id },
@@ -66,7 +83,11 @@ export class LearnerAuthService {
     return { message: 'Logged out successfully' };
   }
 
-  private async upsertFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async upsertFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     const existing = await this.prisma.firebaseToken.findFirst({
       where: { deviceToken },
       select: { id: true },
@@ -84,7 +105,11 @@ export class LearnerAuthService {
     }
   }
 
-  private async deactivateFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async deactivateFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     await this.prisma.firebaseToken.updateMany({
       where: { deviceToken, userId, userType },
       data: { isActive: false },

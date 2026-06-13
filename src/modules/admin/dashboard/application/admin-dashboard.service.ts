@@ -25,7 +25,9 @@ export class AdminDashboardService {
     this.logger.log('Fetching centers by services', { adminId });
 
     // Group centers by their associated services
-    const results = await this.prisma.$queryRaw<Array<{ serviceId: number; serviceName: string; centerCount: bigint }>>`
+    const results = await this.prisma.$queryRaw<
+      Array<{ serviceId: number; serviceName: string; centerCount: bigint }>
+    >`
       SELECT s.id AS "serviceId", s.service_name AS "serviceName", COUNT(DISTINCT cs.center_id) AS "centerCount"
       FROM services s
       LEFT JOIN center_services cs ON cs.service_id = s.id
@@ -41,7 +43,13 @@ export class AdminDashboardService {
 
     const centers = await this.prisma.center.findMany({
       where: { centerServices: { some: { serviceId } } },
-      select: { id: true, centerName: true, isActive: true, isVerified: true, address: true },
+      select: {
+        id: true,
+        centerName: true,
+        isActive: true,
+        isVerified: true,
+        address: true,
+      },
       orderBy: { centerName: 'asc' },
     });
 
@@ -75,7 +83,9 @@ export class AdminDashboardService {
       this.prisma.appAdminStaff.count({ where: { isActive: true } }),
       this.prisma.appAdminStaff.count({ where: { isActive: false } }),
       this.prisma.appAdminStaff.findMany({
-        where: { createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+        where: {
+          createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+        },
         select: { id: true, fullName: true, role: true, createdAt: true },
         orderBy: { createdAt: 'desc' },
         take: 5,
@@ -90,7 +100,12 @@ export class AdminDashboardService {
 
     return this.prisma.appAdminStaff.findMany({
       select: {
-        id: true, fullName: true, email: true, role: true, isActive: true, createdAt: true,
+        id: true,
+        fullName: true,
+        email: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
         manager: { select: { id: true, fullName: true, role: true } },
       },
       orderBy: { fullName: 'asc' },
@@ -141,7 +156,14 @@ export class AdminDashboardService {
     this.logger.log('Fetching hierarchy metrics', { adminId });
 
     // Count direct reports per manager
-    const results = await this.prisma.$queryRaw<Array<{ managerId: number; fullName: string; role: string; directReports: bigint }>>`
+    const results = await this.prisma.$queryRaw<
+      Array<{
+        managerId: number;
+        fullName: string;
+        role: string;
+        directReports: bigint;
+      }>
+    >`
       SELECT m.id AS "managerId", m.full_name AS "fullName", m.role, COUNT(s.id) AS "directReports"
       FROM app_admin_staff m
       INNER JOIN app_admin_staff s ON s.reports_to = m.id
@@ -149,7 +171,10 @@ export class AdminDashboardService {
       ORDER BY "directReports" DESC
     `;
 
-    return results.map((r) => ({ ...r, directReports: Number(r.directReports) }));
+    return results.map((r) => ({
+      ...r,
+      directReports: Number(r.directReports),
+    }));
   }
 
   async getCenterMetrics(adminId: number) {
@@ -157,28 +182,48 @@ export class AdminDashboardService {
 
     const [total, byType, byVerification] = await Promise.all([
       this.prisma.center.count({ where: { isActive: true } }),
-      this.prisma.center.groupBy({ by: ['centerType'], _count: { id: true }, where: { isActive: true } }),
+      this.prisma.center.groupBy({
+        by: ['centerType'],
+        _count: { id: true },
+        where: { isActive: true },
+      }),
       this.prisma.center.groupBy({ by: ['isVerified'], _count: { id: true } }),
     ]);
 
     return {
       total,
-      byType: byType.reduce<Record<string, number>>((acc, r) => { acc[r.centerType ?? 'unknown'] = r._count.id; return acc; }, {}),
-      byVerification: byVerification.reduce<Record<string, number>>((acc, r) => {
-        acc[r.isVerified ? 'verified' : 'unverified'] = r._count.id;
+      byType: byType.reduce<Record<string, number>>((acc, r) => {
+        acc[r.centerType ?? 'unknown'] = r._count.id;
         return acc;
       }, {}),
+      byVerification: byVerification.reduce<Record<string, number>>(
+        (acc, r) => {
+          acc[r.isVerified ? 'verified' : 'unverified'] = r._count.id;
+          return acc;
+        },
+        {},
+      ),
     };
   }
 
   async getCenterById(id: number, adminId: number) {
-    this.logger.log('Fetching center detail for dashboard', { adminId, centerId: id });
+    this.logger.log('Fetching center detail for dashboard', {
+      adminId,
+      centerId: id,
+    });
 
     return this.prisma.center.findUnique({
       where: { id },
       select: {
-        id: true, centerName: true, email: true, phoneNumber: true,
-        isActive: true, isVerified: true, centerType: true, address: true, createdAt: true,
+        id: true,
+        centerName: true,
+        email: true,
+        phoneNumber: true,
+        isActive: true,
+        isVerified: true,
+        centerType: true,
+        address: true,
+        createdAt: true,
       },
     });
   }

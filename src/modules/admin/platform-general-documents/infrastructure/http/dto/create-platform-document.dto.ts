@@ -7,4 +7,6 @@ export const CreatePlatformDocumentSchema = z.object({
   documentType: z.string().max(100).optional(),
 });
 
-export type CreatePlatformDocumentBody = z.infer<typeof CreatePlatformDocumentSchema>;
+export type CreatePlatformDocumentBody = z.infer<
+  typeof CreatePlatformDocumentSchema
+>;

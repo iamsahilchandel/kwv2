@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
-import { CouponStatus, CouponType, CouponApplication } from '@/generated/prisma/enums.js';
+import {
+  CouponStatus,
+  CouponType,
+  CouponApplication,
+} from '@/generated/prisma/enums.js';
 
 export const QueryCouponsSchema = PaginationQuerySchema.extend({
   status: z.nativeEnum(CouponStatus).optional(),

@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { omit } from 'lodash';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '@/common/utils/pagination.util.js';
 import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
 import { ExpertNotFoundException } from '../domain/errors/expert.errors.js';
 import type { QueryExpertsQuery } from '../infrastructure/http/dto/query-experts.dto.js';
@@ -37,7 +40,10 @@ export class AdminExpertsService {
     }
 
     if (startDate && endDate) {
-      where.createdAt = { gte: new Date(startDate), lte: new Date(`${endDate}T23:59:59.999Z`) };
+      where.createdAt = {
+        gte: new Date(startDate),
+        lte: new Date(`${endDate}T23:59:59.999Z`),
+      };
     }
 
     const [experts, total] = await Promise.all([
@@ -47,8 +53,14 @@ export class AdminExpertsService {
         take,
         orderBy: { createdAt: 'desc' },
         select: {
-          id: true, firstName: true, lastName: true, email: true,
-          phoneNumber: true, isActive: true, isVerified: true, createdAt: true,
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          phoneNumber: true,
+          isActive: true,
+          isVerified: true,
+          createdAt: true,
         },
       }),
       this.prisma.experts.count({ where }),
@@ -71,7 +83,10 @@ export class AdminExpertsService {
     if (!expert) throw new ExpertNotFoundException(id);
 
     this.logger.log('Updating expert', { expertId: id });
-    const updated = await this.prisma.experts.update({ where: { id }, data: dto });
+    const updated = await this.prisma.experts.update({
+      where: { id },
+      data: dto,
+    });
     return omit(updated, ['firebaseUid']);
   }
 
@@ -83,7 +98,10 @@ export class AdminExpertsService {
       where: { expertId: id, status: 'active' },
     });
     if (activeBatches > 0) {
-      throw new BusinessRuleException('Cannot delete expert with active batches', { expertId: id, activeBatches });
+      throw new BusinessRuleException(
+        'Cannot delete expert with active batches',
+        { expertId: id, activeBatches },
+      );
     }
 
     await this.prisma.experts.delete({ where: { id } });

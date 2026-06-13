@@ -11,7 +11,10 @@ import {
   type RegisterExpertBody,
   type UpdateExpertProfileBody,
 } from './dto/expert-profile.dto.js';
-import type { IAuthUser, IFirebaseUser } from '@/common/interfaces/auth-user.interface.js';
+import type {
+  IAuthUser,
+  IFirebaseUser,
+} from '@/common/interfaces/auth-user.interface.js';
 
 @ApiTags('Expert - Profile')
 @Controller('expert')
@@ -42,7 +45,8 @@ export class ExpertProfileController {
   @UseGuards(ExpertAuthGuard)
   updateProfile(
     @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(UpdateExpertProfileSchema)) body: UpdateExpertProfileBody,
+    @Body(new ZodValidationPipe(UpdateExpertProfileSchema))
+    body: UpdateExpertProfileBody,
   ) {
     return this.expertProfileService.updateProfile(user, body);
   }

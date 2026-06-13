@@ -16,4 +16,6 @@ export const CreateAdvertisingBannerSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export type CreateAdvertisingBannerBody = z.infer<typeof CreateAdvertisingBannerSchema>;
+export type CreateAdvertisingBannerBody = z.infer<
+  typeof CreateAdvertisingBannerSchema
+>;

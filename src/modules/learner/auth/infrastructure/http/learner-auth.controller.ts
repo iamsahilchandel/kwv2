@@ -5,15 +5,23 @@ import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
 import { FirebaseUser } from '@/common/decorators/firebase-user.decorator.js';
 import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
 import { LearnerAuthService } from '../../application/learner-auth.service.js';
-import { LearnerLoginSchema, type LearnerLoginBody } from './dto/learner-auth.dto.js';
-import type { IAuthUser, IFirebaseUser } from '@/common/interfaces/auth-user.interface.js';
+import {
+  LearnerLoginSchema,
+  type LearnerLoginBody,
+} from './dto/learner-auth.dto.js';
+import type {
+  IAuthUser,
+  IFirebaseUser,
+} from '@/common/interfaces/auth-user.interface.js';
 
 @ApiTags('Learner - Authentication')
 @Controller('learner/auth')
 export class LearnerAuthController {
   constructor(private readonly learnerAuthService: LearnerAuthService) {}
 
-  @ApiOperation({ summary: 'Learner login — auto-creates account on first login' })
+  @ApiOperation({
+    summary: 'Learner login — auto-creates account on first login',
+  })
   @ApiBearerAuth('firebase-token')
   @Post('login')
   login(

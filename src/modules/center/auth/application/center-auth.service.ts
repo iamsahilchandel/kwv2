@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, Inject, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Inject,
+  Logger,
+} from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { FIREBASE_AUTH } from '@/core/firebase/firebase.module.js';
@@ -15,7 +20,9 @@ export class CenterAuthService {
   ) {}
 
   async verifyNumber(phoneNumber: string) {
-    this.logger.log('Verifying center staff phone number', { phoneNumber: `***${phoneNumber.slice(-4)}` });
+    this.logger.log('Verifying center staff phone number', {
+      phoneNumber: `***${phoneNumber.slice(-4)}`,
+    });
 
     const staff = await this.prisma.centerStaff.findUnique({
       where: { phoneNumber },
@@ -26,13 +33,18 @@ export class CenterAuthService {
         isActive: true,
         staffMemberships: {
           where: { center: { isActive: true } },
-          select: { role: true, center: { select: { id: true, centerName: true } } },
+          select: {
+            role: true,
+            center: { select: { id: true, centerName: true } },
+          },
         },
       },
     });
 
     if (!staff) {
-      throw new UnauthorizedException('Phone number not registered as center staff');
+      throw new UnauthorizedException(
+        'Phone number not registered as center staff',
+      );
     }
 
     if (!staff.isActive) {
@@ -97,7 +109,11 @@ export class CenterAuthService {
     return { message: 'Logged out successfully' };
   }
 
-  private async upsertFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async upsertFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     const existing = await this.prisma.firebaseToken.findFirst({
       where: { deviceToken },
       select: { id: true },
@@ -115,7 +131,11 @@ export class CenterAuthService {
     }
   }
 
-  private async deactivateFcmToken(userId: number, deviceToken: string, userType: FcmUserType) {
+  private async deactivateFcmToken(
+    userId: number,
+    deviceToken: string,
+    userType: FcmUserType,
+  ) {
     await this.prisma.firebaseToken.updateMany({
       where: { deviceToken, userId, userType },
       data: { isActive: false },

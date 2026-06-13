@@ -1,9 +1,15 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { chunk } from 'lodash';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '@/common/utils/pagination.util.js';
 import { CouponStatus } from '@/generated/prisma/enums.js';
-import { CouponNotFoundException, CouponCodeAlreadyExistsException } from '../domain/errors/coupon.errors.js';
+import {
+  CouponNotFoundException,
+  CouponCodeAlreadyExistsException,
+} from '../domain/errors/coupon.errors.js';
 import type { CreateCouponBody } from '../infrastructure/http/dto/create-coupon.dto.js';
 import type { CreateCouponBatchBody } from '../infrastructure/http/dto/create-coupon-batch.dto.js';
 import type { UpdateCouponBody } from '../infrastructure/http/dto/update-coupon.dto.js';
@@ -25,7 +31,10 @@ export class AdminCouponsService {
     const existing = await this.prisma.coupon.findFirst({ where: { code } });
     if (existing) throw new CouponCodeAlreadyExistsException(code);
 
-    const status = new Date(dto.endDate) < new Date() ? CouponStatus.expired : CouponStatus.active;
+    const status =
+      new Date(dto.endDate) < new Date()
+        ? CouponStatus.expired
+        : CouponStatus.active;
 
     const coupon = await this.prisma.coupon.create({
       data: {
@@ -33,7 +42,9 @@ export class AdminCouponsService {
         code,
         status,
         usageCount: 0,
-        description: dto.description ?? `${dto.value}${dto.type === 'percentage' ? '%' : '₹'} off`,
+        description:
+          dto.description ??
+          `${dto.value}${dto.type === 'percentage' ? '%' : '₹'} off`,
         createdBy: adminId,
       },
     });
@@ -46,9 +57,14 @@ export class AdminCouponsService {
     this.logger.log('Generating coupon batch', { adminId, count: dto.count });
     this.validateCouponValues(dto.type, dto.value, dto.startDate, dto.endDate);
 
-    const status = new Date(dto.endDate) < new Date() ? CouponStatus.expired : CouponStatus.active;
+    const status =
+      new Date(dto.endDate) < new Date()
+        ? CouponStatus.expired
+        : CouponStatus.active;
     const prefix = dto.prefix ?? '';
-    const description = dto.description ?? `${dto.value}${dto.type === 'percentage' ? '%' : '₹'} off`;
+    const description =
+      dto.description ??
+      `${dto.value}${dto.type === 'percentage' ? '%' : '₹'} off`;
 
     // Generate unique codes
     const codes = new Set<string>();
@@ -128,9 +144,14 @@ export class AdminCouponsService {
     ]);
 
     // Top redeemed coupons via raw query for performance
-    const topCoupons = await this.prisma.$queryRaw<Array<{
-      couponId: number; code: string; redemptionsCount: bigint; totalDiscount: number;
-    }>>`
+    const topCoupons = await this.prisma.$queryRaw<
+      Array<{
+        couponId: number;
+        code: string;
+        redemptionsCount: bigint;
+        totalDiscount: number;
+      }>
+    >`
       SELECT cr.coupon_id AS "couponId", c.code, COUNT(cr.id) AS "redemptionsCount",
              COALESCE(SUM(cr.discount_amount), 0) AS "totalDiscount"
       FROM coupon_redemptions cr
@@ -141,11 +162,23 @@ export class AdminCouponsService {
     `;
 
     const totalRedemptions = await this.prisma.couponRedemption.count();
-    const totalDiscount = await this.prisma.couponRedemption.aggregate({ _sum: { discountAmount: true } });
+    const totalDiscount = await this.prisma.couponRedemption.aggregate({
+      _sum: { discountAmount: true },
+    });
 
     return {
-      overview: { total, active, expired, depleted, totalRedemptions, totalDiscountAmount: totalDiscount._sum.discountAmount ?? 0 },
-      topCoupons: topCoupons.map((r) => ({ ...r, redemptionsCount: Number(r.redemptionsCount) })),
+      overview: {
+        total,
+        active,
+        expired,
+        depleted,
+        totalRedemptions,
+        totalDiscountAmount: totalDiscount._sum.discountAmount ?? 0,
+      },
+      topCoupons: topCoupons.map((r) => ({
+        ...r,
+        redemptionsCount: Number(r.redemptionsCount),
+      })),
     };
   }
 
@@ -154,7 +187,9 @@ export class AdminCouponsService {
     if (!coupon) throw new CouponNotFoundException(id);
 
     if (dto.endDate && new Date(coupon.startDate) > new Date(dto.endDate)) {
-      throw new BadRequestException('End date must be after the coupon start date');
+      throw new BadRequestException(
+        'End date must be after the coupon start date',
+      );
     }
 
     this.logger.log('Updating coupon', { couponId: id, adminId });
@@ -164,9 +199,16 @@ export class AdminCouponsService {
     });
   }
 
-  private validateCouponValues(type: string, value: number, startDate: string, endDate: string) {
+  private validateCouponValues(
+    type: string,
+    value: number,
+    startDate: string,
+    endDate: string,
+  ) {
     if (type === 'percentage' && (value <= 0 || value > 100)) {
-      throw new BadRequestException('Percentage value must be between 1 and 100');
+      throw new BadRequestException(
+        'Percentage value must be between 1 and 100',
+      );
     }
     if (type !== 'percentage' && value <= 0) {
       throw new BadRequestException('Fixed amount must be greater than 0');

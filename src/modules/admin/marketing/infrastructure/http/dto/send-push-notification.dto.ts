@@ -21,4 +21,6 @@ export const SendPushNotificationSchema = z.object({
   priority: z.nativeEnum(NotificationPriority).optional(),
 });
 
-export type SendPushNotificationBody = z.infer<typeof SendPushNotificationSchema>;
+export type SendPushNotificationBody = z.infer<
+  typeof SendPushNotificationSchema
+>;

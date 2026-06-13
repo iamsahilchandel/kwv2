@@ -30,7 +30,13 @@ export class AdminPicklistsService {
 
     return this.prisma.appAdminStaff.findMany({
       where,
-      select: { id: true, fullName: true, role: true, email: true, isActive: true },
+      select: {
+        id: true,
+        fullName: true,
+        role: true,
+        email: true,
+        isActive: true,
+      },
       orderBy: { fullName: 'asc' },
     });
   }
@@ -46,7 +52,13 @@ export class AdminPicklistsService {
 
     const centers = await this.prisma.center.findMany({
       where,
-      select: { id: true, centerName: true, isActive: true, email: true, address: true },
+      select: {
+        id: true,
+        centerName: true,
+        isActive: true,
+        email: true,
+        address: true,
+      },
       orderBy: { centerName: 'asc' },
       take: 100,
     });

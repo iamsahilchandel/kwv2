@@ -6,31 +6,46 @@ import type { UpdatePlatformDocumentBody } from '../infrastructure/http/dto/upda
 
 @Injectable()
 export class AdminPlatformGeneralDocumentsService {
-  private readonly logger = new Logger(AdminPlatformGeneralDocumentsService.name);
+  private readonly logger = new Logger(
+    AdminPlatformGeneralDocumentsService.name,
+  );
 
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    return this.prisma.platformGeneralDocuments.findMany({ orderBy: { createdAt: 'desc' } });
+    return this.prisma.platformGeneralDocuments.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async create(dto: CreatePlatformDocumentBody) {
-    this.logger.log('Creating platform general document', { title: dto.documentTitle });
-    const doc = await this.prisma.platformGeneralDocuments.create({ data: dto });
+    this.logger.log('Creating platform general document', {
+      title: dto.documentTitle,
+    });
+    const doc = await this.prisma.platformGeneralDocuments.create({
+      data: dto,
+    });
     this.logger.log('Platform general document created', { docId: doc.id });
     return doc;
   }
 
   async update(id: number, dto: UpdatePlatformDocumentBody) {
-    const doc = await this.prisma.platformGeneralDocuments.findUnique({ where: { id } });
+    const doc = await this.prisma.platformGeneralDocuments.findUnique({
+      where: { id },
+    });
     if (!doc) throw new PlatformGeneralDocumentNotFoundException(id);
 
     this.logger.log('Updating platform general document', { docId: id });
-    return this.prisma.platformGeneralDocuments.update({ where: { id }, data: dto });
+    return this.prisma.platformGeneralDocuments.update({
+      where: { id },
+      data: dto,
+    });
   }
 
   async remove(id: number) {
-    const doc = await this.prisma.platformGeneralDocuments.findUnique({ where: { id } });
+    const doc = await this.prisma.platformGeneralDocuments.findUnique({
+      where: { id },
+    });
     if (!doc) throw new PlatformGeneralDocumentNotFoundException(id);
 
     await this.prisma.platformGeneralDocuments.delete({ where: { id } });

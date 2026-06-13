@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/core/database/prisma.service.js';
-import { AmenityNotFoundException, ServiceNotFoundException } from '../domain/errors/master-list.errors.js';
+import {
+  AmenityNotFoundException,
+  ServiceNotFoundException,
+} from '../domain/errors/master-list.errors.js';
 import type { CreateAmenityBody } from '../infrastructure/http/dto/create-amenity.dto.js';
 import type { UpdateAmenityBody } from '../infrastructure/http/dto/update-amenity.dto.js';
 import type { CreateServiceBody } from '../infrastructure/http/dto/create-service.dto.js';

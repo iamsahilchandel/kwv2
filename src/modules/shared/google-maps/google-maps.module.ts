@@ -5,9 +5,7 @@ import { GOOGLE_MAPS_PORT } from './application/ports/google-maps.port.js';
 
 @Module({
   controllers: [GoogleMapsController],
-  providers: [
-    { provide: GOOGLE_MAPS_PORT, useClass: GoogleMapsAdapter },
-  ],
+  providers: [{ provide: GOOGLE_MAPS_PORT, useClass: GoogleMapsAdapter }],
   exports: [GOOGLE_MAPS_PORT],
 })
 export class GoogleMapsModule {}

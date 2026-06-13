@@ -30,7 +30,16 @@ import { SharedModule } from '@/modules/shared/shared.module.js';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, redisConfig, firebaseConfig, awsConfig, cashfreeConfig, googleMapsConfig, govPicklistConfig],
+      load: [
+        appConfig,
+        databaseConfig,
+        redisConfig,
+        firebaseConfig,
+        awsConfig,
+        cashfreeConfig,
+        googleMapsConfig,
+        govPicklistConfig,
+      ],
     }),
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],

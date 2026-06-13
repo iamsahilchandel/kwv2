@@ -34,7 +34,10 @@ async function bootstrap() {
     .setTitle('Kreo World API v2')
     .setDescription('Kreo World API — migrated to NestJS')
     .setVersion('2.0')
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID Token' }, 'firebase-token')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID Token' },
+      'firebase-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

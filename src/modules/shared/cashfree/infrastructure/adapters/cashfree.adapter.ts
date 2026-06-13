@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cashfree } from 'cashfree-pg';
-import type { ICashfreePort, CashfreeWebhookPayload } from '../../application/ports/cashfree.port.js';
+import type {
+  ICashfreePort,
+  CashfreeWebhookPayload,
+} from '../../application/ports/cashfree.port.js';
 
 @Injectable()
 export class CashfreeAdapter implements ICashfreePort {
@@ -14,14 +17,25 @@ export class CashfreeAdapter implements ICashfreePort {
 
     Cashfree.XClientId = clientId;
     Cashfree.XClientSecret = clientSecret;
-    Cashfree.XEnvironment = env === 'SANDBOX' ? Cashfree.Environment.SANDBOX : Cashfree.Environment.PRODUCTION;
+    Cashfree.XEnvironment =
+      env === 'SANDBOX'
+        ? Cashfree.Environment.SANDBOX
+        : Cashfree.Environment.PRODUCTION;
 
     this.logger.log(`Cashfree adapter initialized in ${env} mode`);
   }
 
-  verifyWebhook(signature: string, rawBody: string, timestamp: string): CashfreeWebhookPayload {
+  verifyWebhook(
+    signature: string,
+    rawBody: string,
+    timestamp: string,
+  ): CashfreeWebhookPayload {
     // PGVerifyWebhookSignature throws if signature is invalid
-    const parsedBody = Cashfree.PGVerifyWebhookSignature(signature, rawBody, timestamp);
+    const parsedBody = Cashfree.PGVerifyWebhookSignature(
+      signature,
+      rawBody,
+      timestamp,
+    );
 
     return {
       type: (parsedBody as any).type,

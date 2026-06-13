@@ -5,4 +5,6 @@ export const UpdatePlatformSettingsSchema = z.object({
   description: z.string().max(1000).optional(),
 });
 
-export type UpdatePlatformSettingsBody = z.infer<typeof UpdatePlatformSettingsSchema>;
+export type UpdatePlatformSettingsBody = z.infer<
+  typeof UpdatePlatformSettingsSchema
+>;
