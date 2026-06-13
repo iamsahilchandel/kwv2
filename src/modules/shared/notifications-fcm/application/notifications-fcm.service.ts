@@ -1,16 +1,19 @@
-import {
-  Injectable,
-  Inject,
-  Logger,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, Inject, Logger, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@/generated/prisma/client.js';
+import { FcmUserType } from '@/generated/prisma/enums.js';
 import { PrismaService } from '@/core/database/prisma.service.js';
 import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
 import { FCM_PORT, type IFcmPort, type FcmMessage } from './ports/fcm.port.js';
 
 export type UserType = 'appadmin' | 'centerstaff' | 'expert' | 'learner';
 export type DeviceType = 'android' | 'ios' | 'web' | 'desktop';
+
+const FCM_USER_TYPE: Record<UserType, FcmUserType> = {
+  appadmin: FcmUserType.admin,
+  centerstaff: FcmUserType.center,
+  expert: FcmUserType.expert,
+  learner: FcmUserType.learner,
+};
 
 const MAX_DEVICES_PER_USER = 10;
 const INVALID_TOKEN_CODES = new Set([
@@ -37,7 +40,11 @@ export class NotificationsFcmService {
     await this.assertUserExists(userType, userId);
 
     const existing = await this.prisma.firebaseToken.findFirst({
-      where: { userId, userType, deviceToken: fcmToken },
+      where: {
+        userId,
+        userType: FCM_USER_TYPE[userType],
+        deviceToken: fcmToken,
+      },
     });
 
     if (existing) {
@@ -45,7 +52,12 @@ export class NotificationsFcmService {
         where: { id: existing.id },
         data: {
           deviceType,
-          deviceInfo: deviceInfo ?? existing.deviceInfo,
+          deviceInfo:
+            deviceInfo !== undefined
+              ? (deviceInfo as Prisma.InputJsonValue)
+              : existing.deviceInfo !== null
+                ? (existing.deviceInfo as Prisma.InputJsonValue)
+                : Prisma.JsonNull,
           isActive: true,
           lastUsedAt: new Date(),
         },
@@ -60,11 +72,11 @@ export class NotificationsFcmService {
 
     // Enforce device limit — evict least-recently-used device when over limit
     const activeCount = await this.prisma.firebaseToken.count({
-      where: { userId, userType, isActive: true },
+      where: { userId, userType: FCM_USER_TYPE[userType], isActive: true },
     });
     if (activeCount >= MAX_DEVICES_PER_USER) {
       const oldest = await this.prisma.firebaseToken.findFirst({
-        where: { userId, userType, isActive: true },
+        where: { userId, userType: FCM_USER_TYPE[userType], isActive: true },
         orderBy: { lastUsedAt: 'asc' },
       });
       if (oldest) {
@@ -82,10 +94,10 @@ export class NotificationsFcmService {
     const created = await this.prisma.firebaseToken.create({
       data: {
         userId,
-        userType,
+        userType: FCM_USER_TYPE[userType],
         deviceToken: fcmToken,
         deviceType,
-        deviceInfo,
+        deviceInfo: deviceInfo as Prisma.InputJsonValue | undefined,
         isActive: true,
         lastUsedAt: new Date(),
       },
@@ -103,7 +115,12 @@ export class NotificationsFcmService {
 
   async deactivateToken(userId: number, userType: UserType, fcmToken: string) {
     const result = await this.prisma.firebaseToken.updateMany({
-      where: { userId, userType, deviceToken: fcmToken, isActive: true },
+      where: {
+        userId,
+        userType: FCM_USER_TYPE[userType],
+        deviceToken: fcmToken,
+        isActive: true,
+      },
       data: { isActive: false },
     });
 
@@ -171,7 +188,11 @@ export class NotificationsFcmService {
     userIds: number[],
   ): Promise<string[]> {
     const records = await this.prisma.firebaseToken.findMany({
-      where: { userType, userId: { in: userIds }, isActive: true },
+      where: {
+        userType: FCM_USER_TYPE[userType],
+        userId: { in: userIds },
+        isActive: true,
+      },
       select: { deviceToken: true },
     });
     // Remove duplicates
@@ -228,13 +249,13 @@ export class NotificationsFcmService {
         }));
         break;
       case 'expert':
-        exists = !!(await this.prisma.expertProfile.findUnique({
+        exists = !!(await this.prisma.experts.findUnique({
           where: { id: userId },
           select: { id: true },
         }));
         break;
       case 'learner':
-        exists = !!(await this.prisma.learnerProfile.findUnique({
+        exists = !!(await this.prisma.learnerProfiles.findUnique({
           where: { id: userId },
           select: { id: true },
         }));

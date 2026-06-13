@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as admin from 'firebase-admin';
+import { getMessaging } from 'firebase-admin/messaging';
+import type { MulticastMessage } from 'firebase-admin/messaging';
 import type {
   IFcmPort,
   FcmMessage,
@@ -22,7 +23,7 @@ export class FcmAdapter implements IFcmPort {
       failedTokens: [],
     };
 
-    const basePayload: Omit<admin.messaging.MulticastMessage, 'tokens'> = {
+    const basePayload: Omit<MulticastMessage, 'tokens'> = {
       notification: {
         title: message.title,
         body: message.body,
@@ -64,9 +65,10 @@ export class FcmAdapter implements IFcmPort {
     for (let i = 0; i < tokens.length; i += BATCH_SIZE) {
       const batch = tokens.slice(i, i + BATCH_SIZE);
       try {
-        const response = await admin
-          .messaging()
-          .sendEachForMulticast({ ...basePayload, tokens: batch });
+        const response = await getMessaging().sendEachForMulticast({
+          ...basePayload,
+          tokens: batch,
+        });
         result.successCount += response.successCount;
         result.failureCount += response.failureCount;
 
@@ -95,12 +97,13 @@ export class FcmAdapter implements IFcmPort {
 
   async validateToken(token: string): Promise<boolean> {
     try {
-      await admin
-        .messaging()
-        .send({ data: { test: 'validation' }, token }, true); // dryRun = true
+      await getMessaging().send({ data: { test: 'validation' }, token }, true); // dryRun = true
       return true;
     } catch (err) {
-      const code = err.code ?? '';
+      const code =
+        err instanceof Error && 'code' in err && typeof err.code === 'string'
+          ? err.code
+          : '';
       if (
         code === 'messaging/invalid-registration-token' ||
         code === 'messaging/registration-token-not-registered'
