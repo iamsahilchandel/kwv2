@@ -16,15 +16,18 @@ export class GovPicklistService {
     this.apiKey = this.config.get<string>('govPicklist.apiKey') ?? '';
   }
 
-  async getStates(query: GovPicklistQuery) {
+  async getStates(query: GovPicklistQuery): Promise<any> {
     return this.fetchPicklist(STATES_RESOURCE_ID, query);
   }
 
-  async getDistricts(query: GovPicklistQuery) {
+  async getDistricts(query: GovPicklistQuery): Promise<any> {
     return this.fetchPicklist(DISTRICTS_RESOURCE_ID, query);
   }
 
-  private async fetchPicklist(resourceId: string, query: GovPicklistQuery) {
+  private async fetchPicklist(
+    resourceId: string,
+    query: GovPicklistQuery,
+  ): Promise<any> {
     const params: Record<string, string> = {
       'api-key': this.apiKey,
       format: query.format ?? 'json',
@@ -47,8 +50,8 @@ export class GovPicklistService {
     ] as const;
 
     for (const field of filterFields) {
-      if ((query as any)[field]) {
-        params[`filters[${field}]`] = (query as any)[field];
+      if (query[field]) {
+        params[`filters[${field}]`] = query[field];
       }
     }
 

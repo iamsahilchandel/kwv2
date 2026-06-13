@@ -6,6 +6,16 @@ import type {
   GeocodeResult,
   PlacePrediction,
 } from '../../application/ports/google-maps.port.js';
+import type {
+  DirectionsApiResponse,
+  DistanceMatrixApiResponse,
+  GeoApiResponse,
+  NearbySearchApiResponse,
+  PlaceDetailsApiResponse,
+  PlacesAutocompleteApiResponse,
+  QueryAutocompleteApiResponse,
+  TimezoneApiResponse,
+} from '../types/google-maps-api.types.js';
 
 const PLACES_AUTOCOMPLETE_V2_URL =
   'https://places.googleapis.com/v1/places:autocomplete';
@@ -22,14 +32,14 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
 
   async geocodeAddress(address: string): Promise<GeocodeResult[]> {
     const url = `${this.baseUrl}/geocode/json?address=${encodeURIComponent(address)}&key=${this.apiKey}`;
-    const data = await this.fetch<any>(url);
+    const data = await this.fetch<GeoApiResponse>(url);
 
     if (data.status !== 'OK')
       throw new ExternalServiceException(
         'Google Maps',
         `Geocoding failed: ${data.status}`,
       );
-    return data.results.map((r: any) => ({
+    return data.results.map((r) => ({
       formattedAddress: r.formatted_address,
       latitude: r.geometry.location.lat,
       longitude: r.geometry.location.lng,
@@ -40,14 +50,14 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
 
   async reverseGeocode(lat: number, lng: number): Promise<unknown[]> {
     const url = `${this.baseUrl}/geocode/json?latlng=${lat},${lng}&key=${this.apiKey}`;
-    const data = await this.fetch<any>(url);
+    const data = await this.fetch<GeoApiResponse>(url);
 
     if (data.status !== 'OK')
       throw new ExternalServiceException(
         'Google Maps',
         `Reverse geocoding failed: ${data.status}`,
       );
-    return data.results.map((r: any) => ({
+    return data.results.map((r) => ({
       formattedAddress: r.formatted_address,
       addressComponents: r.address_components,
       placeId: r.place_id,
@@ -68,7 +78,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     if (options.mode) params.append('mode', options.mode);
     if (options.avoidTolls) params.append('avoid', 'tolls');
 
-    const data = await this.fetch<any>(
+    const data = await this.fetch<DirectionsApiResponse>(
       `${this.baseUrl}/directions/json?${params}`,
     );
     if (data.status !== 'OK')
@@ -78,13 +88,13 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       );
 
     return {
-      routes: data.routes.map((route: any) => ({
+      routes: data.routes.map((route) => ({
         summary: route.summary,
         distance: route.legs[0].distance,
         duration: route.legs[0].duration,
         startAddress: route.legs[0].start_address,
         endAddress: route.legs[0].end_address,
-        steps: route.legs[0].steps.map((step: any) => ({
+        steps: route.legs[0].steps.map((step) => ({
           instruction: step.html_instructions,
           distance: step.distance,
           duration: step.duration,
@@ -108,7 +118,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     });
     if (mode) params.append('mode', mode);
 
-    const data = await this.fetch<any>(
+    const data = await this.fetch<DistanceMatrixApiResponse>(
       `${this.baseUrl}/distancematrix/json?${params}`,
     );
     if (data.status !== 'OK')
@@ -120,8 +130,8 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     return {
       originAddresses: data.origin_addresses,
       destinationAddresses: data.destination_addresses,
-      rows: data.rows.map((row: any) => ({
-        elements: row.elements.map((el: any) => ({
+      rows: data.rows.map((row) => ({
+        elements: row.elements.map((el) => ({
           distance: el.distance,
           duration: el.duration,
           status: el.status,
@@ -143,7 +153,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     });
     if (type) params.append('type', type);
 
-    const data = await this.fetch<any>(
+    const data = await this.fetch<NearbySearchApiResponse>(
       `${this.baseUrl}/place/nearbysearch/json?${params}`,
     );
     if (data.status !== 'OK')
@@ -153,7 +163,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       );
 
     return {
-      places: data.results.map((p: any) => ({
+      places: data.results.map((p) => ({
         placeId: p.place_id,
         name: p.name,
         rating: p.rating,
@@ -175,7 +185,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       key: this.apiKey,
     });
 
-    const data = await this.fetch<any>(
+    const data = await this.fetch<PlaceDetailsApiResponse>(
       `${this.baseUrl}/place/details/json?${params}`,
     );
     if (data.status !== 'OK')
@@ -191,6 +201,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     input: string,
     options: Record<string, unknown> = {},
   ): Promise<PlacePrediction[]> {
+    void options;
     const headers = new Headers({
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': this.apiKey,
@@ -227,11 +238,11 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
         `Autocomplete request failed: ${response.status}`,
       );
 
-    const data: any = await response.json();
-    return (data.suggestions ?? []).map((s: any) => ({
+    const data = (await response.json()) as PlacesAutocompleteApiResponse;
+    return (data.suggestions ?? []).map((s) => ({
       placeId: s.placePrediction.placeId,
-      description: s.placePrediction.text?.text,
-      structuredFormatting: s.structuredFormat,
+      description: s.placePrediction.text?.text ?? '',
+      structuredFormatting: s.placePrediction.structuredFormat,
     }));
   }
 
@@ -240,11 +251,11 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
     options: Record<string, unknown> = {},
   ): Promise<PlacePrediction[]> {
     const params = new URLSearchParams({ input, key: this.apiKey });
-    if (options.location) params.append('location', String(options.location));
-    if (options.radius) params.append('radius', String(options.radius));
-    if (options.language) params.append('language', String(options.language));
+    if (options.location) params.append('location', options.location as string);
+    if (options.radius) params.append('radius', options.radius as string);
+    if (options.language) params.append('language', options.language as string);
 
-    const data = await this.fetch<any>(
+    const data = await this.fetch<QueryAutocompleteApiResponse>(
       `${this.baseUrl}/place/queryautocomplete/json?${params}`,
     );
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
@@ -254,7 +265,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       );
     }
 
-    return (data.predictions ?? []).map((p: any) => ({
+    return (data.predictions ?? []).map((p) => ({
       placeId: p.place_id,
       description: p.description,
       structuredFormatting: {
@@ -263,7 +274,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       },
       types: p.types,
       matchedSubstrings: p.matched_substrings,
-      terms: p.terms?.map((t: any) => ({ offset: t.offset, value: t.value })),
+      terms: p.terms?.map((t) => ({ offset: t.offset, value: t.value })),
     }));
   }
 
@@ -275,7 +286,7 @@ export class GoogleMapsAdapter implements IGoogleMapsPort {
       key: this.apiKey,
     });
 
-    const data = await this.fetch<any>(
+    const data = await this.fetch<TimezoneApiResponse>(
       `${this.baseUrl}/timezone/json?${params}`,
     );
     if (data.status !== 'OK')

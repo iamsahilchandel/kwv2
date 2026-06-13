@@ -133,7 +133,7 @@ export class GoogleMapsController {
 
   @ApiOperation({ summary: 'Generate a static map image URL' })
   @Get('static-map')
-  async staticMap(
+  staticMap(
     @Query(new ZodValidationPipe(StaticMapQuerySchema)) query: StaticMapQuery,
   ) {
     const url = this.maps.getStaticMapUrl(
