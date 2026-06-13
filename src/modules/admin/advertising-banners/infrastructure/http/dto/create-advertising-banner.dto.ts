@@ -9,10 +9,10 @@ export enum BannerType {
 
 export const CreateAdvertisingBannerSchema = z.object({
   title: z.string().min(1),
-  imageUrl: z.string().url(),
+  imageUrl: z.url(),
   imageKey: z.string().min(1),
-  linkUrl: z.string().url().optional(),
-  type: z.nativeEnum(BannerType),
+  linkUrl: z.url().optional(),
+  type: z.enum(BannerType),
   isActive: z.boolean().optional(),
 });
 

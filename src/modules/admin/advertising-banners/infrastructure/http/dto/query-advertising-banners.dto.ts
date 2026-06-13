@@ -3,7 +3,7 @@ import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
 import { BannerType } from './create-advertising-banner.dto.js';
 
 export const QueryAdvertisingBannersSchema = PaginationQuerySchema.extend({
-  type: z.nativeEnum(BannerType).optional(),
+  type: z.enum(BannerType).optional(),
   isActive: z
     .preprocess((v) => v === 'true' || v === true, z.boolean())
     .optional(),
