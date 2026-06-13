@@ -17,8 +17,8 @@ export enum DeviceType {
 export const RegisterFcmTokenSchema = z.object({
   fcmToken: z.string().min(100, 'FCM token appears invalid (too short)'),
   userId: z.number().int().positive(),
-  userType: z.nativeEnum(UserType),
-  deviceType: z.nativeEnum(DeviceType).optional(),
+  userType: z.enum(UserType),
+  deviceType: z.enum(DeviceType).optional(),
   deviceInfo: z.record(z.unknown()).optional(),
 });
 

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Gender } from '@/generated/prisma/enums.js';
 
 const S3FileSchema = z.object({
-  location: z.string().url(),
+  location: z.url(),
   key: z.string().min(1),
 });
 
@@ -23,7 +23,7 @@ const ExpertiseItemSchema = z.object({
 export const RegisterExpertSchema = z.object({
   firstName: z.string().min(1).max(100),
   lastName: z.string().min(1).max(100),
-  email: z.string().email(),
+  email: z.email(),
   dateOfBirth: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
@@ -60,7 +60,7 @@ export const RegisterExpertSchema = z.object({
 export const UpdateExpertProfileSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
   lastName: z.string().min(1).max(100).optional(),
-  email: z.string().email().optional(),
+  email: z.email().optional(),
   dateOfBirth: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)

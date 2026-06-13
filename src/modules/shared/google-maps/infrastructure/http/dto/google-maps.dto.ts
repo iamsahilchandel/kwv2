@@ -19,14 +19,14 @@ export const LatLngQuerySchema = z.object({
 export const DirectionsQuerySchema = z.object({
   origin: z.string().min(1),
   destination: z.string().min(1),
-  mode: z.nativeEnum(TravelMode).optional(),
+  mode: z.enum(TravelMode).optional(),
   avoidTolls: z.string().optional(),
 });
 
 export const DistanceMatrixQuerySchema = z.object({
   origins: z.string().min(1),
   destinations: z.string().min(1),
-  mode: z.nativeEnum(TravelMode).optional(),
+  mode: z.enum(TravelMode).optional(),
 });
 
 export const NearbyPlacesQuerySchema = z.object({
