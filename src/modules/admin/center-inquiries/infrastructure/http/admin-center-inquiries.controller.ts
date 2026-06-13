@@ -106,9 +106,8 @@ export class AdminCenterInquiriesController {
     @Param('noteId', ParseIntPipe) noteId: number,
     @Body(new ZodValidationPipe(CenterInquiryNoteSchema))
     dto: CenterInquiryNoteBody,
-    @CurrentUser() user: IAuthUser,
   ) {
-    return this.service.updateNote(noteId, dto, user);
+    return this.service.updateNote(noteId, dto);
   }
 
   @Delete(':id/notes/:noteId')

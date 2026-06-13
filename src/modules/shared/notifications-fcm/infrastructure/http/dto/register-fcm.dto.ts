@@ -19,7 +19,7 @@ export const RegisterFcmTokenSchema = z.object({
   userId: z.number().int().positive(),
   userType: z.enum(UserType),
   deviceType: z.enum(DeviceType).optional(),
-  deviceInfo: z.record(z.unknown()).optional(),
+  deviceInfo: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type RegisterFcmTokenBody = z.infer<typeof RegisterFcmTokenSchema>;

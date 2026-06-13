@@ -34,8 +34,8 @@ export const RegisterExpertSchema = z.object({
   isPublic: z.boolean().optional(),
   isOpenForWork: z.boolean().optional(),
   rangeForWork: z.number().positive().optional(),
-  termsAndConditionsAccepted: z.literal(true, {
-    errorMap: () => ({ message: 'Terms must be accepted' }),
+  termsAndConditionsAccepted: z.boolean().refine((val) => val === true, {
+    message: 'Terms must be accepted',
   }),
   isFreelancer: z.boolean(),
   preferredWorkingTimeSlots: z.array(z.any()).optional(),
