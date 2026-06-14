@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
-import { AdminRole } from '@/generated/prisma/enums.js';
+import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
+import { AdminRole } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryAdminUsersSchema = PaginationQuerySchema.extend({
   isActive: z

@@ -1,6 +1,6 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { BatchType } from '@/generated/prisma/enums.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { BatchType } from '../../../../generated/prisma/enums.js';
 
 @Injectable()
 export class CenterPicklistsService {

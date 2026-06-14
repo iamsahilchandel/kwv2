@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { omit } from 'lodash';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+} from '../../../../common/utils/pagination.util.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import {
   CenterNotFoundException,
   UpdateRequestNotFoundException,

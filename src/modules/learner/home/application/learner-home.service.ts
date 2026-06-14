@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { orderBy } from 'lodash';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 
 @Injectable()
 export class LearnerHomeService {

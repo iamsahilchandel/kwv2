@@ -1,13 +1,13 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@/generated/prisma/client.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { Prisma } from '../../../../generated/prisma/client.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
+} from '../../../../common/utils/pagination.util.js';
 import type { QueryPlatformSettingsQuery } from '../infrastructure/http/dto/query-platform-settings.dto.js';
 import type { UpdatePlatformSettingsBody } from '../infrastructure/http/dto/update-platform-settings.dto.js';
-import { SettingValueType } from '@/generated/prisma/enums.js';
+import { SettingValueType } from '../../../../generated/prisma/enums.js';
 
 @Injectable()
 export class AdminPlatformSettingsService {

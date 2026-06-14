@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EnrollmentStatus } from '@/generated/prisma/enums.js';
+import { EnrollmentStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryEnrollmentsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

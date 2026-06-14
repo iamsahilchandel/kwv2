@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import {
   GOOGLE_MAPS_PORT,
   type IGoogleMapsPort,

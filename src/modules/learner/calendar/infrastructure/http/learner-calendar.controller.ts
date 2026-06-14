@@ -1,9 +1,9 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { LearnerAuthGuard } from '@/core/guards/learner-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LearnerCalendarService } from '../../application/learner-calendar.service.js';
 import { CalendarQuerySchema, type CalendarQueryDto } from './dto/learner-calendar.dto.js';
 

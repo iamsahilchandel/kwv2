@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { LearnerAuthGuard } from '@/core/guards/learner-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import { FirebaseUser } from '@/common/decorators/firebase-user.decorator.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import { FirebaseUser } from '../../../../../common/decorators/firebase-user.decorator.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LearnerAuthService } from '../../application/learner-auth.service.js';
 import {
   LearnerLoginSchema,
@@ -12,7 +12,7 @@ import {
 import type {
   IAuthUser,
   IFirebaseUser,
-} from '@/common/interfaces/auth-user.interface.js';
+} from '../../../../../common/interfaces/auth-user.interface.js';
 
 @ApiTags('Learner - Authentication')
 @Controller('learner/auth')

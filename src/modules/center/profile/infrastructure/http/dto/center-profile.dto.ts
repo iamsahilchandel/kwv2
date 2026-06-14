@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CenterType, CenterOperatingEntity } from '@/generated/prisma/enums.js';
+import { CenterType, CenterOperatingEntity } from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateCenterProfileSchema = z.object({
   centerName: z.string().min(1).max(100).optional(),

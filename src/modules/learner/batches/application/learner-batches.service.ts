@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
 import type { QueryBatchesDto } from '../infrastructure/http/dto/learner-batches.dto.js';
 
 @Injectable()

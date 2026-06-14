@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
+import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
 import { BannerType } from './create-advertising-banner.dto.js';
 
 export const QueryAdvertisingBannersSchema = PaginationQuerySchema.extend({

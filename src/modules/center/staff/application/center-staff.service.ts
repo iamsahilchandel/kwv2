@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnauthorizedException, ForbiddenException, ConflictException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
 import { CenterStaffNotFoundException } from '../domain/errors/center-staff.errors.js';
 import type { CreateCenterStaffBody, UpdateCenterStaffBody, QueryCenterStaffQuery } from '../infrastructure/http/dto/center-staff.dto.js';
 

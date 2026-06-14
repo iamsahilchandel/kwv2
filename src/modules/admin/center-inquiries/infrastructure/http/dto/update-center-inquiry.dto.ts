@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CenterInquiryStatus } from '@/generated/prisma/enums.js';
+import { CenterInquiryStatus } from '../../../../../../generated/prisma/enums.js';
 import { CenterAddressSchema } from './create-center-inquiry.dto.js';
 
 export const ALLOWED_STATUS_UPDATES = [

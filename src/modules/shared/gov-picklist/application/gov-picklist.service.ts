@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
+import { ExternalServiceException } from '../../../../common/exceptions/external-service.exception.js';
 import type { GovPicklistQuery } from '../infrastructure/http/dto/gov-picklist.dto.js';
 
 const STATES_RESOURCE_ID = 'a71e60f0-a21d-43de-a6c5-fa5d21600cdb';

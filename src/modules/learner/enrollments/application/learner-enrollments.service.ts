@@ -4,9 +4,9 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { AlreadyEnrolledException, EnrollmentNotFoundException } from '../domain/errors/enrollment.errors.js';
 import type {
   CreateEnrollmentDto,

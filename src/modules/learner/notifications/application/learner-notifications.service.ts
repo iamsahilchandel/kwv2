@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { NotificationStatus } from '@/generated/prisma/enums.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import { NotificationStatus } from '../../../../generated/prisma/enums.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
 import type { QueryNotificationsQuery } from '../infrastructure/http/dto/learner-notifications.dto.js';
 
 @Injectable()

@@ -1,8 +1,8 @@
 import { Injectable, Logger, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@/generated/prisma/client.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+import { Prisma } from '../../../../generated/prisma/client.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { RescheduleRequestNotFoundException } from '../domain/errors/expert-class-reschedule.errors.js';
 import type { QueryRescheduleQuery, CreateRescheduleBody } from '../infrastructure/http/dto/expert-class-reschedule.dto.js';
 

@@ -1,10 +1,10 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
-import { CenterInquiryStatus } from '@/generated/prisma/enums.js';
+} from '../../../../common/utils/pagination.util.js';
+import { CenterInquiryStatus } from '../../../../generated/prisma/enums.js';
 import {
   CenterInquiryNotFoundException,
   CenterInquiryNoteNotFoundException,
@@ -13,7 +13,7 @@ import type { CreateCenterInquiryBody } from '../infrastructure/http/dto/create-
 import type { UpdateCenterInquiryBody } from '../infrastructure/http/dto/update-center-inquiry.dto.js';
 import type { QueryCenterInquiriesQuery } from '../infrastructure/http/dto/query-center-inquiries.dto.js';
 import type { CenterInquiryNoteBody } from '../infrastructure/http/dto/center-inquiry-note.dto.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import type { IAuthUser } from '../../../../common/interfaces/auth-user.interface.js';
 
 const PROTECTED_STATUSES: string[] = [
   CenterInquiryStatus.onboarded,

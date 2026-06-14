@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   AdminRole,
   CenterType,
@@ -16,7 +16,7 @@ import {
   Gender,
   BatchType,
   BatchStatus,
-} from '@/generated/prisma/enums.js';
+} from '../../../../generated/prisma/enums.js';
 
 @Injectable()
 export class AdminPicklistsService {

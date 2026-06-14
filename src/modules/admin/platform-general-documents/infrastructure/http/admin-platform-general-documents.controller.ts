@@ -10,8 +10,8 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminPlatformGeneralDocumentsService } from '../../application/admin-platform-general-documents.service.js';
 import {
   CreatePlatformDocumentSchema,

@@ -1,9 +1,9 @@
 import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { LearnerAuthGuard } from '@/core/guards/learner-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LearnerAttendanceService } from '../../application/learner-attendance.service.js';
 import { QueryAttendanceSchema, type QueryAttendanceDto } from './dto/learner-attendance.dto.js';
 

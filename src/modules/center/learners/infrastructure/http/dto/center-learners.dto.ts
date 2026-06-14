@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AccessRequestStatus } from '@/generated/prisma/enums.js';
+import { AccessRequestStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryCenterLearnersSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

@@ -1,10 +1,10 @@
 import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
-import { AdminRole } from '@/generated/prisma/enums.js';
+} from '../../../../common/utils/pagination.util.js';
+import { AdminRole } from '../../../../generated/prisma/enums.js';
 import {
   AdminUserNotFoundException,
   AdminUserAlreadyExistsException,
@@ -13,7 +13,7 @@ import {
 import type { CreateAdminUserBody } from '../infrastructure/http/dto/create-admin-user.dto.js';
 import type { UpdateAdminUserBody } from '../infrastructure/http/dto/update-admin-user.dto.js';
 import type { QueryAdminUsersQuery } from '../infrastructure/http/dto/query-admin-users.dto.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import type { IAuthUser } from '../../../../common/interfaces/auth-user.interface.js';
 
 const SAFE_SELECT = {
   id: true,

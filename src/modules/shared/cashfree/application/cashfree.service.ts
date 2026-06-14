@@ -8,9 +8,9 @@ import {
   type Prisma,
   TransactionStatus,
   PaymentGroup,
-} from '@/generated/prisma/client.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { PaymentGatewayException } from '@/common/exceptions/payment.exception.js';
+} from '../../../../generated/prisma/client.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { PaymentGatewayException } from '../../../../common/exceptions/payment.exception.js';
 import {
   CASHFREE_PORT,
   CashfreeWebhookPayload,

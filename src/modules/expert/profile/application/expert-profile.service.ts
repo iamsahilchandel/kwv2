@@ -6,15 +6,15 @@ import {
   BadRequestException,
   Logger,
 } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   ExpertDocumentType,
   ExpertMediaType,
-} from '@/generated/prisma/enums.js';
+} from '../../../../generated/prisma/enums.js';
 import type {
   IAuthUser,
   IFirebaseUser,
-} from '@/common/interfaces/auth-user.interface.js';
+} from '../../../../common/interfaces/auth-user.interface.js';
 import type {
   RegisterExpertBody,
   UpdateExpertProfileBody,

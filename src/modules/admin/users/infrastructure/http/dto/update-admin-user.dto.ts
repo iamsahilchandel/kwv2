@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AdminRole } from '@/generated/prisma/enums.js';
+import { AdminRole } from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateAdminUserSchema = z.object({
   fullName: z.string().max(50).optional(),

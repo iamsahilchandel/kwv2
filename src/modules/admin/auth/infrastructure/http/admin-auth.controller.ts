@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Public } from '@/core/guards/api-key.guard.js';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { Public } from '../../../../../core/guards/api-key.guard.js';
+import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminAuthService } from '../../application/admin-auth.service.js';
 import {
   AdminVerifyNumberSchema,
@@ -11,7 +11,7 @@ import {
   type AdminVerifyNumberBody,
   type AdminLoginBody,
 } from './dto/admin-auth.dto.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
 
 @ApiTags('Admin - Authentication')
 @Controller('admin/auth')

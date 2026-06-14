@@ -8,10 +8,10 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ExpertAuthGuard } from '@/core/guards/expert-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertBatchClassAttendanceService } from '../../application/expert-batch-class-attendance.service.js';
 import {
   MarkAttendanceSchema,

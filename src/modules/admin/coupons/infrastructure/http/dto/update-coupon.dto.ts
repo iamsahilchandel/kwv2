@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CouponStatus } from '@/generated/prisma/enums.js';
+import { CouponStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateCouponSchema = z.object({
   description: z.string().max(500).optional(),

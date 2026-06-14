@@ -1,8 +1,8 @@
 import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { AgreementStatus } from '@/generated/prisma/enums.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { AgreementStatus } from '../../../../generated/prisma/enums.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { AgreementNotFoundException } from '../domain/errors/expert-agreements.errors.js';
 import type { QueryAgreementsQuery, RejectAgreementBody } from '../infrastructure/http/dto/expert-agreements.dto.js';
 

@@ -1,11 +1,11 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { chunk } from 'lodash';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
-import { CouponStatus } from '@/generated/prisma/enums.js';
+} from '../../../../common/utils/pagination.util.js';
+import { CouponStatus } from '../../../../generated/prisma/enums.js';
 import {
   CouponNotFoundException,
   CouponCodeAlreadyExistsException,

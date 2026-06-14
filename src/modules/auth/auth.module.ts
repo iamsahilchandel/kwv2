@@ -7,10 +7,10 @@ import { AdminAuthService } from './services/admin-auth.service.js';
 import { CenterAuthService } from './services/center-auth.service.js';
 import { ExpertAuthService } from './services/expert-auth.service.js';
 import { LearnerAuthService } from './services/learner-auth.service.js';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
-import { CenterStaffAuthGuard } from '@/core/guards/center-staff-auth.guard.js';
-import { ExpertAuthGuard } from '@/core/guards/expert-auth.guard.js';
-import { LearnerAuthGuard } from '@/core/guards/learner-auth.guard.js';
+import { AdminAuthGuard } from '../../core/guards/admin-auth.guard.js';
+import { CenterStaffAuthGuard } from '../../core/guards/center-staff-auth.guard.js';
+import { ExpertAuthGuard } from '../../core/guards/expert-auth.guard.js';
+import { LearnerAuthGuard } from '../../core/guards/learner-auth.guard.js';
 
 @Module({
   controllers: [

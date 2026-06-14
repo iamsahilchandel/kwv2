@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BatchStatus, BatchType } from '@/generated/prisma/enums.js';
+import { BatchStatus, BatchType } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryExpertBatchesSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

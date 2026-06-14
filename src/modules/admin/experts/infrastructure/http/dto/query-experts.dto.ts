@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
+import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
 
 export const QueryExpertsSchema = PaginationQuerySchema.extend({
   tab: z.string().optional(),

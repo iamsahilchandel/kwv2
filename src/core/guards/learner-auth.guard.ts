@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { PrismaService } from '../database/prisma.service.js';
-import { FcmUserType } from '@/generated/prisma/enums.js';
+import { FcmUserType } from '../../generated/prisma/enums.js';
 
 @Injectable()
 export class LearnerAuthGuard implements CanActivate {

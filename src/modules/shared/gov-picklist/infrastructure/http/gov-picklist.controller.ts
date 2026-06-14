@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { Public } from '@/core/guards/api-key.guard.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { Public } from '../../../../../core/guards/api-key.guard.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { GovPicklistService } from '../../application/gov-picklist.service.js';
 import {
   GovPicklistQuerySchema,

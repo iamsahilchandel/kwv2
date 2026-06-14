@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Gender } from '@/generated/prisma/enums.js';
+import { Gender } from '../../../../../../generated/prisma/enums.js';
 
 const S3FileSchema = z.object({
   location: z.url(),

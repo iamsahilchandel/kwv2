@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CenterStaffAuthGuard } from '@/core/guards/center-staff-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
 import { CenterDashboardService } from '../../application/center-dashboard.service.js';
 
 @ApiTags('Center - Dashboard')

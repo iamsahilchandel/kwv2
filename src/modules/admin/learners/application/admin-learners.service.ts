@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { omit } from 'lodash';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
+} from '../../../../common/utils/pagination.util.js';
 import { LearnerNotFoundException } from '../domain/errors/learner.errors.js';
 import type { QueryLearnersQuery } from '../infrastructure/http/dto/query-learners.dto.js';
 import type { UpdateLearnerBody } from '../infrastructure/http/dto/update-learner.dto.js';

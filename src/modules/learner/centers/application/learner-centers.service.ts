@@ -4,9 +4,9 @@ import {
   ForbiddenException,
   ConflictException,
 } from '@nestjs/common';
-import { Prisma } from '@/generated/prisma/client.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import { Prisma } from '../../../../generated/prisma/client.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
 import { CenterNotFoundException, CenterAccessRequestNotFoundException } from '../domain/errors/center-access.errors.js';
 import type {
   NearbyCentersDto,

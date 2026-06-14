@@ -1,8 +1,8 @@
 import { Injectable, Logger, UnauthorizedException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { omit } from 'lodash';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { CenterExpertNotFoundException } from '../domain/errors/center-experts.errors.js';
 import type { QueryCenterExpertsQuery, AddExpertBody } from '../infrastructure/http/dto/center-experts.dto.js';
 

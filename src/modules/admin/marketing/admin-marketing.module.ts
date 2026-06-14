@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { NotificationsFcmModule } from '@/modules/shared/notifications-fcm/notifications-fcm.module.js';
+import { NotificationsFcmModule } from '../../../modules/shared/notifications-fcm/notifications-fcm.module.js';
 import { AdminMarketingController } from './infrastructure/http/admin-marketing.controller.js';
 import { AdminMarketingService } from './application/admin-marketing.service.js';
 

@@ -6,9 +6,9 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
 import { AdminDashboardService } from '../../application/admin-dashboard.service.js';
 
 @ApiTags('Admin - Dashboard')

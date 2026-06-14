@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CenterPaymentMethod } from '@/generated/prisma/enums.js';
+import { CenterPaymentMethod } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryPaymentsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

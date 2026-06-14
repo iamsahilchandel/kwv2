@@ -1,8 +1,8 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { Public } from '@/core/guards/api-key.guard.js';
-import { CenterStaffAuthGuard } from '@/core/guards/center-staff-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { Public } from '../../../core/guards/api-key.guard.js';
+import { CenterStaffAuthGuard } from '../../../core/guards/center-staff-auth.guard.js';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe.js';
 import { CenterAuthService } from '../services/center-auth.service.js';
 import {
   LoginBodySchema,
@@ -10,7 +10,7 @@ import {
   type LoginBody,
   type VerifyNumberBody,
 } from '../dto/login.dto.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
+import type { IAuthUser } from '../../../common/interfaces/auth-user.interface.js';
 
 @Controller('center/auth')
 export class CenterAuthController {

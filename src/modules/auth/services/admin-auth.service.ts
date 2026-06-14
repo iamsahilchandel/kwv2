@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { FIREBASE_AUTH } from '@/core/firebase/firebase.module.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
-import { FcmUserType } from '@/generated/prisma/enums.js';
+import { PrismaService } from '../../../core/database/prisma.service.js';
+import { FIREBASE_AUTH } from '../../../core/firebase/firebase.module.js';
+import type { IAuthUser } from '../../../common/interfaces/auth-user.interface.js';
+import { FcmUserType } from '../../../generated/prisma/enums.js';
 
 @Injectable()
 export class AdminAuthService {

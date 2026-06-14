@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { PaginationQuerySchema } from '@/common/dto/pagination.dto.js';
-import { CenterType, CenterOperatingEntity } from '@/generated/prisma/enums.js';
+import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
+import { CenterType, CenterOperatingEntity } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryCentersSchema = PaginationQuerySchema.extend({
   isActive: z

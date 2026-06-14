@@ -1,7 +1,7 @@
 import { Injectable, Logger, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@/generated/prisma/client.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import { Prisma } from '../../../../generated/prisma/client.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
 import { BatchClassMediaNotFoundException } from '../domain/errors/batch-class-media.errors.js';
 import type { CreateBatchClassMediaBody, QueryMediaQuery } from '../infrastructure/http/dto/expert-batch-class-media.dto.js';
 

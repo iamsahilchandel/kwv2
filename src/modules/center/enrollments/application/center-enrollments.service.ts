@@ -1,6 +1,6 @@
 import { Injectable, Logger, UnauthorizedException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
 import { EnrollmentNotFoundException } from '../domain/errors/enrollment.errors.js';
 import type { QueryEnrollmentsQuery, UpdateEnrollmentBody } from '../infrastructure/http/dto/center-enrollments.dto.js';
 

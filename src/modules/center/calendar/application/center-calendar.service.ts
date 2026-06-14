@@ -1,5 +1,5 @@
 import { Injectable, Logger, UnauthorizedException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import type { CalendarQuery, DailyScheduleQuery, CreateBatchClassBody, UpdateBatchClassBody } from '../infrastructure/http/dto/center-calendar.dto.js';
 
 @Injectable()

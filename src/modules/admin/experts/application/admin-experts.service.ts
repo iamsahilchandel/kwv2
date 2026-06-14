@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { omit } from 'lodash';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+} from '../../../../common/utils/pagination.util.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { ExpertNotFoundException } from '../domain/errors/expert.errors.js';
 import type { QueryExpertsQuery } from '../infrastructure/http/dto/query-experts.dto.js';
 import type { UpdateExpertBody } from '../infrastructure/http/dto/update-expert.dto.js';

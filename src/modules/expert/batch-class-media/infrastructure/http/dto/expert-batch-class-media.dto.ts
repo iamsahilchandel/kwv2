@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BatchClassMediaType, MediaVisibility } from '@/generated/prisma/enums.js';
+import { BatchClassMediaType, MediaVisibility } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateBatchClassMediaSchema = z.object({
   mediaUrl: z.string().url(),

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ClassType } from '@/generated/prisma/enums.js';
+import { ClassType } from '../../../../../../generated/prisma/enums.js';
 
 export const CalendarQuerySchema = z.object({
   startDate: z.coerce.date(),

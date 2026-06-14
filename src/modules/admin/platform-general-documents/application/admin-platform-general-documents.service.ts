@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import { PlatformGeneralDocumentNotFoundException } from '../domain/errors/platform-general-document.errors.js';
 import type { CreatePlatformDocumentBody } from '../infrastructure/http/dto/create-platform-document.dto.js';
 import type { UpdatePlatformDocumentBody } from '../infrastructure/http/dto/update-platform-document.dto.js';

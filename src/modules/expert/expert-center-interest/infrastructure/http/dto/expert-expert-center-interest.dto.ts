@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { InterestStatus, InterestInitiator } from '@/generated/prisma/enums.js';
+import { InterestStatus, InterestInitiator } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateInterestSchema = z.object({
   centerId: z.number().int().min(1),

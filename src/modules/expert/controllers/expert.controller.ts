@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
-import { ExpertAuthGuard } from '@/core/guards/expert-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import { FirebaseUser } from '@/common/decorators/firebase-user.decorator.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { ExpertAuthGuard } from '../../../core/guards/expert-auth.guard.js';
+import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
+import { FirebaseUser } from '../../../common/decorators/firebase-user.decorator.js';
+import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe.js';
 import { ExpertService } from '../services/expert.service.js';
 import {
   RegisterExpertSchema,
@@ -13,7 +13,7 @@ import {
 import type {
   IAuthUser,
   IFirebaseUser,
-} from '@/common/interfaces/auth-user.interface.js';
+} from '../../../common/interfaces/auth-user.interface.js';
 
 @Controller('expert')
 export class ExpertController {

@@ -10,10 +10,10 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CenterStaffAuthGuard } from '@/core/guards/center-staff-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterCalendarService } from '../../application/center-calendar.service.js';
 import {
   CalendarQuerySchema,

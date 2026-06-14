@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ServiceGroup } from '@/generated/prisma/enums.js';
+import { ServiceGroup } from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateServiceSchema = z.object({
   serviceGroup: z.enum(ServiceGroup).optional(),

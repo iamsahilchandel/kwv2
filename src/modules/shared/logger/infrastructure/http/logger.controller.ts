@@ -1,7 +1,7 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LoggerFilesService } from '../../application/logger-files.service.js';
 import { LogsQuerySchema, type LogsQuery } from './dto/logger.dto.js';
 

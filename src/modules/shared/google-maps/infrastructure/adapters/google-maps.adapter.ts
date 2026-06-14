@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
+import { ExternalServiceException } from '../../../../../common/exceptions/external-service.exception.js';
 import type {
   IGoogleMapsPort,
   GeocodeResult,

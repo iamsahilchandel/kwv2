@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CenterType, CenterOperatingEntity } from '@/generated/prisma/enums.js';
+import { CenterType, CenterOperatingEntity } from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateCenterSchema = z.object({
   isActive: z.boolean().optional(),

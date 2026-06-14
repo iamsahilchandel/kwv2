@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CouponType, CouponApplication } from '@/generated/prisma/enums.js';
+import { CouponType, CouponApplication } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateCouponSchema = z.object({
   code: z.string().max(50).optional(),

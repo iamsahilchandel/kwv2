@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AgreementStatus } from '@/generated/prisma/enums.js';
+import { AgreementStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryAgreementsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

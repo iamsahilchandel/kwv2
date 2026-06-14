@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import {
   paginationParams,
   buildPaginatedResult,
-} from '@/common/utils/pagination.util.js';
+} from '../../../../common/utils/pagination.util.js';
 import { AdvertisingBannerNotFoundException } from '../domain/errors/advertising-banner.errors.js';
 import type { CreateAdvertisingBannerBody } from '../infrastructure/http/dto/create-advertising-banner.dto.js';
 import type { UpdateAdvertisingBannerBody } from '../infrastructure/http/dto/update-advertising-banner.dto.js';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { InterestStatus } from '@/generated/prisma/enums.js';
+import { InterestStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateInterestSchema = z.object({
   expertId: z.number().int().min(1),

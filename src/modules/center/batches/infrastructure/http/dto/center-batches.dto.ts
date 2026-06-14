@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BatchType, BatchStatus, AttendanceStatus, BenefitType } from '@/generated/prisma/enums.js';
+import { BatchType, BatchStatus, AttendanceStatus, BenefitType } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateBatchSchema = z.object({
   batchName: z.string().min(1).max(200),

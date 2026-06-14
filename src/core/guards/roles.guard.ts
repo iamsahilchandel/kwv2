@@ -6,8 +6,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
-import type { AdminRole, CenterStaffRole } from '@/generated/prisma/enums.js';
-import { ROLES_KEY } from '@/common/decorators/roles.decorator.js';
+import type {
+  AdminRole,
+  CenterStaffRole,
+} from '../../generated/prisma/enums.js';
+import { ROLES_KEY } from '../../common/decorators/roles.decorator.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

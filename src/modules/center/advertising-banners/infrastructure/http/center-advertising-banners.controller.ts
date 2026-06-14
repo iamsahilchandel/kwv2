@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CenterStaffAuthGuard } from '@/core/guards/center-staff-auth.guard.js';
+import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CenterAdvertisingBannersService } from '../../application/center-advertising-banners.service.js';
 
 @ApiTags('Center - Advertising Banners')

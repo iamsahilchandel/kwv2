@@ -1,9 +1,9 @@
 import { Controller, Get, Patch, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { LearnerAuthGuard } from '@/core/guards/learner-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import type { IAuthUser } from '@/common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LearnerNotificationsService } from '../../application/learner-notifications.service.js';
 import { QueryNotificationsSchema, type QueryNotificationsQuery } from './dto/learner-notifications.dto.js';
 

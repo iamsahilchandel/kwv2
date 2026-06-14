@@ -1,5 +1,5 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
+import { ExternalServiceException } from '../../../../common/exceptions/external-service.exception.js';
 import {
   S3_PORT,
   type IS3Port,

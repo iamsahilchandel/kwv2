@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { ExpertAuthGuard } from '@/core/guards/expert-auth.guard.js';
-import { CurrentUser } from '@/common/decorators/current-user.decorator.js';
-import { FirebaseUser } from '@/common/decorators/firebase-user.decorator.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
+import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
+import { FirebaseUser } from '../../../../../common/decorators/firebase-user.decorator.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertProfileService } from '../../application/expert-profile.service.js';
 import {
   RegisterExpertSchema,
@@ -14,7 +14,7 @@ import {
 import type {
   IAuthUser,
   IFirebaseUser,
-} from '@/common/interfaces/auth-user.interface.js';
+} from '../../../../../common/interfaces/auth-user.interface.js';
 
 @ApiTags('Expert - Profile')
 @Controller('expert')

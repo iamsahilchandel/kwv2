@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { LearnerAuthGuard } from '@/core/guards/learner-auth.guard.js';
+import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
 import { LearnerMasterListService } from '../../application/learner-master-list.service.js';
 
 @ApiTags('Learner - Master List')

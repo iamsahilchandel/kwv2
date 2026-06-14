@@ -2,7 +2,7 @@ import type {
   AdminRole,
   CenterStaffRole,
   FcmUserType,
-} from '@/generated/prisma/enums.js';
+} from '../../generated/prisma/enums.js';
 
 export interface IFirebaseUser {
   phone: string;

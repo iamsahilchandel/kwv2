@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { NotificationsFcmService } from '@/modules/shared/notifications-fcm/application/notifications-fcm.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { NotificationsFcmService } from '../../../../modules/shared/notifications-fcm/application/notifications-fcm.service.js';
 import type { SendPushNotificationBody } from '../infrastructure/http/dto/send-push-notification.dto.js';
 import { MarketingUserType } from '../infrastructure/http/dto/send-push-notification.dto.js';
 

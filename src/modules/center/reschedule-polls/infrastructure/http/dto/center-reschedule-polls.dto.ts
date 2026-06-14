@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PollStatus } from '@/generated/prisma/enums.js';
+import { PollStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const CreatePollSchema = z.object({
   title: z.string().min(1).max(200),

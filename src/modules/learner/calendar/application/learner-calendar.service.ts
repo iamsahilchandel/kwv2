@@ -1,5 +1,5 @@
 import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
 import type { CalendarQueryDto } from '../infrastructure/http/dto/learner-calendar.dto.js';
 
 @Injectable()

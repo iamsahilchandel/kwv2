@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CouponType, CouponApplication } from '@/generated/prisma/enums.js';
+import { CouponType, CouponApplication } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateCouponBatchSchema = z.object({
   count: z.number().int().min(1).max(1000),

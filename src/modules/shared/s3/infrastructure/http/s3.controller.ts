@@ -15,8 +15,8 @@ import {
   ApiConsumes,
   ApiBody,
 } from '@nestjs/swagger';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '@/core/pipes/zod-validation.pipe.js';
+import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
+import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { S3Service } from '../../application/s3.service.js';
 import {
   DeleteFilesSchema,

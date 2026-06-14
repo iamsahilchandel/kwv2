@@ -1,6 +1,6 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { AdminAuthGuard } from '@/core/guards/admin-auth.guard.js';
+import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { AdminPicklistsService } from '../../application/admin-picklists.service.js';
 
 @ApiTags('Admin - Picklists')

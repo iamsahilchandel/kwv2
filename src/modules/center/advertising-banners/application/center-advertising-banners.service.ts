@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { BannerType } from '@/generated/prisma/enums.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { BannerType } from '../../../../generated/prisma/enums.js';
 
 @Injectable()
 export class CenterAdvertisingBannersService {

@@ -1,8 +1,8 @@
 import { Injectable, Inject, Logger, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@/generated/prisma/client.js';
-import { FcmUserType } from '@/generated/prisma/enums.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { ExternalServiceException } from '@/common/exceptions/external-service.exception.js';
+import { Prisma } from '../../../../generated/prisma/client.js';
+import { FcmUserType } from '../../../../generated/prisma/enums.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { ExternalServiceException } from '../../../../common/exceptions/external-service.exception.js';
 import { FCM_PORT, type IFcmPort, type FcmMessage } from './ports/fcm.port.js';
 
 export type UserType = 'appadmin' | 'centerstaff' | 'expert' | 'learner';

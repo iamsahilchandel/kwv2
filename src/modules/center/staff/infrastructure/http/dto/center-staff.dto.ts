@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CenterStaffRole } from '@/generated/prisma/enums.js';
+import { CenterStaffRole } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateCenterStaffSchema = z.object({
   firstName: z.string().min(1).max(50),

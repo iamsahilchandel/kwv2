@@ -1,6 +1,6 @@
 import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
 import { BatchNotFoundException } from '../domain/errors/expert-batches.errors.js';
 import type { QueryExpertBatchesQuery } from '../infrastructure/http/dto/expert-batches.dto.js';
 

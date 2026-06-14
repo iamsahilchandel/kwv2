@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { RescheduleRequestStatus, RequesterType } from '@/generated/prisma/enums.js';
+import { RescheduleRequestStatus, RequesterType } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryRescheduleRequestsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),

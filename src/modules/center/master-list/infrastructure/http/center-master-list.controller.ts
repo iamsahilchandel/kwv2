@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { CenterStaffAuthGuard } from '@/core/guards/center-staff-auth.guard.js';
+import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CenterMasterListService } from '../../application/center-master-list.service.js';
 
 @ApiTags('Center - Master List')

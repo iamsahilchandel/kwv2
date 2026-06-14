@@ -5,9 +5,9 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { omit } from 'lodash';
-import { Prisma } from '@/generated/prisma/client.js';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+import { Prisma } from '../../../../generated/prisma/client.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { LearnerProfileNotFoundException } from '../domain/errors/learner-profile.errors.js';
 import type {
   UpdateLearnerDto,

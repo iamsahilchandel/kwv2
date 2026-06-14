@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnauthorizedException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '@/common/utils/pagination.util.js';
-import { BusinessRuleException } from '@/common/exceptions/business-rule.exception.js';
+import { PrismaService } from '../../../../core/database/prisma.service.js';
+import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { PollNotFoundException } from '../domain/errors/reschedule-poll.errors.js';
 import type { CreatePollBody, UpdatePollBody, ClosePollBody, QueryPollsQuery } from '../infrastructure/http/dto/center-reschedule-polls.dto.js';
 
