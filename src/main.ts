@@ -30,13 +30,28 @@ async function bootstrap() {
   const swaggerUsername = config.get<string>('app.swaggerUsername') ?? 'admin';
   // const swaggerPassword = config.get<string>('app.swaggerPassword') ?? 'admin';
 
+  const port = config.get<number>('app.port') ?? process.env.PORT ?? 3000;
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Kreo World API v2')
     .setDescription('Kreo World API — migrated to NestJS')
     .setVersion('2.0')
+    .addServer(`http://localhost:${port}`, 'Local')
     .addBearerAuth(
       { type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID Token' },
-      'firebase-token',
+      'learner-token',
+    )
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID Token' },
+      'expert-token',
+    )
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID Token' },
+      'center-token',
+    )
+    .addApiKey(
+      { type: 'apiKey', in: 'header', name: 'x-api-key' },
+      'x-api-key',
     )
     .build();
 
@@ -47,7 +62,6 @@ async function bootstrap() {
     // Basic auth is handled via a custom middleware in app.setup.ts
   });
 
-  const port = config.get<number>('app.port') ?? process.env.PORT ?? 3000;
   await app.listen(port);
 
   logger.log(`Application running on port ${port}`);
