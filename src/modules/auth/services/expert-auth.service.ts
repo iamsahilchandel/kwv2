@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
 import { PrismaService } from '../../../core/database/prisma.service.js';
 import { FIREBASE_AUTH } from '../../../core/firebase/firebase.module.js';
@@ -7,6 +7,8 @@ import { FcmUserType } from '../../../generated/prisma/enums.js';
 
 @Injectable()
 export class ExpertAuthService {
+  private readonly logger = new Logger(ExpertAuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(FIREBASE_AUTH) private readonly firebaseAuth: Auth,
@@ -35,7 +37,19 @@ export class ExpertAuthService {
   }
 
   async logout(user: IAuthUser, fcmToken?: string | null) {
-    await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
+    try {
+      await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
+      this.logger.log('Expert refresh tokens revoked', { expertId: user.id, uid: user.firebaseUid });
+    } catch (err: unknown) {
+      const e = err as { errorInfo?: { code?: string; message?: string }; code?: string; message?: string };
+      this.logger.error('Failed to revoke expert refresh tokens', {
+        expertId: user.id,
+        uid: user.firebaseUid,
+        code: e?.errorInfo?.code ?? e?.code ?? 'unknown',
+        message: e?.errorInfo?.message ?? e?.message ?? 'No message',
+      });
+      throw err;
+    }
     if (fcmToken) await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.expert);
     return { message: 'Logged out successfully' };
   }

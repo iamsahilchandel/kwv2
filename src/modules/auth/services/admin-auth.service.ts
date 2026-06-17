@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Inject, Logger } from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
 import { PrismaService } from '../../../core/database/prisma.service.js';
 import { FIREBASE_AUTH } from '../../../core/firebase/firebase.module.js';
@@ -7,6 +7,8 @@ import { FcmUserType } from '../../../generated/prisma/enums.js';
 
 @Injectable()
 export class AdminAuthService {
+  private readonly logger = new Logger(AdminAuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(FIREBASE_AUTH) private readonly firebaseAuth: Auth,
@@ -49,7 +51,19 @@ export class AdminAuthService {
   }
 
   async logout(user: IAuthUser, fcmToken?: string | null) {
-    await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
+    try {
+      await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
+      this.logger.log('Admin refresh tokens revoked', { adminId: user.id, uid: user.firebaseUid });
+    } catch (err: unknown) {
+      const e = err as { errorInfo?: { code?: string; message?: string }; code?: string; message?: string };
+      this.logger.error('Failed to revoke admin refresh tokens', {
+        adminId: user.id,
+        uid: user.firebaseUid,
+        code: e?.errorInfo?.code ?? e?.code ?? 'unknown',
+        message: e?.errorInfo?.message ?? e?.message ?? 'No message',
+      });
+      throw err;
+    }
     if (fcmToken) await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.admin);
     return { message: 'Logged out successfully' };
   }
