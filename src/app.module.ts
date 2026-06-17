@@ -11,7 +11,6 @@ import { googleMapsConfig } from './config/google-maps.config.js';
 import { govPicklistConfig } from './config/gov-picklist.config.js';
 import { HttpLoggerMiddleware } from './core/middleware/http-logger.middleware.js';
 import { DatabaseModule } from './core/database/database.module.js';
-import { ApiKeyGuard } from './core/guards/api-key.guard.js';
 import { FirebaseAuthGuard } from './core/guards/firebase-auth.guard.js';
 import { RolesGuard } from './core/guards/roles.guard.js';
 import { HttpExceptionFilter } from './core/filters/http-exception.filter.js';
@@ -62,7 +61,6 @@ import { SharedModule } from './modules/shared/shared.module.js';
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
-    { provide: APP_GUARD, useClass: ApiKeyGuard },
     { provide: APP_GUARD, useClass: FirebaseAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_FILTER, useClass: HttpExceptionFilter },

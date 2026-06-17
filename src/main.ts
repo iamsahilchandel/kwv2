@@ -38,7 +38,6 @@ async function bootstrap() {
       { type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID Token' },
       'center-token',
     )
-    .addApiKey({ type: 'apiKey', in: 'header', name: 'x-api-key' }, 'x-api-key')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

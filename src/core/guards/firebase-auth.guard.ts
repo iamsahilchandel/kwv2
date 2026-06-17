@@ -4,12 +4,15 @@ import {
   ExecutionContext,
   UnauthorizedException,
   Inject,
+  SetMetadata,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Auth } from 'firebase-admin/auth';
 import type { Request } from 'express';
-import { IS_PUBLIC_KEY } from './api-key.guard.js';
 import { FIREBASE_AUTH } from '../firebase/firebase.module.js';
+
+export const IS_PUBLIC_KEY = 'isPublic';
+export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {

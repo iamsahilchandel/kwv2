@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Public } from '../../../../../core/guards/api-key.guard.js';
+import { Public } from '../../../../../core/guards/firebase-auth.guard.js';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import { AdminAuthService } from '../../application/admin-auth.service.js';

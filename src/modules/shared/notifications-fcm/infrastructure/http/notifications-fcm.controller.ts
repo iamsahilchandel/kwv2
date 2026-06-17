@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { Public } from '../../../../../core/guards/api-key.guard.js';
+import { Public } from '../../../../../core/guards/firebase-auth.guard.js';
 import { NotificationsFcmService } from '../../application/notifications-fcm.service.js';
 import {
   RegisterFcmTokenSchema,
