@@ -17,7 +17,7 @@ export class LearnerAuthService {
     @Inject(FIREBASE_AUTH) private readonly firebaseAuth: Auth,
   ) {}
 
-  async login(firebaseUser: IFirebaseUser, fcmToken: string) {
+  async login(firebaseUser: IFirebaseUser, fcmToken?: string | null) {
     this.logger.log('Learner login attempt', {
       phone: `***${firebaseUser.phone.slice(-4)}`,
     });
@@ -64,7 +64,8 @@ export class LearnerAuthService {
       return existing;
     });
 
-    await this.upsertFcmToken(learner.id, fcmToken, FcmUserType.learner);
+    if (fcmToken)
+      await this.upsertFcmToken(learner.id, fcmToken, FcmUserType.learner);
 
     this.logger.log('Learner login successful', { learnerId: learner.id });
     return {
@@ -74,11 +75,12 @@ export class LearnerAuthService {
     };
   }
 
-  async logout(user: IAuthUser, fcmToken: string) {
+  async logout(user: IAuthUser, fcmToken?: string | null) {
     this.logger.log('Learner logout', { learnerId: user.id });
 
     await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
-    await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.learner);
+    if (fcmToken)
+      await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.learner);
 
     return { message: 'Logged out successfully' };
   }
