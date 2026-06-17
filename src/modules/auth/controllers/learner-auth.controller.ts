@@ -14,11 +14,8 @@ export class LearnerAuthController {
   constructor(private readonly learnerAuthService: LearnerAuthService) {}
 
   @Post('login')
-  login(
-    @FirebaseUser() firebaseUser: IFirebaseUser,
-    @Body() body: LoginBodyDto,
-  ) {
-    return this.learnerAuthService.login(firebaseUser, body.fcmToken);
+  login(@FirebaseUser() firebaseUser: IFirebaseUser) {
+    return this.learnerAuthService.login(firebaseUser);
   }
 
   @Post('logout')

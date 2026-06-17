@@ -56,7 +56,8 @@ export class LearnerAuthService {
       return existing;
     });
 
-    if (fcmToken) await this.upsertFcmToken(learner.id, fcmToken, FcmUserType.learner);
+    if (fcmToken)
+      await this.upsertFcmToken(learner.id, fcmToken, FcmUserType.learner);
 
     return {
       id: learner.id,
@@ -68,9 +69,16 @@ export class LearnerAuthService {
   async logout(user: IAuthUser, fcmToken?: string | null) {
     try {
       await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
-      this.logger.log('Learner refresh tokens revoked', { learnerId: user.id, uid: user.firebaseUid });
+      this.logger.log('Learner refresh tokens revoked', {
+        learnerId: user.id,
+        uid: user.firebaseUid,
+      });
     } catch (err: unknown) {
-      const e = err as { errorInfo?: { code?: string; message?: string }; code?: string; message?: string };
+      const e = err as {
+        errorInfo?: { code?: string; message?: string };
+        code?: string;
+        message?: string;
+      };
       this.logger.error('Failed to revoke learner refresh tokens', {
         learnerId: user.id,
         uid: user.firebaseUid,
@@ -79,7 +87,8 @@ export class LearnerAuthService {
       });
       throw err;
     }
-    if (fcmToken) await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.learner);
+    if (fcmToken)
+      await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.learner);
     return { message: 'Logged out successfully' };
   }
 
