@@ -18,11 +18,7 @@ async function bootstrap() {
 
   setupApp(app);
 
-  // Swagger — protected by basic auth configured in app.setup.ts
   const config = app.get(ConfigService);
-  const swaggerUsername = config.get<string>('app.swaggerUsername') ?? 'admin';
-  // const swaggerPassword = config.get<string>('app.swaggerPassword') ?? 'admin';
-
   const port = config.get<number>('app.port') ?? process.env.PORT ?? 3000;
 
   const swaggerConfig = new DocumentBuilder()
@@ -56,7 +52,6 @@ async function bootstrap() {
 
   logger.log(`Application running on port ${port}`);
   logger.log(`Swagger docs at http://localhost:${port}/api-docs`);
-  logger.log(`Swagger auth: ${swaggerUsername} / [hidden]`);
 }
 
 bootstrap().catch((err) => {
