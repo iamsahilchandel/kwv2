@@ -15,10 +15,7 @@ export class HttpLoggerMiddleware implements NestMiddleware {
       req.ip ??
       'unknown';
 
-    const origin =
-      (req.headers['origin'] as string | undefined) ??
-      (req.headers['referer'] as string | undefined) ??
-      'direct';
+    const origin = req.headers['origin'] ?? req.headers['referer'] ?? 'direct';
 
     const start = Date.now();
 
