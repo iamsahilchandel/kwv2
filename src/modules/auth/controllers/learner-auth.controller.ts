@@ -3,11 +3,7 @@ import { LearnerAuthGuard } from '../../../core/guards/learner-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
 import { FirebaseUser } from '../../../common/decorators/firebase-user.decorator.js';
 import { LearnerAuthService } from '../services/learner-auth.service.js';
-import {
-  LoginBodySchema,
-  type LoginBody,
-  LoginBodyDto,
-} from '../dto/login.dto.js';
+import { LoginBodyDto } from '../dto/login.dto.js';
 import type {
   IAuthUser,
   IFirebaseUser,
