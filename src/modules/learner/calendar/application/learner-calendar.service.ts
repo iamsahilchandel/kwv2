@@ -13,17 +13,21 @@ export class LearnerCalendarService {
       where: { id: learnerId },
       select: { profileId: true },
     });
-    if (!learner?.profileId) throw new ForbiddenException('Learner profile required');
+    if (!learner?.profileId)
+      throw new ForbiddenException('Learner profile required');
     return Number(learner.profileId);
   }
 
   async getCalendar(learnerId: number, query: CalendarQueryDto) {
     const profileId = await this.getProfileId(learnerId);
-    const { startDate, endDate, centerId, serviceId, batchType, status } = query;
+    const { startDate, endDate, centerId, serviceId, batchType, status } =
+      query;
 
     const today = new Date();
-    const rangeStart = startDate ?? new Date(today.getFullYear(), today.getMonth(), 1);
-    const rangeEnd = endDate ?? new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const rangeStart =
+      startDate ?? new Date(today.getFullYear(), today.getMonth(), 1);
+    const rangeEnd =
+      endDate ?? new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
     const batchWhere: Record<string, unknown> = {};
     if (status) batchWhere.status = status;
@@ -43,7 +47,12 @@ export class LearnerCalendarService {
     const batchIds = enrollments.map((e) => e.batchId);
 
     if (batchIds.length === 0) {
-      return { events: [], dateRange: { start: rangeStart, end: rangeEnd }, totalBatches: 0, totalClasses: 0 };
+      return {
+        events: [],
+        dateRange: { start: rangeStart, end: rangeEnd },
+        totalBatches: 0,
+        totalClasses: 0,
+      };
     }
 
     const classes = await this.prisma.batchClasses.findMany({
@@ -71,7 +80,10 @@ export class LearnerCalendarService {
       },
     });
 
-    this.logger.debug('Fetched learner calendar', { learnerId, classCount: classes.length });
+    this.logger.debug('Fetched learner calendar', {
+      learnerId,
+      classCount: classes.length,
+    });
     return {
       events: classes,
       dateRange: { start: rangeStart, end: rangeEnd },
@@ -84,7 +96,10 @@ export class LearnerCalendarService {
     const profileId = await this.getProfileId(learnerId);
 
     const enrollments = await this.prisma.batchEnrollments.findMany({
-      where: { learnerProfileId: profileId, status: { in: ['enrolled', 'rescheduled'] } },
+      where: {
+        learnerProfileId: profileId,
+        status: { in: ['enrolled', 'rescheduled'] },
+      },
       select: { batchId: true },
     });
 
@@ -112,7 +127,10 @@ export class LearnerCalendarService {
       },
     });
 
-    this.logger.debug('Fetched upcoming classes for learner', { learnerId, count: classes.length });
+    this.logger.debug('Fetched upcoming classes for learner', {
+      learnerId,
+      count: classes.length,
+    });
     return classes;
   }
 }

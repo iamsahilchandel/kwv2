@@ -1,9 +1,24 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
-import { LearnerNotFoundException, AccessRequestNotFoundException } from '../domain/errors/center-learners.errors.js';
-import type { QueryCenterLearnersQuery, QueryAccessRequestsQuery, RejectAccessRequestBody } from '../infrastructure/http/dto/center-learners.dto.js';
+import {
+  LearnerNotFoundException,
+  AccessRequestNotFoundException,
+} from '../domain/errors/center-learners.errors.js';
+import type {
+  QueryCenterLearnersQuery,
+  QueryAccessRequestsQuery,
+  RejectAccessRequestBody,
+} from '../infrastructure/http/dto/center-learners.dto.js';
 
 @Injectable()
 export class CenterLearnersService {
@@ -60,26 +75,32 @@ export class CenterLearnersService {
   async findOne(staffId: number, learnerProfileId: number) {
     const centerId = await this.getCenterId(staffId);
 
-    const membership = await this.prisma.learnerProfileHasManyCenters.findFirst({
-      where: { centerId, learnerProfileId },
-      include: {
-        learnerProfile: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phoneNumber: true,
-            profilePicture: true,
-            gender: true,
-            dateOfBirth: true,
-            isActive: true,
-            isVerified: true,
-            interests: { include: { service: { select: { id: true, serviceName: true } } } },
+    const membership = await this.prisma.learnerProfileHasManyCenters.findFirst(
+      {
+        where: { centerId, learnerProfileId },
+        include: {
+          learnerProfile: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              phoneNumber: true,
+              profilePicture: true,
+              gender: true,
+              dateOfBirth: true,
+              isActive: true,
+              isVerified: true,
+              interests: {
+                include: {
+                  service: { select: { id: true, serviceName: true } },
+                },
+              },
+            },
           },
         },
       },
-    });
+    );
 
     if (!membership) throw new LearnerNotFoundException(learnerProfileId);
     return membership;
@@ -131,18 +152,27 @@ export class CenterLearnersService {
       throw new BusinessRuleException('Access request is no longer pending');
     }
 
-    this.logger.log('Approving learner access request', { requestId, centerId, staffId });
+    this.logger.log('Approving learner access request', {
+      requestId,
+      centerId,
+      staffId,
+    });
 
     // Look up existing center membership before the transaction
-    const existingMembership = await this.prisma.learnerProfileHasManyCenters.findFirst({
-      where: { learnerProfileId: request.learnerProfileId, centerId },
-      select: { id: true },
-    });
+    const existingMembership =
+      await this.prisma.learnerProfileHasManyCenters.findFirst({
+        where: { learnerProfileId: request.learnerProfileId, centerId },
+        select: { id: true },
+      });
 
     await this.prisma.$transaction([
       this.prisma.learnerCenterAccessRequests.update({
         where: { id: requestId },
-        data: { requestStatus: 'approved', approvedBy: staffId, approvedAt: new Date() },
+        data: {
+          requestStatus: 'approved',
+          approvedBy: staffId,
+          approvedAt: new Date(),
+        },
       }),
       existingMembership
         ? this.prisma.learnerProfileHasManyCenters.update({
@@ -163,7 +193,11 @@ export class CenterLearnersService {
     return { message: 'Access request approved' };
   }
 
-  async rejectAccessRequest(staffId: number, requestId: number, dto: RejectAccessRequestBody) {
+  async rejectAccessRequest(
+    staffId: number,
+    requestId: number,
+    dto: RejectAccessRequestBody,
+  ) {
     const centerId = await this.getCenterId(staffId);
 
     const request = await this.prisma.learnerCenterAccessRequests.findUnique({
@@ -176,7 +210,11 @@ export class CenterLearnersService {
       throw new BusinessRuleException('Access request is no longer pending');
     }
 
-    this.logger.log('Rejecting learner access request', { requestId, centerId, staffId });
+    this.logger.log('Rejecting learner access request', {
+      requestId,
+      centerId,
+      staffId,
+    });
 
     return this.prisma.learnerCenterAccessRequests.update({
       where: { id: requestId },
@@ -189,7 +227,8 @@ export class CenterLearnersService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

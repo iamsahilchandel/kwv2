@@ -1,7 +1,15 @@
-import { Injectable, Logger, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { Prisma } from '../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { InterestNotFoundException } from '../domain/errors/expert-center-interest.errors.js';
 import type {
@@ -52,14 +60,24 @@ export class ExpertExpertCenterInterestService {
   }
 
   async create(expertId: number, dto: CreateInterestBody) {
-    this.logger.log('Creating expert interest in center', { expertId, centerId: dto.centerId });
+    this.logger.log('Creating expert interest in center', {
+      expertId,
+      centerId: dto.centerId,
+    });
 
     const existing = await this.prisma.expertCenterInterest.findFirst({
-      where: { expertId, centerId: dto.centerId, status: 'pending', initiator: 'expert' },
+      where: {
+        expertId,
+        centerId: dto.centerId,
+        status: 'pending',
+        initiator: 'expert',
+      },
     });
 
     if (existing) {
-      throw new ConflictException('A pending expert-initiated interest for this center already exists');
+      throw new ConflictException(
+        'A pending expert-initiated interest for this center already exists',
+      );
     }
 
     const { services, preferredWorkingTimeSlots, ...restDto } = dto;
@@ -74,7 +92,8 @@ export class ExpertExpertCenterInterestService {
         expectedCompensation: restDto.expectedCompensation,
         experienceYears: restDto.experienceYears,
         ...(preferredWorkingTimeSlots !== undefined && {
-          preferredWorkingTimeSlots: preferredWorkingTimeSlots as Prisma.InputJsonValue,
+          preferredWorkingTimeSlots:
+            preferredWorkingTimeSlots as Prisma.InputJsonValue,
         }),
         interestServices: {
           createMany: {
@@ -93,23 +112,32 @@ export class ExpertExpertCenterInterestService {
       },
     });
 
-    this.logger.log('Expert center interest created', { interestId: interest.id });
+    this.logger.log('Expert center interest created', {
+      interestId: interest.id,
+    });
     return interest;
   }
 
   async withdraw(expertId: number, id: number) {
-    const interest = await this.prisma.expertCenterInterest.findUnique({ where: { id } });
+    const interest = await this.prisma.expertCenterInterest.findUnique({
+      where: { id },
+    });
 
     if (!interest) throw new InterestNotFoundException(id);
     if (interest.expertId !== expertId) throw new ForbiddenException();
     if (interest.initiator !== 'expert') {
-      throw new BusinessRuleException('Can only withdraw expert-initiated interests');
+      throw new BusinessRuleException(
+        'Can only withdraw expert-initiated interests',
+      );
     }
     if (interest.status !== 'pending') {
       throw new BusinessRuleException('Interest is no longer pending');
     }
 
-    this.logger.log('Withdrawing expert interest', { expertId, interestId: id });
+    this.logger.log('Withdrawing expert interest', {
+      expertId,
+      interestId: id,
+    });
 
     return this.prisma.expertCenterInterest.update({
       where: { id },
@@ -118,18 +146,25 @@ export class ExpertExpertCenterInterestService {
   }
 
   async acceptCenterInterest(expertId: number, id: number) {
-    const interest = await this.prisma.expertCenterInterest.findUnique({ where: { id } });
+    const interest = await this.prisma.expertCenterInterest.findUnique({
+      where: { id },
+    });
 
     if (!interest) throw new InterestNotFoundException(id);
     if (interest.expertId !== expertId) throw new ForbiddenException();
     if (interest.initiator !== 'center') {
-      throw new BusinessRuleException('Can only accept center-initiated interests');
+      throw new BusinessRuleException(
+        'Can only accept center-initiated interests',
+      );
     }
     if (interest.status !== 'pending') {
       throw new BusinessRuleException('Interest is no longer pending');
     }
 
-    this.logger.log('Expert accepting center interest', { expertId, interestId: id });
+    this.logger.log('Expert accepting center interest', {
+      expertId,
+      interestId: id,
+    });
 
     const updated = await this.prisma.expertCenterInterest.update({
       where: { id },
@@ -140,10 +175,12 @@ export class ExpertExpertCenterInterestService {
     });
 
     // Upsert center membership
-    const existingMembership = await this.prisma.centerHasManyExperts.findFirst({
-      where: { expertId, centerId: interest.centerId },
-      select: { id: true },
-    });
+    const existingMembership = await this.prisma.centerHasManyExperts.findFirst(
+      {
+        where: { expertId, centerId: interest.centerId },
+        select: { id: true },
+      },
+    );
 
     if (existingMembership) {
       await this.prisma.centerHasManyExperts.update({
@@ -159,19 +196,30 @@ export class ExpertExpertCenterInterestService {
     return updated;
   }
 
-  async rejectCenterInterest(expertId: number, id: number, dto: RespondInterestBody) {
-    const interest = await this.prisma.expertCenterInterest.findUnique({ where: { id } });
+  async rejectCenterInterest(
+    expertId: number,
+    id: number,
+    dto: RespondInterestBody,
+  ) {
+    const interest = await this.prisma.expertCenterInterest.findUnique({
+      where: { id },
+    });
 
     if (!interest) throw new InterestNotFoundException(id);
     if (interest.expertId !== expertId) throw new ForbiddenException();
     if (interest.initiator !== 'center') {
-      throw new BusinessRuleException('Can only reject center-initiated interests');
+      throw new BusinessRuleException(
+        'Can only reject center-initiated interests',
+      );
     }
     if (interest.status !== 'pending') {
       throw new BusinessRuleException('Interest is no longer pending');
     }
 
-    this.logger.log('Expert rejecting center interest', { expertId, interestId: id });
+    this.logger.log('Expert rejecting center interest', {
+      expertId,
+      interestId: id,
+    });
 
     return this.prisma.expertCenterInterest.update({
       where: { id },

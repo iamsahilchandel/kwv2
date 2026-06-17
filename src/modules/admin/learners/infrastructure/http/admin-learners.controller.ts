@@ -11,15 +11,16 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminLearnersService } from '../../application/admin-learners.service.js';
 import {
   QueryLearnersSchema,
   type QueryLearnersQuery,
+  QueryLearnersDto,
 } from './dto/query-learners.dto.js';
 import {
   UpdateLearnerSchema,
   type UpdateLearnerBody,
+  UpdateLearnerDto,
 } from './dto/update-learner.dto.js';
 
 @ApiTags('Admin - Learners')
@@ -31,8 +32,8 @@ export class AdminLearnersController {
 
   @Get()
   findAll(
-    @Query(new ZodValidationPipe(QueryLearnersSchema))
-    query: QueryLearnersQuery,
+    @Query()
+    query: QueryLearnersDto,
   ) {
     return this.service.findAll(query);
   }
@@ -43,10 +44,7 @@ export class AdminLearnersController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateLearnerSchema)) dto: UpdateLearnerBody,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateLearnerDto) {
     return this.service.update(id, dto);
   }
 

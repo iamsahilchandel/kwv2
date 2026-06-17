@@ -1,8 +1,19 @@
-import { Injectable, Logger, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
-import type { QueryMyExpertsDto, QueryGlobalExpertsDto } from '../infrastructure/http/dto/learner-experts.dto.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
+import type {
+  QueryMyExpertsDto,
+  QueryGlobalExpertsDto,
+} from '../infrastructure/http/dto/learner-experts.dto.js';
 
 @Injectable()
 export class LearnerExpertsService {
@@ -15,13 +26,17 @@ export class LearnerExpertsService {
       where: { id: learnerId },
       select: { profileId: true },
     });
-    if (!learner?.profileId) throw new ForbiddenException('Learner profile required');
+    if (!learner?.profileId)
+      throw new ForbiddenException('Learner profile required');
     return Number(learner.profileId);
   }
 
   private parseIds(commaSeparated?: string): number[] {
     if (!commaSeparated) return [];
-    return commaSeparated.split(',').map(Number).filter((n) => !isNaN(n));
+    return commaSeparated
+      .split(',')
+      .map(Number)
+      .filter((n) => !isNaN(n));
   }
 
   async findMyExperts(learnerId: number, query: QueryMyExpertsDto) {
@@ -56,9 +71,17 @@ export class LearnerExpertsService {
         batch: {
           include: {
             expert: {
-              select: { id: true, firstName: true, lastName: true, profilePicture: true, mediaKey: true },
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                profilePicture: true,
+                mediaKey: true,
+              },
             },
-            service: { select: { id: true, serviceName: true, serviceGroup: true } },
+            service: {
+              select: { id: true, serviceName: true, serviceGroup: true },
+            },
             center: { select: { id: true, centerName: true } },
           },
         },
@@ -80,9 +103,14 @@ export class LearnerExpertsService {
     }
 
     const items = Array.from(expertMap.values());
-    const total = await this.prisma.batchEnrollments.count({ where: { ...enrollmentWhere, batch: batchWhere } });
+    const total = await this.prisma.batchEnrollments.count({
+      where: { ...enrollmentWhere, batch: batchWhere },
+    });
 
-    this.logger.debug('Fetched learner experts', { learnerId, uniqueExperts: items.length });
+    this.logger.debug('Fetched learner experts', {
+      learnerId,
+      uniqueExperts: items.length,
+    });
     return buildPaginatedResult(items, total, page, limit);
   }
 
@@ -93,7 +121,14 @@ export class LearnerExpertsService {
 
     if (lat !== undefined && long !== undefined) {
       const distanceDegrees = distance / 111320;
-      type GlobalExpert = { id: number; firstName: string; lastName: string; mediaKey: string; distance: number; total: bigint };
+      type GlobalExpert = {
+        id: number;
+        firstName: string;
+        lastName: string;
+        mediaKey: string;
+        distance: number;
+        total: bigint;
+      };
       const results = await this.prisma.$queryRaw<GlobalExpert[]>`
         SELECT
           e.id,
@@ -130,7 +165,9 @@ export class LearnerExpertsService {
       ];
     }
     if (activityIdList.length > 0) {
-      where.experties = { some: { expertiesId: { in: activityIdList } } } as Record<string, unknown>;
+      where.experties = {
+        some: { expertiesId: { in: activityIdList } },
+      } as Record<string, unknown>;
     }
 
     const [items, total] = await Promise.all([
@@ -166,13 +203,19 @@ export class LearnerExpertsService {
       where: { id: expertId, isActive: true },
       include: {
         experties: {
-          include: { service: { select: { id: true, serviceName: true, serviceGroup: true } } },
+          include: {
+            service: {
+              select: { id: true, serviceName: true, serviceGroup: true },
+            },
+          },
         },
         about: true,
         media: { select: { id: true, mediaKey: true, mediaType: true } },
         expertMemberships: {
           where: { isActive: true },
-          include: { center: { select: { id: true, centerName: true, address: true } } },
+          include: {
+            center: { select: { id: true, centerName: true, address: true } },
+          },
         },
       },
     });

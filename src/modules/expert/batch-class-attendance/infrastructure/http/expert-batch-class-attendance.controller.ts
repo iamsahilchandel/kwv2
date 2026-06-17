@@ -11,11 +11,11 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertBatchClassAttendanceService } from '../../application/expert-batch-class-attendance.service.js';
 import {
   MarkAttendanceSchema,
   type MarkAttendanceBody,
+  MarkAttendanceDto,
 } from './dto/expert-batch-class-attendance.dto.js';
 
 @ApiTags('Expert - Batch Class Attendance')
@@ -37,7 +37,7 @@ export class ExpertBatchClassAttendanceController {
   markAttendance(
     @CurrentUser() user: IAuthUser,
     @Param('classId', ParseIntPipe) classId: number,
-    @Body(new ZodValidationPipe(MarkAttendanceSchema)) dto: MarkAttendanceBody,
+    @Body() dto: MarkAttendanceDto,
   ) {
     return this.service.markAttendance(user.id, classId, dto);
   }

@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertDashboardService } from '../../application/expert-dashboard.service.js';
 
 const DashboardQuerySchema = z.object({
@@ -29,7 +28,7 @@ export class ExpertDashboardController {
   @Get('upcoming-classes')
   getUpcomingClasses(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(DashboardQuerySchema)) query: DashboardQuery,
+    @Query() query: DashboardQuery,
   ) {
     return this.service.getUpcomingClasses(user.id, query);
   }
@@ -37,7 +36,7 @@ export class ExpertDashboardController {
   @Get('recent-batches')
   getRecentBatches(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(DashboardQuerySchema)) query: DashboardQuery,
+    @Query() query: DashboardQuery,
   ) {
     return this.service.getRecentBatches(user.id, query);
   }

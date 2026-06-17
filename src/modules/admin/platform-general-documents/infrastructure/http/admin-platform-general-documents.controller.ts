@@ -11,15 +11,16 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminPlatformGeneralDocumentsService } from '../../application/admin-platform-general-documents.service.js';
 import {
   CreatePlatformDocumentSchema,
   type CreatePlatformDocumentBody,
+  CreatePlatformDocumentDto,
 } from './dto/create-platform-document.dto.js';
 import {
   UpdatePlatformDocumentSchema,
   type UpdatePlatformDocumentBody,
+  UpdatePlatformDocumentDto,
 } from './dto/update-platform-document.dto.js';
 
 @ApiTags('Admin - Platform General Documents')
@@ -36,8 +37,8 @@ export class AdminPlatformGeneralDocumentsController {
 
   @Post()
   create(
-    @Body(new ZodValidationPipe(CreatePlatformDocumentSchema))
-    dto: CreatePlatformDocumentBody,
+    @Body()
+    dto: CreatePlatformDocumentDto,
   ) {
     return this.service.create(dto);
   }
@@ -45,8 +46,8 @@ export class AdminPlatformGeneralDocumentsController {
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdatePlatformDocumentSchema))
-    dto: UpdatePlatformDocumentBody,
+    @Body()
+    dto: UpdatePlatformDocumentDto,
   ) {
     return this.service.update(id, dto);
   }

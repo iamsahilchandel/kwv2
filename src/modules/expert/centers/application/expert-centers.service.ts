@@ -1,6 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import type { QueryExpertCentersQuery } from '../infrastructure/http/dto/expert-centers.dto.js';
 
 @Injectable()
@@ -43,7 +46,10 @@ export class ExpertCentersService {
   }
 
   async findOne(expertId: number, centerId: number) {
-    this.logger.log('Fetching center detail for expert', { expertId, centerId });
+    this.logger.log('Fetching center detail for expert', {
+      expertId,
+      centerId,
+    });
 
     const membership = await this.prisma.centerHasManyExperts.findFirst({
       where: { expertId, centerId, isActive: true },
@@ -62,7 +68,9 @@ export class ExpertCentersService {
     });
 
     if (!membership) {
-      throw new NotFoundException(`Center with id ${centerId} not found or expert is not an active member`);
+      throw new NotFoundException(
+        `Center with id ${centerId} not found or expert is not an active member`,
+      );
     }
 
     return membership;

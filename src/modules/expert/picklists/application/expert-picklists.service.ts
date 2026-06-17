@@ -13,7 +13,9 @@ export class ExpertPicklistsService {
     return this.prisma.expertExperties.findMany({
       where: { expertId },
       include: {
-        service: { select: { id: true, serviceName: true, serviceGroup: true } },
+        service: {
+          select: { id: true, serviceName: true, serviceGroup: true },
+        },
       },
     });
   }

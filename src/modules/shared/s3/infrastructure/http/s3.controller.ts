@@ -16,13 +16,14 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { S3Service } from '../../application/s3.service.js';
 import {
   DeleteFilesSchema,
   GetPresignedUrlsSchema,
   type DeleteFilesBody,
   type GetPresignedUrlsBody,
+  DeleteFilesDto,
+  GetPresignedUrlsDto,
 } from './dto/s3.dto.js';
 
 @ApiTags('Shared - S3 File Management')
@@ -88,9 +89,7 @@ export class S3Controller {
 
   @ApiOperation({ summary: 'Delete one or more files from S3 by key' })
   @Post('delete')
-  async deleteFiles(
-    @Body(new ZodValidationPipe(DeleteFilesSchema)) dto: DeleteFilesBody,
-  ) {
+  async deleteFiles(@Body() dto: DeleteFilesDto) {
     const result = await this.s3Service.deleteFiles(dto.keys);
     return { ...result, message: `Deleted ${result.deleted.length} file(s)` };
   }
@@ -98,8 +97,8 @@ export class S3Controller {
   @ApiOperation({ summary: 'Get presigned URLs for private files' })
   @Post('presigned-urls')
   async getPresignedUrls(
-    @Body(new ZodValidationPipe(GetPresignedUrlsSchema))
-    dto: GetPresignedUrlsBody,
+    @Body()
+    dto: GetPresignedUrlsDto,
   ) {
     const urlMap = await this.s3Service.getPresignedUrls(dto.keys);
     return urlMap;

@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module.js';
 import { setupApp } from './bootstrap/app.setup.js';
 
@@ -13,15 +14,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  // Global validation: strip unknown fields, auto-coerce types, reject invalid data
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
+  app.useGlobalPipes(new ZodValidationPipe());
 
   setupApp(app);
 
@@ -49,10 +42,7 @@ async function bootstrap() {
       { type: 'http', scheme: 'bearer', bearerFormat: 'Firebase ID Token' },
       'center-token',
     )
-    .addApiKey(
-      { type: 'apiKey', in: 'header', name: 'x-api-key' },
-      'x-api-key',
-    )
+    .addApiKey({ type: 'apiKey', in: 'header', name: 'x-api-key' }, 'x-api-key')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

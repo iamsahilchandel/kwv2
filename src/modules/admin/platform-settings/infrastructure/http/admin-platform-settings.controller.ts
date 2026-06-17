@@ -12,15 +12,16 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminPlatformSettingsService } from '../../application/admin-platform-settings.service.js';
 import {
   QueryPlatformSettingsSchema,
   type QueryPlatformSettingsQuery,
+  QueryPlatformSettingsDto,
 } from './dto/query-platform-settings.dto.js';
 import {
   UpdatePlatformSettingsSchema,
   type UpdatePlatformSettingsBody,
+  UpdatePlatformSettingsDto,
 } from './dto/update-platform-settings.dto.js';
 
 @ApiTags('Admin - Platform Settings')
@@ -32,8 +33,8 @@ export class AdminPlatformSettingsController {
 
   @Get()
   findAll(
-    @Query(new ZodValidationPipe(QueryPlatformSettingsSchema))
-    query: QueryPlatformSettingsQuery,
+    @Query()
+    query: QueryPlatformSettingsDto,
   ) {
     return this.service.findAll(query);
   }
@@ -46,8 +47,8 @@ export class AdminPlatformSettingsController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdatePlatformSettingsSchema))
-    dto: UpdatePlatformSettingsBody,
+    @Body()
+    dto: UpdatePlatformSettingsDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.update(id, dto, user.id);

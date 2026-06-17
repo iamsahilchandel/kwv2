@@ -3,13 +3,14 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Public } from '../../../../../core/guards/api-key.guard.js';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminAuthService } from '../../application/admin-auth.service.js';
 import {
   AdminVerifyNumberSchema,
   AdminLoginSchema,
   type AdminVerifyNumberBody,
   type AdminLoginBody,
+  AdminVerifyNumberDto,
+  AdminLoginDto,
 } from './dto/admin-auth.dto.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
 
@@ -22,8 +23,8 @@ export class AdminAuthController {
   @Post('verify-number')
   @Public()
   verifyNumber(
-    @Body(new ZodValidationPipe(AdminVerifyNumberSchema))
-    body: AdminVerifyNumberBody,
+    @Body()
+    body: AdminVerifyNumberDto,
   ) {
     return this.adminAuthService.verifyNumber(body.phoneNumber);
   }
@@ -32,10 +33,7 @@ export class AdminAuthController {
   @ApiBearerAuth('firebase-token')
   @Post('login')
   @UseGuards(AdminAuthGuard)
-  login(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(AdminLoginSchema)) body: AdminLoginBody,
-  ) {
+  login(@CurrentUser() user: IAuthUser, @Body() body: AdminLoginDto) {
     return this.adminAuthService.login(user, body.fcmToken);
   }
 
@@ -43,10 +41,7 @@ export class AdminAuthController {
   @ApiBearerAuth('firebase-token')
   @Post('logout')
   @UseGuards(AdminAuthGuard)
-  logout(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(AdminLoginSchema)) body: AdminLoginBody,
-  ) {
+  logout(@CurrentUser() user: IAuthUser, @Body() body: AdminLoginDto) {
     return this.adminAuthService.logout(user, body.fcmToken);
   }
 }

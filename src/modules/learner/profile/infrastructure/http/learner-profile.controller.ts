@@ -14,15 +14,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LearnerProfileService } from '../../application/learner-profile.service.js';
 import {
   UpdateLearnerSchema,
-  type UpdateLearnerDto,
+  UpdateLearnerDto,
   CreateProfileSchema,
-  type CreateProfileDto,
+  CreateProfileDto,
   UpdateProfileSchema,
-  type UpdateProfileDto,
+  UpdateProfileDto,
 } from './dto/learner-profile.dto.js';
 
 @ApiTags('Learner - Profile')
@@ -43,10 +42,7 @@ export class LearnerProfileController {
   }
 
   @Put('me')
-  updateMe(
-    @Body(new ZodValidationPipe(UpdateLearnerSchema)) dto: UpdateLearnerDto,
-    @CurrentUser() user: IAuthUser,
-  ) {
+  updateMe(@Body() dto: UpdateLearnerDto, @CurrentUser() user: IAuthUser) {
     return this.service.updateMe(user.id, dto);
   }
 
@@ -56,10 +52,7 @@ export class LearnerProfileController {
   }
 
   @Post('sub-profiles')
-  createProfile(
-    @Body(new ZodValidationPipe(CreateProfileSchema)) dto: CreateProfileDto,
-    @CurrentUser() user: IAuthUser,
-  ) {
+  createProfile(@Body() dto: CreateProfileDto, @CurrentUser() user: IAuthUser) {
     return this.service.createProfile(user.id, dto);
   }
 
@@ -74,7 +67,7 @@ export class LearnerProfileController {
   @Patch('sub-profiles/:profileId')
   updateProfile(
     @Param('profileId', ParseIntPipe) profileId: number,
-    @Body(new ZodValidationPipe(UpdateProfileSchema)) dto: UpdateProfileDto,
+    @Body() dto: UpdateProfileDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.updateProfile(user.id, profileId, dto);

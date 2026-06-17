@@ -1,7 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
-import type { CalendarQuery, UpcomingClassesQuery } from '../infrastructure/http/dto/expert-calendar.dto.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
+import type {
+  CalendarQuery,
+  UpcomingClassesQuery,
+} from '../infrastructure/http/dto/expert-calendar.dto.js';
 
 @Injectable()
 export class ExpertCalendarService {
@@ -11,7 +17,11 @@ export class ExpertCalendarService {
 
   async getCalendar(expertId: number, query: CalendarQuery) {
     const { startDate, endDate } = query;
-    this.logger.log('Fetching calendar for expert', { expertId, startDate, endDate });
+    this.logger.log('Fetching calendar for expert', {
+      expertId,
+      startDate,
+      endDate,
+    });
 
     const batches = await this.prisma.batches.findMany({
       where: {
@@ -66,7 +76,13 @@ export class ExpertCalendarService {
         take,
         orderBy: { classDate: 'asc' },
         include: {
-          batch: { select: { id: true, batchName: true, center: { select: { id: true, centerName: true } } } },
+          batch: {
+            select: {
+              id: true,
+              batchName: true,
+              center: { select: { id: true, centerName: true } },
+            },
+          },
         },
       }),
       this.prisma.batchClasses.count({

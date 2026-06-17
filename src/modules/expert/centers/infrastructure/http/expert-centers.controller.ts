@@ -1,13 +1,20 @@
-import { Controller, Get, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertCentersService } from '../../application/expert-centers.service.js';
 import {
   QueryExpertCentersSchema,
   type QueryExpertCentersQuery,
+  QueryExpertCentersDto,
 } from './dto/expert-centers.dto.js';
 
 @ApiTags('Expert - Centers')
@@ -20,7 +27,7 @@ export class ExpertCentersController {
   @Get()
   findAll(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryExpertCentersSchema)) query: QueryExpertCentersQuery,
+    @Query() query: QueryExpertCentersDto,
   ) {
     return this.service.findAll(user.id, query);
   }

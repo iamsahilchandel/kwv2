@@ -3,8 +3,11 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
-import { PaginationQuerySchema, type PaginationQuery } from '../../../../../common/dto/pagination.dto.js';
+import {
+  PaginationQuerySchema,
+  type PaginationQuery,
+  PaginationQueryDto,
+} from '../../../../../common/dto/pagination.dto.js';
 import { LearnerReferralsService } from '../../application/learner-referrals.service.js';
 
 @ApiTags('Learner - Referrals')
@@ -16,7 +19,7 @@ export class LearnerReferralsController {
 
   @Get('rewards')
   getReferralRewards(
-    @Query(new ZodValidationPipe(PaginationQuerySchema)) query: PaginationQuery,
+    @Query() query: PaginationQueryDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.getReferralRewards(user.id, query);

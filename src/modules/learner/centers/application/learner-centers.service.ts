@@ -6,8 +6,14 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
-import { CenterNotFoundException, CenterAccessRequestNotFoundException } from '../domain/errors/center-access.errors.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
+import {
+  CenterNotFoundException,
+  CenterAccessRequestNotFoundException,
+} from '../domain/errors/center-access.errors.js';
 import type {
   NearbyCentersDto,
   CenterAccessRequestDto,
@@ -25,7 +31,8 @@ export class LearnerCentersService {
       where: { id: learnerId },
       select: { profileId: true },
     });
-    if (!learner?.profileId) throw new ForbiddenException('Learner profile required');
+    if (!learner?.profileId)
+      throw new ForbiddenException('Learner profile required');
     return Number(learner.profileId);
   }
 
@@ -40,7 +47,13 @@ export class LearnerCentersService {
       ? Prisma.sql`AND c.center_name ILIKE ${'%' + search + '%'}`
       : Prisma.empty;
 
-    type NearbyCenter = { id: number; centerName: string; address: unknown; distance: number; total: bigint };
+    type NearbyCenter = {
+      id: number;
+      centerName: string;
+      address: unknown;
+      distance: number;
+      total: bigint;
+    };
     const results = await this.prisma.$queryRaw<NearbyCenter[]>`
       SELECT
         c.id,
@@ -78,7 +91,9 @@ export class LearnerCentersService {
           isActive: true,
           batches: {
             some: {
-              enrollments: { some: { learnerProfileId: profileId, status: 'enrolled' } },
+              enrollments: {
+                some: { learnerProfileId: profileId, status: 'enrolled' },
+              },
             },
           },
         },
@@ -89,7 +104,11 @@ export class LearnerCentersService {
           id: true,
           centerName: true,
           address: true,
-          media: { where: { mediaType: 'logo' }, select: { id: true, mediaKey: true }, take: 1 },
+          media: {
+            where: { mediaType: 'logo' },
+            select: { id: true, mediaKey: true },
+            take: 1,
+          },
         },
       }),
       this.prisma.center.count({
@@ -97,7 +116,9 @@ export class LearnerCentersService {
           isActive: true,
           batches: {
             some: {
-              enrollments: { some: { learnerProfileId: profileId, status: 'enrolled' } },
+              enrollments: {
+                some: { learnerProfileId: profileId, status: 'enrolled' },
+              },
             },
           },
         },
@@ -113,8 +134,16 @@ export class LearnerCentersService {
       where: { id, isActive: true },
       include: {
         media: { select: { id: true, mediaKey: true, mediaType: true } },
-        centerServices: { include: { service: { select: { id: true, serviceName: true, serviceGroup: true } } } },
-        centerAmenities: { include: { amenity: { select: { id: true, amenityName: true } } } },
+        centerServices: {
+          include: {
+            service: {
+              select: { id: true, serviceName: true, serviceGroup: true },
+            },
+          },
+        },
+        centerAmenities: {
+          include: { amenity: { select: { id: true, amenityName: true } } },
+        },
         _count: { select: { batches: true } },
       },
     });
@@ -183,10 +212,15 @@ export class LearnerCentersService {
     });
 
     if (existing) {
-      throw new ConflictException('Access request already exists for this center');
+      throw new ConflictException(
+        'Access request already exists for this center',
+      );
     }
 
-    this.logger.log('Creating center access request', { learnerId, centerId: dto.centerId });
+    this.logger.log('Creating center access request', {
+      learnerId,
+      centerId: dto.centerId,
+    });
     return this.prisma.learnerCenterAccessRequests.create({
       data: {
         learnerProfileId: profileId,
@@ -207,8 +241,12 @@ export class LearnerCentersService {
     if (!request) throw new CenterAccessRequestNotFoundException(requestId);
     if (request.learnerProfileId !== profileId) throw new ForbiddenException();
 
-    await this.prisma.learnerCenterAccessRequests.delete({ where: { id: requestId } });
-    this.logger.log(`Deleted center access request ${requestId}`, { learnerId });
+    await this.prisma.learnerCenterAccessRequests.delete({
+      where: { id: requestId },
+    });
+    this.logger.log(`Deleted center access request ${requestId}`, {
+      learnerId,
+    });
     return { message: 'Access request deleted' };
   }
 }

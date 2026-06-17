@@ -1,24 +1,19 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterPaymentsService } from '../../application/center-payments.service.js';
 import {
   QueryPaymentsSchema,
   type QueryPaymentsQuery,
+  QueryPaymentsDto,
   OnboardingPaymentSchema,
   type OnboardingPaymentBody,
+  OnboardingPaymentDto,
   PayWithCouponSchema,
   type PayWithCouponBody,
+  PayWithCouponDto,
 } from './dto/center-payments.dto.js';
 
 @ApiTags('Center - Payments')
@@ -29,10 +24,7 @@ export class CenterPaymentsController {
   constructor(private readonly service: CenterPaymentsService) {}
 
   @Get()
-  getHistory(
-    @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryPaymentsSchema)) query: QueryPaymentsQuery,
-  ) {
+  getHistory(@CurrentUser() user: IAuthUser, @Query() query: QueryPaymentsDto) {
     return this.service.getHistory(user.id, query);
   }
 
@@ -44,16 +36,13 @@ export class CenterPaymentsController {
   @Post('onboarding-payment')
   initiateOnboardingPayment(
     @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(OnboardingPaymentSchema)) dto: OnboardingPaymentBody,
+    @Body() dto: OnboardingPaymentDto,
   ) {
     return this.service.initiateOnboardingPayment(user.id, dto);
   }
 
   @Post('pay-with-coupon')
-  payWithCoupon(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(PayWithCouponSchema)) dto: PayWithCouponBody,
-  ) {
+  payWithCoupon(@CurrentUser() user: IAuthUser, @Body() dto: PayWithCouponDto) {
     return this.service.payWithCoupon(user.id, dto);
   }
 }

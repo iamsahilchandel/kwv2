@@ -1,6 +1,17 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import type { CalendarQuery, DailyScheduleQuery, CreateBatchClassBody, UpdateBatchClassBody } from '../infrastructure/http/dto/center-calendar.dto.js';
+import type {
+  CalendarQuery,
+  DailyScheduleQuery,
+  CreateBatchClassBody,
+  UpdateBatchClassBody,
+} from '../infrastructure/http/dto/center-calendar.dto.js';
 
 @Injectable()
 export class CenterCalendarService {
@@ -88,7 +99,9 @@ export class CenterCalendarService {
   async createClass(staffId: number, dto: CreateBatchClassBody) {
     const centerId = await this.getCenterId(staffId);
 
-    const batch = await this.prisma.batches.findUnique({ where: { id: dto.batchId } });
+    const batch = await this.prisma.batches.findUnique({
+      where: { id: dto.batchId },
+    });
     if (!batch) throw new NotFoundException(`Batch ${dto.batchId} not found`);
     if (batch.centerId !== centerId) throw new ForbiddenException();
 
@@ -113,7 +126,11 @@ export class CenterCalendarService {
     return created;
   }
 
-  async updateClass(staffId: number, classId: number, dto: UpdateBatchClassBody) {
+  async updateClass(
+    staffId: number,
+    classId: number,
+    dto: UpdateBatchClassBody,
+  ) {
     const centerId = await this.getCenterId(staffId);
 
     const batchClass = await this.prisma.batchClasses.findUnique({
@@ -128,12 +145,16 @@ export class CenterCalendarService {
 
     const updateData: Record<string, unknown> = { lastModifiedBy: staffId };
     if (dto.classDate) updateData.classDate = dto.classDate;
-    if (dto.startTime) updateData.startTime = this.parseTimeString(dto.startTime);
+    if (dto.startTime)
+      updateData.startTime = this.parseTimeString(dto.startTime);
     if (dto.endTime) updateData.endTime = this.parseTimeString(dto.endTime);
     if (dto.status) updateData.status = dto.status;
     if (dto.expertId) updateData.expertId = dto.expertId;
 
-    return this.prisma.batchClasses.update({ where: { id: classId }, data: updateData });
+    return this.prisma.batchClasses.update({
+      where: { id: classId },
+      data: updateData,
+    });
   }
 
   private parseTimeString(time: string): Date {
@@ -148,7 +169,8 @@ export class CenterCalendarService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

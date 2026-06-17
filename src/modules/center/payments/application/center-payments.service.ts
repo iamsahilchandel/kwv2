@@ -1,8 +1,20 @@
-import { Injectable, Logger, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
-import type { QueryPaymentsQuery, OnboardingPaymentBody, PayWithCouponBody } from '../infrastructure/http/dto/center-payments.dto.js';
+import type {
+  QueryPaymentsQuery,
+  OnboardingPaymentBody,
+  PayWithCouponBody,
+} from '../infrastructure/http/dto/center-payments.dto.js';
 
 @Injectable()
 export class CenterPaymentsService {
@@ -15,7 +27,10 @@ export class CenterPaymentsService {
     const { skip, take, page, limit } = paginationParams(query);
     const { status } = query;
 
-    const where: Record<string, unknown> = { centerId, paymentType: 'center_onboarding' };
+    const where: Record<string, unknown> = {
+      centerId,
+      paymentType: 'center_onboarding',
+    };
     if (status) where.status = status;
 
     const [items, total] = await Promise.all([
@@ -54,7 +69,8 @@ export class CenterPaymentsService {
       where: { category: 'payment', keyName: 'center_onboarding_fee' },
     });
 
-    const baseAmount = platformFeeSetting?.numberValue ?? center.originalOnboardingAmount ?? 0;
+    const baseAmount =
+      platformFeeSetting?.numberValue ?? center.originalOnboardingAmount ?? 0;
 
     return {
       centerId,
@@ -67,11 +83,17 @@ export class CenterPaymentsService {
 
   async initiateOnboardingPayment(staffId: number, dto: OnboardingPaymentBody) {
     const centerId = await this.getCenterId(staffId);
-    this.logger.log('Initiating onboarding payment', { centerId, method: dto.paymentMethod });
+    this.logger.log('Initiating onboarding payment', {
+      centerId,
+      method: dto.paymentMethod,
+    });
 
     const center = await this.prisma.center.findUnique({
       where: { id: centerId },
-      select: { isOnboardingPaymentVerified: true, originalOnboardingAmount: true },
+      select: {
+        isOnboardingPaymentVerified: true,
+        originalOnboardingAmount: true,
+      },
     });
 
     if (!center) throw new NotFoundException('Center not found');
@@ -96,21 +118,31 @@ export class CenterPaymentsService {
       },
     });
 
-    this.logger.log('Onboarding payment initiated', { centerId, orderId: payment.orderId });
+    this.logger.log('Onboarding payment initiated', {
+      centerId,
+      orderId: payment.orderId,
+    });
     return payment;
   }
 
   async payWithCoupon(staffId: number, dto: PayWithCouponBody) {
     const centerId = await this.getCenterId(staffId);
-    this.logger.log('Applying coupon for center onboarding', { centerId, couponCode: dto.couponCode });
+    this.logger.log('Applying coupon for center onboarding', {
+      centerId,
+      couponCode: dto.couponCode,
+    });
 
     const coupon = await this.prisma.coupon.findUnique({
       where: { code: dto.couponCode },
     });
 
-    if (!coupon) throw new NotFoundException(`Coupon ${dto.couponCode} not found`);
+    if (!coupon)
+      throw new NotFoundException(`Coupon ${dto.couponCode} not found`);
     if (coupon.status !== 'active') {
-      throw new BusinessRuleException('Coupon is not active', { couponCode: dto.couponCode, status: coupon.status });
+      throw new BusinessRuleException('Coupon is not active', {
+        couponCode: dto.couponCode,
+        status: coupon.status,
+      });
     }
     if (coupon.endDate < new Date()) {
       throw new BusinessRuleException('Coupon has expired');
@@ -118,7 +150,10 @@ export class CenterPaymentsService {
 
     const center = await this.prisma.center.findUnique({
       where: { id: centerId },
-      select: { isOnboardingPaymentVerified: true, originalOnboardingAmount: true },
+      select: {
+        isOnboardingPaymentVerified: true,
+        originalOnboardingAmount: true,
+      },
     });
 
     if (!center) throw new NotFoundException('Center not found');
@@ -132,7 +167,10 @@ export class CenterPaymentsService {
     if (coupon.type === 'percentage') {
       discountAmount = (baseAmount * Number(coupon.value)) / 100;
       if (coupon.maxDiscountAmount) {
-        discountAmount = Math.min(discountAmount, Number(coupon.maxDiscountAmount));
+        discountAmount = Math.min(
+          discountAmount,
+          Number(coupon.maxDiscountAmount),
+        );
       }
     } else {
       discountAmount = Number(coupon.value);
@@ -195,7 +233,8 @@ export class CenterPaymentsService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

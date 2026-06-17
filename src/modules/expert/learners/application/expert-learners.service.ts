@@ -1,6 +1,9 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import type { QueryExpertLearnersQuery } from '../infrastructure/http/dto/expert-learners.dto.js';
 
 @Injectable()
@@ -39,7 +42,9 @@ export class ExpertLearnersService {
     });
 
     const totalUnique = allEnrollments.length;
-    const uniqueIds = allEnrollments.slice(skip, skip + take).map((e) => e.learnerProfileId);
+    const uniqueIds = allEnrollments
+      .slice(skip, skip + take)
+      .map((e) => e.learnerProfileId);
 
     const learners = await this.prisma.learnerProfiles.findMany({
       where: { id: { in: uniqueIds } },
@@ -57,7 +62,10 @@ export class ExpertLearnersService {
   }
 
   async findOne(expertId: number, learnerId: number) {
-    this.logger.log('Fetching learner detail for expert', { expertId, learnerId });
+    this.logger.log('Fetching learner detail for expert', {
+      expertId,
+      learnerId,
+    });
 
     const learner = await this.prisma.learnerProfiles.findUnique({
       where: { id: learnerId },
@@ -71,7 +79,8 @@ export class ExpertLearnersService {
       },
     });
 
-    if (!learner) throw new NotFoundException(`Learner with id ${learnerId} not found`);
+    if (!learner)
+      throw new NotFoundException(`Learner with id ${learnerId} not found`);
 
     const enrollments = await this.prisma.batchEnrollments.findMany({
       where: {

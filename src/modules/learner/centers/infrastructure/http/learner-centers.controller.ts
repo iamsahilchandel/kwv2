@@ -13,15 +13,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LearnerCentersService } from '../../application/learner-centers.service.js';
 import {
-  NearbyCentersSchema,
-  type NearbyCentersDto,
-  CenterAccessRequestSchema,
-  type CenterAccessRequestDto,
-  QueryMyCentersSchema,
-  type QueryMyCentersDto,
+  NearbyCentersDto,
+  CenterAccessRequestDto,
+  RequestAccessBodyDto,
+  QueryMyCentersDto,
 } from './dto/learner-centers.dto.js';
 
 @ApiTags('Learner - Centers')
@@ -32,15 +29,13 @@ export class LearnerCentersController {
   constructor(private readonly service: LearnerCentersService) {}
 
   @Get('nearby')
-  findNearby(
-    @Query(new ZodValidationPipe(NearbyCentersSchema)) query: NearbyCentersDto,
-  ) {
+  findNearby(@Query() query: NearbyCentersDto) {
     return this.service.findNearby(query);
   }
 
   @Get('my')
   findMyCenters(
-    @Query(new ZodValidationPipe(QueryMyCentersSchema)) query: QueryMyCentersDto,
+    @Query() query: QueryMyCentersDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.findMyCenters(user.id, query);
@@ -53,7 +48,7 @@ export class LearnerCentersController {
 
   @Post('access-requests')
   createAccessRequest(
-    @Body(new ZodValidationPipe(CenterAccessRequestSchema)) dto: CenterAccessRequestDto,
+    @Body() dto: CenterAccessRequestDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.createAccessRequest(user.id, dto);
@@ -80,8 +75,7 @@ export class LearnerCentersController {
   @Post(':centerId/request-access')
   requestAccess(
     @Param('centerId', ParseIntPipe) centerId: number,
-    @Body(new ZodValidationPipe(CenterAccessRequestSchema.omit({ centerId: true })))
-    dto: Omit<CenterAccessRequestDto, 'centerId'>,
+    @Body() dto: RequestAccessBodyDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.createAccessRequest(user.id, { ...dto, centerId });

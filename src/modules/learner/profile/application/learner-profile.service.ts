@@ -33,7 +33,11 @@ export class LearnerProfileService {
           where: { id: Number(learner.profileId) },
           include: {
             interests: {
-              include: { service: { select: { id: true, serviceName: true, serviceGroup: true } } },
+              include: {
+                service: {
+                  select: { id: true, serviceName: true, serviceGroup: true },
+                },
+              },
             },
           },
         })
@@ -43,7 +47,9 @@ export class LearnerProfileService {
   }
 
   async updateMe(learnerId: number, dto: UpdateLearnerDto) {
-    const learner = await this.prisma.learners.findUnique({ where: { id: learnerId } });
+    const learner = await this.prisma.learners.findUnique({
+      where: { id: learnerId },
+    });
     if (!learner) throw new LearnerProfileNotFoundException(learnerId);
 
     this.logger.log('Updating learner', { learnerId });
@@ -55,7 +61,9 @@ export class LearnerProfileService {
   }
 
   async acceptTerms(learnerId: number) {
-    const learner = await this.prisma.learners.findUnique({ where: { id: learnerId } });
+    const learner = await this.prisma.learners.findUnique({
+      where: { id: learnerId },
+    });
     if (!learner) throw new LearnerProfileNotFoundException(learnerId);
 
     if (learner.termsAccepted) {
@@ -92,7 +100,10 @@ export class LearnerProfileService {
       ...a,
       learnerProfile: {
         ...a.learnerProfile,
-        profileType: Number(learner?.profileId) === a.learnerProfileId ? 'primary' : 'secondary',
+        profileType:
+          Number(learner?.profileId) === a.learnerProfileId
+            ? 'primary'
+            : 'secondary',
       },
     }));
   }
@@ -122,7 +133,8 @@ export class LearnerProfileService {
       ...association,
       learnerProfile: {
         ...association.learnerProfile,
-        profileType: Number(learner?.profileId) === profileId ? 'primary' : 'secondary',
+        profileType:
+          Number(learner?.profileId) === profileId ? 'primary' : 'secondary',
       },
     };
   }
@@ -159,11 +171,18 @@ export class LearnerProfileService {
       return newProfile;
     });
 
-    this.logger.log('Sub-profile created', { learnerId, profileId: profile.id });
+    this.logger.log('Sub-profile created', {
+      learnerId,
+      profileId: profile.id,
+    });
     return profile;
   }
 
-  async updateProfile(learnerId: number, profileId: number, dto: UpdateProfileDto) {
+  async updateProfile(
+    learnerId: number,
+    profileId: number,
+    dto: UpdateProfileDto,
+  ) {
     const association = await this.prisma.learnerHasManyProfiles.findFirst({
       where: { learnerId, learnerProfileId: profileId },
     });
@@ -179,15 +198,22 @@ export class LearnerProfileService {
         where: { id: profileId },
         data: {
           ...profileData,
-          ...(address !== undefined && { address: address as Prisma.InputJsonValue }),
+          ...(address !== undefined && {
+            address: address as Prisma.InputJsonValue,
+          }),
         },
       });
 
       if (interests !== undefined) {
-        await tx.learnersInterest.deleteMany({ where: { learnerProfileId: profileId } });
+        await tx.learnersInterest.deleteMany({
+          where: { learnerProfileId: profileId },
+        });
         if (interests.length > 0) {
           await tx.learnersInterest.createMany({
-            data: interests.map((serviceId) => ({ learnerProfileId: profileId, serviceId })),
+            data: interests.map((serviceId) => ({
+              learnerProfileId: profileId,
+              serviceId,
+            })),
             skipDuplicates: true,
           });
         }
@@ -214,15 +240,23 @@ export class LearnerProfileService {
     if (!association) throw new LearnerProfileNotFoundException(profileId);
 
     const activeEnrollments = await this.prisma.batchEnrollments.count({
-      where: { learnerProfileId: profileId, status: { in: ['enrolled', 'pending'] } },
+      where: {
+        learnerProfileId: profileId,
+        status: { in: ['enrolled', 'pending'] },
+      },
     });
 
     if (activeEnrollments > 0) {
-      throw new BusinessRuleException('Cannot delete profile with active enrollments', { profileId, activeEnrollments });
+      throw new BusinessRuleException(
+        'Cannot delete profile with active enrollments',
+        { profileId, activeEnrollments },
+      );
     }
 
     this.logger.log('Deleting sub-profile', { learnerId, profileId });
-    await this.prisma.learnerHasManyProfiles.deleteMany({ where: { learnerId, learnerProfileId: profileId } });
+    await this.prisma.learnerHasManyProfiles.deleteMany({
+      where: { learnerId, learnerProfileId: profileId },
+    });
     return { message: 'Profile deleted successfully' };
   }
 }

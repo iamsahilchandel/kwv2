@@ -1,13 +1,20 @@
-import { Controller, Get, Patch, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertNotificationsService } from '../../application/expert-notifications.service.js';
 import {
   QueryNotificationsSchema,
   type QueryNotificationsQuery,
+  QueryNotificationsDto,
 } from './dto/expert-notifications.dto.js';
 
 @ApiTags('Expert - Notifications')
@@ -25,7 +32,7 @@ export class ExpertNotificationsController {
   @Get()
   findAll(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryNotificationsSchema)) query: QueryNotificationsQuery,
+    @Query() query: QueryNotificationsDto,
   ) {
     return this.service.findAll(user.id, query);
   }
@@ -36,10 +43,7 @@ export class ExpertNotificationsController {
   }
 
   @Patch(':id/read')
-  markRead(
-    @CurrentUser() user: IAuthUser,
-    @Param('id') id: string,
-  ) {
+  markRead(@CurrentUser() user: IAuthUser, @Param('id') id: string) {
     return this.service.markRead(user.id, id);
   }
 }

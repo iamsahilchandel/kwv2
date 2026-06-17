@@ -1,11 +1,22 @@
-import { Injectable, Logger, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { omit } from 'lodash';
 import { Prisma } from '../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
-import type { UpdateCenterProfileBody, SubmitUpdateRequestBody } from '../infrastructure/http/dto/center-profile.dto.js';
+import type {
+  UpdateCenterProfileBody,
+  SubmitUpdateRequestBody,
+} from '../infrastructure/http/dto/center-profile.dto.js';
 
-const SENSITIVE_FIELDS = ['onboardingPaymentSS', 'onboardingPaymentSSKey'] as const;
+const SENSITIVE_FIELDS = [
+  'onboardingPaymentSS',
+  'onboardingPaymentSSKey',
+] as const;
 
 @Injectable()
 export class CenterProfileService {
@@ -27,7 +38,17 @@ export class CenterProfileService {
         centerServices: { include: { service: true } },
         staffAssociations: {
           where: { isActive: true },
-          include: { staff: { select: { id: true, firstName: true, lastName: true, email: true, phoneNumber: true } } },
+          include: {
+            staff: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                phoneNumber: true,
+              },
+            },
+          },
         },
       },
     });
@@ -45,8 +66,12 @@ export class CenterProfileService {
       where: { id: centerId },
       data: {
         ...restDto,
-        ...(dailyOperatingHours !== undefined && { dailyOperatingHours: dailyOperatingHours as Prisma.InputJsonValue }),
-        ...(address !== undefined && { address: address as Prisma.InputJsonValue }),
+        ...(dailyOperatingHours !== undefined && {
+          dailyOperatingHours: dailyOperatingHours as Prisma.InputJsonValue,
+        }),
+        ...(address !== undefined && {
+          address: address as Prisma.InputJsonValue,
+        }),
         lastModifiedBy: staffId,
       },
     });
@@ -59,9 +84,10 @@ export class CenterProfileService {
     const centerId = await this.getCenterId(staffId);
     this.logger.log('Submitting center update request', { centerId, staffId });
 
-    const pendingRequest = await this.prisma.updateCenterDetailsRequest.findFirst({
-      where: { centerId, status: 'PENDING' },
-    });
+    const pendingRequest =
+      await this.prisma.updateCenterDetailsRequest.findFirst({
+        where: { centerId, status: 'PENDING' },
+      });
 
     if (pendingRequest) {
       throw new BusinessRuleException(
@@ -70,18 +96,29 @@ export class CenterProfileService {
       );
     }
 
-    const { dailyOperatingHours: reqHours, address: reqAddr, ...restReqDto } = dto;
+    const {
+      dailyOperatingHours: reqHours,
+      address: reqAddr,
+      ...restReqDto
+    } = dto;
     const request = await this.prisma.updateCenterDetailsRequest.create({
       data: {
         centerId,
         createdBy: staffId,
         ...restReqDto,
-        ...(reqHours !== undefined && { dailyOperatingHours: reqHours as Prisma.InputJsonValue }),
-        ...(reqAddr !== undefined && { address: reqAddr as Prisma.InputJsonValue }),
+        ...(reqHours !== undefined && {
+          dailyOperatingHours: reqHours as Prisma.InputJsonValue,
+        }),
+        ...(reqAddr !== undefined && {
+          address: reqAddr as Prisma.InputJsonValue,
+        }),
       },
     });
 
-    this.logger.log('Center update request submitted', { centerId, requestId: request.id });
+    this.logger.log('Center update request submitted', {
+      centerId,
+      requestId: request.id,
+    });
     return request;
   }
 
@@ -98,7 +135,8 @@ export class CenterProfileService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

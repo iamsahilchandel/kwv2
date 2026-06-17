@@ -3,13 +3,14 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Public } from '../../../../../core/guards/api-key.guard.js';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterAuthService } from '../../application/center-auth.service.js';
 import {
   CenterVerifyNumberSchema,
   CenterLoginSchema,
   type CenterVerifyNumberBody,
   type CenterLoginBody,
+  CenterVerifyNumberDto,
+  CenterLoginDto,
 } from './dto/center-auth.dto.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
 
@@ -22,8 +23,8 @@ export class CenterAuthController {
   @Post('verify-number')
   @Public()
   verifyNumber(
-    @Body(new ZodValidationPipe(CenterVerifyNumberSchema))
-    body: CenterVerifyNumberBody,
+    @Body()
+    body: CenterVerifyNumberDto,
   ) {
     return this.centerAuthService.verifyNumber(body.phoneNumber);
   }
@@ -32,10 +33,7 @@ export class CenterAuthController {
   @ApiBearerAuth('firebase-token')
   @Post('login')
   @UseGuards(CenterStaffAuthGuard)
-  login(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(CenterLoginSchema)) body: CenterLoginBody,
-  ) {
+  login(@CurrentUser() user: IAuthUser, @Body() body: CenterLoginDto) {
     return this.centerAuthService.login(user, body.fcmToken);
   }
 
@@ -43,10 +41,7 @@ export class CenterAuthController {
   @ApiBearerAuth('firebase-token')
   @Post('logout')
   @UseGuards(CenterStaffAuthGuard)
-  logout(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(CenterLoginSchema)) body: CenterLoginBody,
-  ) {
+  logout(@CurrentUser() user: IAuthUser, @Body() body: CenterLoginDto) {
     return this.centerAuthService.logout(user, body.fcmToken);
   }
 }

@@ -14,15 +14,17 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterStaffManagementService } from '../../application/center-staff.service.js';
 import {
   CreateCenterStaffSchema,
   type CreateCenterStaffBody,
+  CreateCenterStaffDto,
   UpdateCenterStaffSchema,
   type UpdateCenterStaffBody,
+  UpdateCenterStaffDto,
   QueryCenterStaffSchema,
   type QueryCenterStaffQuery,
+  QueryCenterStaffDto,
 } from './dto/center-staff.dto.js';
 
 @ApiTags('Center - Staff')
@@ -33,18 +35,12 @@ export class CenterStaffController {
   constructor(private readonly service: CenterStaffManagementService) {}
 
   @Get()
-  findAll(
-    @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryCenterStaffSchema)) query: QueryCenterStaffQuery,
-  ) {
+  findAll(@CurrentUser() user: IAuthUser, @Query() query: QueryCenterStaffDto) {
     return this.service.findAll(user.id, query);
   }
 
   @Post()
-  create(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(CreateCenterStaffSchema)) dto: CreateCenterStaffBody,
-  ) {
+  create(@CurrentUser() user: IAuthUser, @Body() dto: CreateCenterStaffDto) {
     return this.service.create(user.id, dto);
   }
 
@@ -60,7 +56,7 @@ export class CenterStaffController {
   update(
     @CurrentUser() user: IAuthUser,
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateCenterStaffSchema)) dto: UpdateCenterStaffBody,
+    @Body() dto: UpdateCenterStaffDto,
   ) {
     return this.service.update(user.id, id, dto);
   }

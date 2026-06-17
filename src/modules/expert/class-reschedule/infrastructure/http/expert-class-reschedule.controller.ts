@@ -12,13 +12,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertClassRescheduleService } from '../../application/expert-class-reschedule.service.js';
 import {
   QueryRescheduleSchema,
   type QueryRescheduleQuery,
+  QueryRescheduleDto,
   CreateRescheduleSchema,
   type CreateRescheduleBody,
+  CreateRescheduleDto,
 } from './dto/expert-class-reschedule.dto.js';
 
 @ApiTags('Expert - Class Reschedule')
@@ -29,10 +30,7 @@ export class ExpertClassRescheduleController {
   constructor(private readonly service: ExpertClassRescheduleService) {}
 
   @Get()
-  findAll(
-    @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryRescheduleSchema)) query: QueryRescheduleQuery,
-  ) {
+  findAll(@CurrentUser() user: IAuthUser, @Query() query: QueryRescheduleDto) {
     return this.service.findAll(user.id, query);
   }
 
@@ -45,10 +43,7 @@ export class ExpertClassRescheduleController {
   }
 
   @Post()
-  create(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(CreateRescheduleSchema)) dto: CreateRescheduleBody,
-  ) {
+  create(@CurrentUser() user: IAuthUser, @Body() dto: CreateRescheduleDto) {
     return this.service.create(user.id, dto);
   }
 }

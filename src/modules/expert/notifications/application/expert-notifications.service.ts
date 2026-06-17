@@ -1,7 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { NotificationStatus } from '../../../../generated/prisma/enums.js';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import type { QueryNotificationsQuery } from '../infrastructure/http/dto/expert-notifications.dto.js';
 
 @Injectable()
@@ -48,10 +51,15 @@ export class ExpertNotificationsService {
     });
 
     if (!notification) {
-      throw new NotFoundException(`Notification with id ${notificationId} not found`);
+      throw new NotFoundException(
+        `Notification with id ${notificationId} not found`,
+      );
     }
 
-    this.logger.log('Marking notification as read', { expertId, notificationId });
+    this.logger.log('Marking notification as read', {
+      expertId,
+      notificationId,
+    });
 
     return this.prisma.notifications.update({
       where: { id },
@@ -62,7 +70,9 @@ export class ExpertNotificationsService {
   async markAllRead(expertId: number) {
     const userId = BigInt(expertId);
 
-    this.logger.log('Marking all notifications as read for expert', { expertId });
+    this.logger.log('Marking all notifications as read for expert', {
+      expertId,
+    });
 
     const result = await this.prisma.notifications.updateMany({
       where: {
@@ -80,7 +90,9 @@ export class ExpertNotificationsService {
     const userId = BigInt(expertId);
 
     const [total, unread, sent] = await Promise.all([
-      this.prisma.notifications.count({ where: { userType: 'expert', userId } }),
+      this.prisma.notifications.count({
+        where: { userType: 'expert', userId },
+      }),
       this.prisma.notifications.count({
         where: { userType: 'expert', userId, readAt: null },
       }),

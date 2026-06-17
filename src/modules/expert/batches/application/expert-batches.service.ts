@@ -1,6 +1,9 @@
 import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BatchNotFoundException } from '../domain/errors/expert-batches.errors.js';
 import type { QueryExpertBatchesQuery } from '../infrastructure/http/dto/expert-batches.dto.js';
 
@@ -46,7 +49,14 @@ export class ExpertBatchesService {
         benefits: true,
         classes: {
           orderBy: { classDate: 'asc' },
-          select: { id: true, classDate: true, startTime: true, endTime: true, status: true, classType: true },
+          select: {
+            id: true,
+            classDate: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+            classType: true,
+          },
         },
         _count: { select: { enrollments: true } },
       },
@@ -59,7 +69,9 @@ export class ExpertBatchesService {
   }
 
   async getEnrollments(expertId: number, batchId: number) {
-    const batch = await this.prisma.batches.findUnique({ where: { id: batchId } });
+    const batch = await this.prisma.batches.findUnique({
+      where: { id: batchId },
+    });
     if (!batch) throw new BatchNotFoundException(batchId);
     if (batch.expertId !== expertId) throw new ForbiddenException();
 
@@ -82,7 +94,9 @@ export class ExpertBatchesService {
   }
 
   async getCalendar(expertId: number, batchId: number) {
-    const batch = await this.prisma.batches.findUnique({ where: { id: batchId } });
+    const batch = await this.prisma.batches.findUnique({
+      where: { id: batchId },
+    });
     if (!batch) throw new BatchNotFoundException(batchId);
     if (batch.expertId !== expertId) throw new ForbiddenException();
 

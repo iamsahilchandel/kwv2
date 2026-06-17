@@ -13,17 +13,20 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterReschedulePollsService } from '../../application/center-reschedule-polls.service.js';
 import {
   CreatePollSchema,
   type CreatePollBody,
+  CreatePollDto,
   UpdatePollSchema,
   type UpdatePollBody,
+  UpdatePollDto,
   ClosePollSchema,
   type ClosePollBody,
+  ClosePollDto,
   QueryPollsSchema,
   type QueryPollsQuery,
+  QueryPollsDto,
 } from './dto/center-reschedule-polls.dto.js';
 
 @ApiTags('Center - Reschedule Polls')
@@ -34,18 +37,12 @@ export class CenterReschedulePollsController {
   constructor(private readonly service: CenterReschedulePollsService) {}
 
   @Get()
-  findAll(
-    @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryPollsSchema)) query: QueryPollsQuery,
-  ) {
+  findAll(@CurrentUser() user: IAuthUser, @Query() query: QueryPollsDto) {
     return this.service.findAll(user.id, query);
   }
 
   @Post()
-  create(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(CreatePollSchema)) dto: CreatePollBody,
-  ) {
+  create(@CurrentUser() user: IAuthUser, @Body() dto: CreatePollDto) {
     return this.service.create(user.id, dto);
   }
 
@@ -61,7 +58,7 @@ export class CenterReschedulePollsController {
   update(
     @CurrentUser() user: IAuthUser,
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdatePollSchema)) dto: UpdatePollBody,
+    @Body() dto: UpdatePollDto,
   ) {
     return this.service.update(user.id, id, dto);
   }
@@ -70,7 +67,7 @@ export class CenterReschedulePollsController {
   close(
     @CurrentUser() user: IAuthUser,
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(ClosePollSchema)) dto: ClosePollBody,
+    @Body() dto: ClosePollDto,
   ) {
     return this.service.close(user.id, id, dto);
   }

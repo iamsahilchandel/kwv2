@@ -14,19 +14,21 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminUsersService } from '../../application/admin-users.service.js';
 import {
   CreateAdminUserSchema,
   type CreateAdminUserBody,
+  CreateAdminUserDto,
 } from './dto/create-admin-user.dto.js';
 import {
   UpdateAdminUserSchema,
   type UpdateAdminUserBody,
+  UpdateAdminUserDto,
 } from './dto/update-admin-user.dto.js';
 import {
   QueryAdminUsersSchema,
   type QueryAdminUsersQuery,
+  QueryAdminUsersDto,
 } from './dto/query-admin-users.dto.js';
 
 @ApiTags('Admin - Users')
@@ -43,8 +45,8 @@ export class AdminUsersController {
 
   @Get()
   findAll(
-    @Query(new ZodValidationPipe(QueryAdminUsersSchema))
-    query: QueryAdminUsersQuery,
+    @Query()
+    query: QueryAdminUsersDto,
   ) {
     return this.service.findAll(query);
   }
@@ -56,8 +58,8 @@ export class AdminUsersController {
 
   @Post()
   create(
-    @Body(new ZodValidationPipe(CreateAdminUserSchema))
-    dto: CreateAdminUserBody,
+    @Body()
+    dto: CreateAdminUserDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.create(dto, user);
@@ -66,8 +68,8 @@ export class AdminUsersController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateAdminUserSchema))
-    dto: UpdateAdminUserBody,
+    @Body()
+    dto: UpdateAdminUserDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.update(id, dto, user);

@@ -9,7 +9,9 @@ export class ExpertAdvertisingBannersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(expertId: number) {
-    this.logger.log('Fetching advertising banners for expert portal', { expertId });
+    this.logger.log('Fetching advertising banners for expert portal', {
+      expertId,
+    });
     return this.prisma.advertisingBanners.findMany({
       where: {
         isActive: true,

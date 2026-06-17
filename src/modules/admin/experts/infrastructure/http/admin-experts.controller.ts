@@ -11,15 +11,16 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminExpertsService } from '../../application/admin-experts.service.js';
 import {
   QueryExpertsSchema,
   type QueryExpertsQuery,
+  QueryExpertsDto,
 } from './dto/query-experts.dto.js';
 import {
   UpdateExpertSchema,
   type UpdateExpertBody,
+  UpdateExpertDto,
 } from './dto/update-expert.dto.js';
 
 @ApiTags('Admin - Experts')
@@ -30,9 +31,7 @@ export class AdminExpertsController {
   constructor(private readonly service: AdminExpertsService) {}
 
   @Get()
-  findAll(
-    @Query(new ZodValidationPipe(QueryExpertsSchema)) query: QueryExpertsQuery,
-  ) {
+  findAll(@Query() query: QueryExpertsDto) {
     return this.service.findAll(query);
   }
 
@@ -42,10 +41,7 @@ export class AdminExpertsController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateExpertSchema)) dto: UpdateExpertBody,
-  ) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateExpertDto) {
     return this.service.update(id, dto);
   }
 

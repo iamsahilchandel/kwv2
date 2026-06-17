@@ -3,13 +3,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertCalendarService } from '../../application/expert-calendar.service.js';
 import {
   CalendarQuerySchema,
   type CalendarQuery,
+  CalendarQueryDto,
   UpcomingClassesQuerySchema,
   type UpcomingClassesQuery,
+  UpcomingClassesQueryDto,
 } from './dto/expert-calendar.dto.js';
 
 @ApiTags('Expert - Calendar')
@@ -22,7 +23,7 @@ export class ExpertCalendarController {
   @Get()
   getCalendar(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(CalendarQuerySchema)) query: CalendarQuery,
+    @Query() query: CalendarQueryDto,
   ) {
     return this.service.getCalendar(user.id, query);
   }
@@ -30,7 +31,7 @@ export class ExpertCalendarController {
   @Get('upcoming-classes')
   getUpcomingClasses(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(UpcomingClassesQuerySchema)) query: UpcomingClassesQuery,
+    @Query() query: UpcomingClassesQueryDto,
   ) {
     return this.service.getUpcomingClasses(user.id, query);
   }

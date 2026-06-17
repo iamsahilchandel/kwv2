@@ -1,9 +1,22 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { CenterStaffNotFoundException } from '../domain/errors/center-staff.errors.js';
-import type { CreateCenterStaffBody, UpdateCenterStaffBody, QueryCenterStaffQuery } from '../infrastructure/http/dto/center-staff.dto.js';
+import type {
+  CreateCenterStaffBody,
+  UpdateCenterStaffBody,
+  QueryCenterStaffQuery,
+} from '../infrastructure/http/dto/center-staff.dto.js';
 
 @Injectable()
 export class CenterStaffManagementService {
@@ -57,7 +70,10 @@ export class CenterStaffManagementService {
 
   async create(requestingStaffId: number, dto: CreateCenterStaffBody) {
     const centerId = await this.getCenterId(requestingStaffId);
-    this.logger.log('Creating center staff', { centerId, phone: dto.phoneNumber });
+    this.logger.log('Creating center staff', {
+      centerId,
+      phone: dto.phoneNumber,
+    });
 
     const existing = await this.prisma.centerStaff.findUnique({
       where: { phoneNumber: dto.phoneNumber },
@@ -68,7 +84,9 @@ export class CenterStaffManagementService {
         where: { centerId, staffId: existing.id, isActive: true },
       });
       if (alreadyMember) {
-        throw new ConflictException('This staff member is already part of your center');
+        throw new ConflictException(
+          'This staff member is already part of your center',
+        );
       }
 
       const membership = await this.prisma.centerHasManyStaff.create({
@@ -79,10 +97,22 @@ export class CenterStaffManagementService {
           joinedOn: dto.joinedOn,
           createdBy: requestingStaffId,
         },
-        include: { staff: { select: { id: true, firstName: true, lastName: true, phoneNumber: true } } },
+        include: {
+          staff: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              phoneNumber: true,
+            },
+          },
+        },
       });
 
-      this.logger.log('Existing staff linked to center', { centerId, staffId: existing.id });
+      this.logger.log('Existing staff linked to center', {
+        centerId,
+        staffId: existing.id,
+      });
       return membership;
     }
 
@@ -110,7 +140,10 @@ export class CenterStaffManagementService {
       return { staff, membership };
     });
 
-    this.logger.log('Center staff created', { centerId, staffId: newStaff.staff.id });
+    this.logger.log('Center staff created', {
+      centerId,
+      staffId: newStaff.staff.id,
+    });
     return newStaff;
   }
 
@@ -139,7 +172,11 @@ export class CenterStaffManagementService {
     return membership;
   }
 
-  async update(requestingStaffId: number, targetStaffId: number, dto: UpdateCenterStaffBody) {
+  async update(
+    requestingStaffId: number,
+    targetStaffId: number,
+    dto: UpdateCenterStaffBody,
+  ) {
     const centerId = await this.getCenterId(requestingStaffId);
 
     const membership = await this.prisma.centerHasManyStaff.findFirst({
@@ -147,7 +184,11 @@ export class CenterStaffManagementService {
     });
     if (!membership) throw new CenterStaffNotFoundException(targetStaffId);
 
-    this.logger.log('Updating center staff', { centerId, targetStaffId, requestingStaffId });
+    this.logger.log('Updating center staff', {
+      centerId,
+      targetStaffId,
+      requestingStaffId,
+    });
 
     const { role, isActive, ...staffFields } = dto;
 
@@ -178,7 +219,9 @@ export class CenterStaffManagementService {
     const centerId = await this.getCenterId(requestingStaffId);
 
     if (requestingStaffId === targetStaffId) {
-      throw new BusinessRuleException('You cannot remove yourself from the center');
+      throw new BusinessRuleException(
+        'You cannot remove yourself from the center',
+      );
     }
 
     const membership = await this.prisma.centerHasManyStaff.findFirst({
@@ -186,7 +229,11 @@ export class CenterStaffManagementService {
     });
     if (!membership) throw new CenterStaffNotFoundException(targetStaffId);
 
-    this.logger.log('Removing center staff', { centerId, targetStaffId, requestingStaffId });
+    this.logger.log('Removing center staff', {
+      centerId,
+      targetStaffId,
+      requestingStaffId,
+    });
 
     await this.prisma.centerHasManyStaff.update({
       where: { id: membership.id },
@@ -202,7 +249,8 @@ export class CenterStaffManagementService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

@@ -3,13 +3,14 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import { FirebaseUser } from '../../../../../common/decorators/firebase-user.decorator.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertProfileService } from '../../application/expert-profile.service.js';
 import {
   RegisterExpertSchema,
   UpdateExpertProfileSchema,
   type RegisterExpertBody,
   type UpdateExpertProfileBody,
+  RegisterExpertDto,
+  UpdateExpertProfileDto,
 } from './dto/expert-profile.dto.js';
 import type {
   IAuthUser,
@@ -34,7 +35,7 @@ export class ExpertProfileController {
   @Post('register')
   register(
     @FirebaseUser() firebaseUser: IFirebaseUser,
-    @Body(new ZodValidationPipe(RegisterExpertSchema)) body: RegisterExpertBody,
+    @Body() body: RegisterExpertDto,
   ) {
     return this.expertProfileService.register(firebaseUser, body);
   }
@@ -45,8 +46,8 @@ export class ExpertProfileController {
   @UseGuards(ExpertAuthGuard)
   updateProfile(
     @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(UpdateExpertProfileSchema))
-    body: UpdateExpertProfileBody,
+    @Body()
+    body: UpdateExpertProfileDto,
   ) {
     return this.expertProfileService.updateProfile(user, body);
   }

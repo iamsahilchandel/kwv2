@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 
 interface DashboardQuery {
   page: number;
@@ -48,7 +51,10 @@ export class ExpertDashboardService {
       this.prisma.batchClasses.count({ where: { expertId } }),
     ]);
 
-    const completionRate = totalClasses > 0 ? Math.round((completedClasses / totalClasses) * 100) : 0;
+    const completionRate =
+      totalClasses > 0
+        ? Math.round((completedClasses / totalClasses) * 100)
+        : 0;
 
     return {
       activeBatches,
@@ -77,7 +83,13 @@ export class ExpertDashboardService {
         take,
         orderBy: { classDate: 'asc' },
         include: {
-          batch: { select: { id: true, batchName: true, center: { select: { id: true, centerName: true } } } },
+          batch: {
+            select: {
+              id: true,
+              batchName: true,
+              center: { select: { id: true, centerName: true } },
+            },
+          },
         },
       }),
       this.prisma.batchClasses.count({

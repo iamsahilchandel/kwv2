@@ -1,9 +1,23 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { PollNotFoundException } from '../domain/errors/reschedule-poll.errors.js';
-import type { CreatePollBody, UpdatePollBody, ClosePollBody, QueryPollsQuery } from '../infrastructure/http/dto/center-reschedule-polls.dto.js';
+import type {
+  CreatePollBody,
+  UpdatePollBody,
+  ClosePollBody,
+  QueryPollsQuery,
+} from '../infrastructure/http/dto/center-reschedule-polls.dto.js';
 
 @Injectable()
 export class CenterReschedulePollsService {
@@ -82,8 +96,10 @@ export class CenterReschedulePollsService {
         where: { id: dto.batchClassId },
         include: { batch: { select: { centerId: true } } },
       });
-      if (!batchClass) throw new NotFoundException(`Class ${dto.batchClassId} not found`);
-      if (batchClass.batch.centerId !== centerId) throw new ForbiddenException();
+      if (!batchClass)
+        throw new NotFoundException(`Class ${dto.batchClassId} not found`);
+      if (batchClass.batch.centerId !== centerId)
+        throw new ForbiddenException();
     }
 
     const poll = await this.prisma.reschedulePolls.create({
@@ -116,7 +132,9 @@ export class CenterReschedulePollsService {
   async update(staffId: number, pollId: number, dto: UpdatePollBody) {
     const centerId = await this.getCenterId(staffId);
 
-    const poll = await this.prisma.reschedulePolls.findUnique({ where: { id: pollId } });
+    const poll = await this.prisma.reschedulePolls.findUnique({
+      where: { id: pollId },
+    });
     if (!poll) throw new PollNotFoundException(pollId);
     if (poll.centerId !== centerId) throw new ForbiddenException();
     if (poll.pollStatus !== 'active') {
@@ -142,12 +160,19 @@ export class CenterReschedulePollsService {
       throw new BusinessRuleException('Poll is already closed');
     }
 
-    const selectedOption = poll.options.find((o) => o.id === dto.selectedOptionId);
+    const selectedOption = poll.options.find(
+      (o) => o.id === dto.selectedOptionId,
+    );
     if (!selectedOption) {
-      throw new BusinessRuleException('Selected option does not belong to this poll');
+      throw new BusinessRuleException(
+        'Selected option does not belong to this poll',
+      );
     }
 
-    this.logger.log('Closing poll with selected option', { pollId, selectedOptionId: dto.selectedOptionId });
+    this.logger.log('Closing poll with selected option', {
+      pollId,
+      selectedOptionId: dto.selectedOptionId,
+    });
 
     await this.prisma.$transaction(async (tx) => {
       await tx.reschedulePolls.update({
@@ -184,7 +209,8 @@ export class CenterReschedulePollsService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

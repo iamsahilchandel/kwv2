@@ -1,9 +1,20 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Prisma } from '../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
-import { BatchNotFoundException, BatchClassNotFoundException } from '../domain/errors/batch.errors.js';
+import {
+  BatchNotFoundException,
+  BatchClassNotFoundException,
+} from '../domain/errors/batch.errors.js';
 import type {
   CreateBatchBody,
   UpdateBatchBody,
@@ -20,7 +31,15 @@ export class CenterBatchesService {
   async findAll(staffId: number, query: QueryBatchesQuery) {
     const centerId = await this.getCenterId(staffId);
     const { skip, take, page, limit } = paginationParams(query);
-    const { search, status, batchType, expertId, serviceId, startDateFrom, startDateTo } = query;
+    const {
+      search,
+      status,
+      batchType,
+      expertId,
+      serviceId,
+      startDateFrom,
+      startDateTo,
+    } = query;
 
     const where: Record<string, unknown> = { centerId };
     if (status) where.status = status;
@@ -43,7 +62,14 @@ export class CenterBatchesService {
         take,
         orderBy: { createdAt: 'desc' },
         include: {
-          expert: { select: { id: true, firstName: true, lastName: true, profilePicture: true } },
+          expert: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              profilePicture: true,
+            },
+          },
           service: { select: { id: true, serviceName: true } },
           _count: { select: { enrollments: true, classes: true } },
         },
@@ -60,13 +86,28 @@ export class CenterBatchesService {
     const batch = await this.prisma.batches.findUnique({
       where: { id: batchId },
       include: {
-        expert: { select: { id: true, firstName: true, lastName: true, profilePicture: true, phoneNumber: true } },
+        expert: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profilePicture: true,
+            phoneNumber: true,
+          },
+        },
         service: { select: { id: true, serviceName: true } },
         benefits: true,
         media: true,
         classes: {
           orderBy: { classDate: 'asc' },
-          select: { id: true, classDate: true, startTime: true, endTime: true, status: true, classType: true },
+          select: {
+            id: true,
+            classDate: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+            classType: true,
+          },
         },
         _count: { select: { enrollments: true } },
       },
@@ -129,12 +170,16 @@ export class CenterBatchesService {
   async update(staffId: number, batchId: number, dto: UpdateBatchBody) {
     const centerId = await this.getCenterId(staffId);
 
-    const batch = await this.prisma.batches.findUnique({ where: { id: batchId } });
+    const batch = await this.prisma.batches.findUnique({
+      where: { id: batchId },
+    });
     if (!batch) throw new BatchNotFoundException(batchId);
     if (batch.centerId !== centerId) throw new ForbiddenException();
 
     if (batch.status === 'completed' || batch.status === 'cancelled') {
-      throw new BusinessRuleException('Cannot update a completed or cancelled batch');
+      throw new BusinessRuleException(
+        'Cannot update a completed or cancelled batch',
+      );
     }
 
     this.logger.log('Updating batch', { batchId, centerId, staffId });
@@ -144,8 +189,12 @@ export class CenterBatchesService {
       where: { id: batchId },
       data: {
         ...restDto,
-        ...(frequency !== undefined && { frequency: frequency as Prisma.InputJsonValue }),
-        ...(expertId !== undefined && { expert: { connect: { id: expertId } } }),
+        ...(frequency !== undefined && {
+          frequency: frequency as Prisma.InputJsonValue,
+        }),
+        ...(expertId !== undefined && {
+          expert: { connect: { id: expertId } },
+        }),
         lastModifiedBy: staffId,
       },
     });
@@ -154,7 +203,9 @@ export class CenterBatchesService {
   async remove(staffId: number, batchId: number) {
     const centerId = await this.getCenterId(staffId);
 
-    const batch = await this.prisma.batches.findUnique({ where: { id: batchId } });
+    const batch = await this.prisma.batches.findUnique({
+      where: { id: batchId },
+    });
     if (!batch) throw new BatchNotFoundException(batchId);
     if (batch.centerId !== centerId) throw new ForbiddenException();
 
@@ -163,10 +214,13 @@ export class CenterBatchesService {
         where: { batchId, status: { in: ['enrolled', 'pending'] } },
       });
       if (activeEnrollments > 0) {
-        throw new BusinessRuleException('Cannot delete batch with active enrollments', {
-          batchId,
-          activeEnrollments,
-        });
+        throw new BusinessRuleException(
+          'Cannot delete batch with active enrollments',
+          {
+            batchId,
+            activeEnrollments,
+          },
+        );
       }
     }
 
@@ -182,7 +236,9 @@ export class CenterBatchesService {
   async getEnrollments(staffId: number, batchId: number) {
     const centerId = await this.getCenterId(staffId);
 
-    const batch = await this.prisma.batches.findUnique({ where: { id: batchId } });
+    const batch = await this.prisma.batches.findUnique({
+      where: { id: batchId },
+    });
     if (!batch) throw new BatchNotFoundException(batchId);
     if (batch.centerId !== centerId) throw new ForbiddenException();
 
@@ -199,7 +255,14 @@ export class CenterBatchesService {
             profilePicture: true,
           },
         },
-        payments: { select: { id: true, status: true, totalAmount: true, paymentDate: true } },
+        payments: {
+          select: {
+            id: true,
+            status: true,
+            totalAmount: true,
+            paymentDate: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -208,7 +271,9 @@ export class CenterBatchesService {
   async getCalendar(staffId: number, batchId: number) {
     const centerId = await this.getCenterId(staffId);
 
-    const batch = await this.prisma.batches.findUnique({ where: { id: batchId } });
+    const batch = await this.prisma.batches.findUnique({
+      where: { id: batchId },
+    });
     if (!batch) throw new BatchNotFoundException(batchId);
     if (batch.centerId !== centerId) throw new ForbiddenException();
 
@@ -253,7 +318,11 @@ export class CenterBatchesService {
     });
   }
 
-  async markAttendance(staffId: number, classId: number, dto: MarkAttendanceBody) {
+  async markAttendance(
+    staffId: number,
+    classId: number,
+    dto: MarkAttendanceBody,
+  ) {
     const centerId = await this.getCenterId(staffId);
 
     const batchClass = await this.prisma.batchClasses.findUnique({
@@ -264,13 +333,21 @@ export class CenterBatchesService {
     if (!batchClass) throw new BatchClassNotFoundException(classId);
     if (batchClass.batch.centerId !== centerId) throw new ForbiddenException();
 
-    this.logger.log('Marking attendance for class', { classId, centerId, staffId });
+    this.logger.log('Marking attendance for class', {
+      classId,
+      centerId,
+      staffId,
+    });
 
     // Upsert each attendance record: update if exists for this class + enrollment, create otherwise
     const results = await Promise.all(
       dto.attendances.map(async (a) => {
         const existing = await this.prisma.batchClassAttendence.findFirst({
-          where: { batchClassId: classId, batchEnrollmentId: a.batchEnrollmentId, learnerProfileId: a.learnerProfileId },
+          where: {
+            batchClassId: classId,
+            batchEnrollmentId: a.batchEnrollmentId,
+            learnerProfileId: a.learnerProfileId,
+          },
           select: { id: true },
         });
 
@@ -309,7 +386,8 @@ export class CenterBatchesService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

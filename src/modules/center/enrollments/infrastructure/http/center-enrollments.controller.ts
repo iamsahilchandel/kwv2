@@ -12,13 +12,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterEnrollmentsService } from '../../application/center-enrollments.service.js';
 import {
   QueryEnrollmentsSchema,
   type QueryEnrollmentsQuery,
+  QueryEnrollmentsDto,
   UpdateEnrollmentSchema,
   type UpdateEnrollmentBody,
+  UpdateEnrollmentDto,
 } from './dto/center-enrollments.dto.js';
 
 @ApiTags('Center - Enrollments')
@@ -29,10 +30,7 @@ export class CenterEnrollmentsController {
   constructor(private readonly service: CenterEnrollmentsService) {}
 
   @Get()
-  findAll(
-    @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryEnrollmentsSchema)) query: QueryEnrollmentsQuery,
-  ) {
+  findAll(@CurrentUser() user: IAuthUser, @Query() query: QueryEnrollmentsDto) {
     return this.service.findAll(user.id, query);
   }
 
@@ -48,7 +46,7 @@ export class CenterEnrollmentsController {
   update(
     @CurrentUser() user: IAuthUser,
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateEnrollmentSchema)) dto: UpdateEnrollmentBody,
+    @Body() dto: UpdateEnrollmentDto,
   ) {
     return this.service.update(user.id, id, dto);
   }

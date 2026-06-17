@@ -2,13 +2,14 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { Public } from '../../../core/guards/api-key.guard.js';
 import { CenterStaffAuthGuard } from '../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../common/decorators/current-user.decorator.js';
-import { ZodValidationPipe } from '../../../core/pipes/zod-validation.pipe.js';
 import { CenterAuthService } from '../services/center-auth.service.js';
 import {
   LoginBodySchema,
   VerifyNumberSchema,
   type LoginBody,
   type VerifyNumberBody,
+  LoginBodyDto,
+  VerifyNumberDto,
 } from '../dto/login.dto.js';
 import type { IAuthUser } from '../../../common/interfaces/auth-user.interface.js';
 
@@ -18,27 +19,19 @@ export class CenterAuthController {
 
   @Post('verify-number')
   @Public()
-  verifyNumber(
-    @Body(new ZodValidationPipe(VerifyNumberSchema)) body: VerifyNumberBody,
-  ) {
+  verifyNumber(@Body() body: VerifyNumberDto) {
     return this.centerAuthService.verifyNumber(body.phoneNumber);
   }
 
   @Post('login')
   @UseGuards(CenterStaffAuthGuard)
-  login(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(LoginBodySchema)) body: LoginBody,
-  ) {
+  login(@CurrentUser() user: IAuthUser, @Body() body: LoginBodyDto) {
     return this.centerAuthService.login(user, body.fcmToken);
   }
 
   @Post('logout')
   @UseGuards(CenterStaffAuthGuard)
-  logout(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(LoginBodySchema)) body: LoginBody,
-  ) {
+  logout(@CurrentUser() user: IAuthUser, @Body() body: LoginBodyDto) {
     return this.centerAuthService.logout(user, body.fcmToken);
   }
 }

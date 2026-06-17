@@ -1,10 +1,16 @@
 import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
 import { AgreementStatus } from '../../../../generated/prisma/enums.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { AgreementNotFoundException } from '../domain/errors/expert-agreements.errors.js';
-import type { QueryAgreementsQuery, RejectAgreementBody } from '../infrastructure/http/dto/expert-agreements.dto.js';
+import type {
+  QueryAgreementsQuery,
+  RejectAgreementBody,
+} from '../infrastructure/http/dto/expert-agreements.dto.js';
 
 @Injectable()
 export class ExpertAgreementsService {
@@ -50,7 +56,9 @@ export class ExpertAgreementsService {
   }
 
   async accept(expertId: number, id: number) {
-    const agreement = await this.prisma.agreements.findUnique({ where: { id } });
+    const agreement = await this.prisma.agreements.findUnique({
+      where: { id },
+    });
 
     if (!agreement) throw new AgreementNotFoundException(id);
     if (agreement.signedByExpert !== expertId) throw new ForbiddenException();
@@ -58,7 +66,10 @@ export class ExpertAgreementsService {
       throw new BusinessRuleException('Agreement is no longer pending');
     }
 
-    this.logger.log('Expert accepting agreement', { expertId, agreementId: id });
+    this.logger.log('Expert accepting agreement', {
+      expertId,
+      agreementId: id,
+    });
 
     return this.prisma.agreements.update({
       where: { id },
@@ -70,7 +81,9 @@ export class ExpertAgreementsService {
   }
 
   async reject(expertId: number, id: number, dto: RejectAgreementBody) {
-    const agreement = await this.prisma.agreements.findUnique({ where: { id } });
+    const agreement = await this.prisma.agreements.findUnique({
+      where: { id },
+    });
 
     if (!agreement) throw new AgreementNotFoundException(id);
     if (agreement.signedByExpert !== expertId) throw new ForbiddenException();
@@ -78,7 +91,10 @@ export class ExpertAgreementsService {
       throw new BusinessRuleException('Agreement is no longer pending');
     }
 
-    this.logger.log('Expert rejecting agreement', { expertId, agreementId: id });
+    this.logger.log('Expert rejecting agreement', {
+      expertId,
+      agreementId: id,
+    });
 
     return this.prisma.agreements.update({
       where: { id },

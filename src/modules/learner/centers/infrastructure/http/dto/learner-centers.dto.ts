@@ -22,6 +22,12 @@ export const CenterAccessRequestSchema = z.object({
 
 export type CenterAccessRequest = z.infer<typeof CenterAccessRequestSchema>;
 
+export const RequestAccessBodySchema = z.object({
+  message: z.string().max(500).optional(),
+});
+
+export type RequestAccessBody = z.infer<typeof RequestAccessBodySchema>;
+
 export const QueryMyCentersSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -32,5 +38,8 @@ export type QueryMyCenters = z.infer<typeof QueryMyCentersSchema>;
 export class NearbyCentersDto extends createZodDto(NearbyCentersSchema) {}
 export class CenterAccessRequestDto extends createZodDto(
   CenterAccessRequestSchema,
+) {}
+export class RequestAccessBodyDto extends createZodDto(
+  RequestAccessBodySchema,
 ) {}
 export class QueryMyCentersDto extends createZodDto(QueryMyCentersSchema) {}

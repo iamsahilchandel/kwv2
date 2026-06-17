@@ -1,10 +1,22 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { omit } from 'lodash';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { CenterExpertNotFoundException } from '../domain/errors/center-experts.errors.js';
-import type { QueryCenterExpertsQuery, AddExpertBody } from '../infrastructure/http/dto/center-experts.dto.js';
+import type {
+  QueryCenterExpertsQuery,
+  AddExpertBody,
+} from '../infrastructure/http/dto/center-experts.dto.js';
 
 @Injectable()
 export class CenterExpertsService {
@@ -31,7 +43,10 @@ export class CenterExpertsService {
       expertWhere.experties = { some: { expertiesId: serviceId } };
     }
 
-    const where = { centerId, expert: Object.keys(expertWhere).length ? expertWhere : undefined };
+    const where = {
+      centerId,
+      expert: Object.keys(expertWhere).length ? expertWhere : undefined,
+    };
 
     const [items, total] = await Promise.all([
       this.prisma.centerHasManyExperts.findMany({
@@ -51,7 +66,9 @@ export class CenterExpertsService {
               isActive: true,
               isVerified: true,
               experties: {
-                select: { service: { select: { id: true, serviceName: true } } },
+                select: {
+                  service: { select: { id: true, serviceName: true } },
+                },
               },
             },
           },
@@ -100,9 +117,14 @@ export class CenterExpertsService {
 
   async add(staffId: number, dto: AddExpertBody) {
     const centerId = await this.getCenterId(staffId);
-    this.logger.log('Adding expert to center', { centerId, expertId: dto.expertId });
+    this.logger.log('Adding expert to center', {
+      centerId,
+      expertId: dto.expertId,
+    });
 
-    const expert = await this.prisma.experts.findUnique({ where: { id: dto.expertId } });
+    const expert = await this.prisma.experts.findUnique({
+      where: { id: dto.expertId },
+    });
     if (!expert) throw new CenterExpertNotFoundException(dto.expertId);
 
     const existing = await this.prisma.centerHasManyExperts.findUnique({
@@ -128,7 +150,10 @@ export class CenterExpertsService {
       },
     });
 
-    this.logger.log('Expert added to center', { centerId, expertId: dto.expertId });
+    this.logger.log('Expert added to center', {
+      centerId,
+      expertId: dto.expertId,
+    });
     return membership;
   }
 
@@ -165,7 +190,8 @@ export class CenterExpertsService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

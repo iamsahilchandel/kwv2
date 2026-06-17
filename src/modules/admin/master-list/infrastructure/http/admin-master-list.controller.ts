@@ -13,23 +13,26 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminMasterListService } from '../../application/admin-master-list.service.js';
 import {
   CreateAmenitySchema,
   type CreateAmenityBody,
+  CreateAmenityDto,
 } from './dto/create-amenity.dto.js';
 import {
   UpdateAmenitySchema,
   type UpdateAmenityBody,
+  UpdateAmenityDto,
 } from './dto/update-amenity.dto.js';
 import {
   CreateServiceSchema,
   type CreateServiceBody,
+  CreateServiceDto,
 } from './dto/create-service.dto.js';
 import {
   UpdateServiceSchema,
   type UpdateServiceBody,
+  UpdateServiceDto,
 } from './dto/update-service.dto.js';
 
 @ApiTags('Admin - Master List')
@@ -45,17 +48,14 @@ export class AdminMasterListController {
   }
 
   @Post('amenities')
-  createAmenity(
-    @Body(new ZodValidationPipe(CreateAmenitySchema)) dto: CreateAmenityBody,
-    @CurrentUser() user: IAuthUser,
-  ) {
+  createAmenity(@Body() dto: CreateAmenityDto, @CurrentUser() user: IAuthUser) {
     return this.service.createAmenity(dto, user.id);
   }
 
   @Put('amenities/:id')
   updateAmenity(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateAmenitySchema)) dto: UpdateAmenityBody,
+    @Body() dto: UpdateAmenityDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.updateAmenity(id, dto, user.id);
@@ -72,17 +72,14 @@ export class AdminMasterListController {
   }
 
   @Post('services')
-  createService(
-    @Body(new ZodValidationPipe(CreateServiceSchema)) dto: CreateServiceBody,
-    @CurrentUser() user: IAuthUser,
-  ) {
+  createService(@Body() dto: CreateServiceDto, @CurrentUser() user: IAuthUser) {
     return this.service.createService(dto, user.id);
   }
 
   @Put('services/:id')
   updateService(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateServiceSchema)) dto: UpdateServiceBody,
+    @Body() dto: UpdateServiceDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.updateService(id, dto, user.id);

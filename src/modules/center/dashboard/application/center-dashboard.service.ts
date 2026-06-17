@@ -21,7 +21,9 @@ export class CenterDashboardService {
     ] = await Promise.all([
       this.prisma.batches.count({ where: { centerId } }),
       this.prisma.batches.count({ where: { centerId, status: 'active' } }),
-      this.prisma.centerHasManyExperts.count({ where: { centerId, isActive: true } }),
+      this.prisma.centerHasManyExperts.count({
+        where: { centerId, isActive: true },
+      }),
       this.prisma.learnerProfileHasManyCenters.count({ where: { centerId } }),
       this.prisma.batchEnrollments.count({
         where: { batch: { centerId } },
@@ -83,7 +85,8 @@ export class CenterDashboardService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

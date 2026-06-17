@@ -12,15 +12,17 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterLearnersService } from '../../application/center-learners.service.js';
 import {
   QueryCenterLearnersSchema,
   type QueryCenterLearnersQuery,
+  QueryCenterLearnersDto,
   QueryAccessRequestsSchema,
   type QueryAccessRequestsQuery,
+  QueryAccessRequestsDto,
   RejectAccessRequestSchema,
   type RejectAccessRequestBody,
+  RejectAccessRequestDto,
 } from './dto/center-learners.dto.js';
 
 @ApiTags('Center - Learners')
@@ -33,7 +35,7 @@ export class CenterLearnersController {
   @Get()
   findAll(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryCenterLearnersSchema)) query: QueryCenterLearnersQuery,
+    @Query() query: QueryCenterLearnersDto,
   ) {
     return this.service.findAll(user.id, query);
   }
@@ -41,7 +43,7 @@ export class CenterLearnersController {
   @Get('access-requests')
   getAccessRequests(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryAccessRequestsSchema)) query: QueryAccessRequestsQuery,
+    @Query() query: QueryAccessRequestsDto,
   ) {
     return this.service.getAccessRequests(user.id, query);
   }
@@ -66,7 +68,7 @@ export class CenterLearnersController {
   rejectAccessRequest(
     @CurrentUser() user: IAuthUser,
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(RejectAccessRequestSchema)) dto: RejectAccessRequestBody,
+    @Body() dto: RejectAccessRequestDto,
   ) {
     return this.service.rejectAccessRequest(user.id, id, dto);
   }

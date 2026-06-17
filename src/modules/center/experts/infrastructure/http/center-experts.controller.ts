@@ -13,13 +13,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterExpertsService } from '../../application/center-experts.service.js';
 import {
   QueryCenterExpertsSchema,
   type QueryCenterExpertsQuery,
+  QueryCenterExpertsDto,
   AddExpertSchema,
   type AddExpertBody,
+  AddExpertDto,
 } from './dto/center-experts.dto.js';
 
 @ApiTags('Center - Experts')
@@ -32,16 +33,13 @@ export class CenterExpertsController {
   @Get()
   findAll(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryCenterExpertsSchema)) query: QueryCenterExpertsQuery,
+    @Query() query: QueryCenterExpertsDto,
   ) {
     return this.service.findAll(user.id, query);
   }
 
   @Post()
-  add(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(AddExpertSchema)) dto: AddExpertBody,
-  ) {
+  add(@CurrentUser() user: IAuthUser, @Body() dto: AddExpertDto) {
     return this.service.add(user.id, dto);
   }
 

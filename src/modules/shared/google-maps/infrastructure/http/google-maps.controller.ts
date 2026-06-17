@@ -1,7 +1,6 @@
 import { Controller, Get, Inject, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import {
   GOOGLE_MAPS_PORT,
   type IGoogleMapsPort,
@@ -9,20 +8,28 @@ import {
 import {
   GeocodeQuerySchema,
   type GeocodeQuery,
+  GeocodeQueryDto,
   LatLngQuerySchema,
   type LatLngQuery,
+  LatLngQueryDto,
   DirectionsQuerySchema,
   type DirectionsQuery,
+  DirectionsQueryDto,
   DistanceMatrixQuerySchema,
   type DistanceMatrixQuery,
+  DistanceMatrixQueryDto,
   NearbyPlacesQuerySchema,
   type NearbyPlacesQuery,
+  NearbyPlacesQueryDto,
   PlaceDetailsQuerySchema,
   type PlaceDetailsQuery,
+  PlaceDetailsQueryDto,
   AutocompleteQuerySchema,
   type AutocompleteQuery,
+  AutocompleteQueryDto,
   StaticMapQuerySchema,
   type StaticMapQuery,
+  StaticMapQueryDto,
 } from './dto/google-maps.dto.js';
 
 @ApiTags('Shared - Google Maps')
@@ -36,17 +43,13 @@ export class GoogleMapsController {
 
   @ApiOperation({ summary: 'Geocode an address to coordinates' })
   @Get('geocode')
-  async geocode(
-    @Query(new ZodValidationPipe(GeocodeQuerySchema)) query: GeocodeQuery,
-  ) {
+  async geocode(@Query() query: GeocodeQueryDto) {
     return this.maps.geocodeAddress(query.address);
   }
 
   @ApiOperation({ summary: 'Reverse geocode coordinates to address' })
   @Get('reverse-geocode')
-  async reverseGeocode(
-    @Query(new ZodValidationPipe(LatLngQuerySchema)) query: LatLngQuery,
-  ) {
+  async reverseGeocode(@Query() query: LatLngQueryDto) {
     return this.maps.reverseGeocode(
       parseFloat(query.lat),
       parseFloat(query.lng),
@@ -55,9 +58,7 @@ export class GoogleMapsController {
 
   @ApiOperation({ summary: 'Get directions between two locations' })
   @Get('directions')
-  async directions(
-    @Query(new ZodValidationPipe(DirectionsQuerySchema)) query: DirectionsQuery,
-  ) {
+  async directions(@Query() query: DirectionsQueryDto) {
     return this.maps.getDirections(query.origin, query.destination, {
       mode: query.mode,
       avoidTolls: query.avoidTolls === 'true',
@@ -70,8 +71,8 @@ export class GoogleMapsController {
   })
   @Get('distance-matrix')
   async distanceMatrix(
-    @Query(new ZodValidationPipe(DistanceMatrixQuerySchema))
-    query: DistanceMatrixQuery,
+    @Query()
+    query: DistanceMatrixQueryDto,
   ) {
     return this.maps.getDistanceMatrix(
       query.origins.split('|'),
@@ -83,8 +84,8 @@ export class GoogleMapsController {
   @ApiOperation({ summary: 'Search nearby places' })
   @Get('places/nearby')
   async nearbyPlaces(
-    @Query(new ZodValidationPipe(NearbyPlacesQuerySchema))
-    query: NearbyPlacesQuery,
+    @Query()
+    query: NearbyPlacesQueryDto,
   ) {
     return this.maps.searchNearbyPlaces(
       parseFloat(query.lat),
@@ -97,8 +98,8 @@ export class GoogleMapsController {
   @ApiOperation({ summary: 'Get details for a specific Place ID' })
   @Get('places/details')
   async placeDetails(
-    @Query(new ZodValidationPipe(PlaceDetailsQuerySchema))
-    query: PlaceDetailsQuery,
+    @Query()
+    query: PlaceDetailsQueryDto,
   ) {
     return this.maps.getPlaceDetails(query.placeId);
   }
@@ -108,34 +109,36 @@ export class GoogleMapsController {
   })
   @Get('places/address-autocomplete')
   async addressAutocomplete(
-    @Query(new ZodValidationPipe(AutocompleteQuerySchema))
-    query: AutocompleteQuery,
+    @Query()
+    query: AutocompleteQueryDto,
   ) {
-    return this.maps.getAddressAutocomplete(query.input, query);
+    return this.maps.getAddressAutocomplete(
+      query.input,
+      query as unknown as Record<string, unknown>,
+    );
   }
 
   @ApiOperation({ summary: 'Query autocomplete for broader text searches' })
   @Get('places/query-autocomplete')
   async queryAutocomplete(
-    @Query(new ZodValidationPipe(AutocompleteQuerySchema))
-    query: AutocompleteQuery,
+    @Query()
+    query: AutocompleteQueryDto,
   ) {
-    return this.maps.getQueryAutocomplete(query.input, query);
+    return this.maps.getQueryAutocomplete(
+      query.input,
+      query as unknown as Record<string, unknown>,
+    );
   }
 
   @ApiOperation({ summary: 'Get timezone info for coordinates' })
   @Get('timezone')
-  async timezone(
-    @Query(new ZodValidationPipe(LatLngQuerySchema)) query: LatLngQuery,
-  ) {
+  async timezone(@Query() query: LatLngQueryDto) {
     return this.maps.getTimezone(parseFloat(query.lat), parseFloat(query.lng));
   }
 
   @ApiOperation({ summary: 'Generate a static map image URL' })
   @Get('static-map')
-  staticMap(
-    @Query(new ZodValidationPipe(StaticMapQuerySchema)) query: StaticMapQuery,
-  ) {
+  staticMap(@Query() query: StaticMapQueryDto) {
     const url = this.maps.getStaticMapUrl(
       query.center,
       query.zoom,

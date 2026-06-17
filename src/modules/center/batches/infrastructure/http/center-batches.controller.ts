@@ -14,17 +14,20 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterBatchesService } from '../../application/center-batches.service.js';
 import {
   CreateBatchSchema,
   type CreateBatchBody,
+  CreateBatchDto,
   UpdateBatchSchema,
   type UpdateBatchBody,
+  UpdateBatchDto,
   QueryBatchesSchema,
   type QueryBatchesQuery,
+  QueryBatchesDto,
   MarkAttendanceSchema,
   type MarkAttendanceBody,
+  MarkAttendanceDto,
 } from './dto/center-batches.dto.js';
 
 @ApiTags('Center - Batches')
@@ -35,18 +38,12 @@ export class CenterBatchesController {
   constructor(private readonly service: CenterBatchesService) {}
 
   @Get()
-  findAll(
-    @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryBatchesSchema)) query: QueryBatchesQuery,
-  ) {
+  findAll(@CurrentUser() user: IAuthUser, @Query() query: QueryBatchesDto) {
     return this.service.findAll(user.id, query);
   }
 
   @Post()
-  create(
-    @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(CreateBatchSchema)) dto: CreateBatchBody,
-  ) {
+  create(@CurrentUser() user: IAuthUser, @Body() dto: CreateBatchDto) {
     return this.service.create(user.id, dto);
   }
 
@@ -62,7 +59,7 @@ export class CenterBatchesController {
   update(
     @CurrentUser() user: IAuthUser,
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateBatchSchema)) dto: UpdateBatchBody,
+    @Body() dto: UpdateBatchDto,
   ) {
     return this.service.update(user.id, id, dto);
   }
@@ -103,7 +100,7 @@ export class CenterBatchesController {
   markAttendance(
     @CurrentUser() user: IAuthUser,
     @Param('classId', ParseIntPipe) classId: number,
-    @Body(new ZodValidationPipe(MarkAttendanceSchema)) dto: MarkAttendanceBody,
+    @Body() dto: MarkAttendanceDto,
   ) {
     return this.service.markAttendance(user.id, classId, dto);
   }

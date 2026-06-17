@@ -14,19 +14,21 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { AdminAdvertisingBannersService } from '../../application/admin-advertising-banners.service.js';
 import {
   CreateAdvertisingBannerSchema,
   type CreateAdvertisingBannerBody,
+  CreateAdvertisingBannerDto,
 } from './dto/create-advertising-banner.dto.js';
 import {
   UpdateAdvertisingBannerSchema,
   type UpdateAdvertisingBannerBody,
+  UpdateAdvertisingBannerDto,
 } from './dto/update-advertising-banner.dto.js';
 import {
   QueryAdvertisingBannersSchema,
   type QueryAdvertisingBannersQuery,
+  QueryAdvertisingBannersDto,
 } from './dto/query-advertising-banners.dto.js';
 
 @ApiTags('Admin - Advertising Banners')
@@ -38,16 +40,16 @@ export class AdminAdvertisingBannersController {
 
   @Get()
   findAll(
-    @Query(new ZodValidationPipe(QueryAdvertisingBannersSchema))
-    query: QueryAdvertisingBannersQuery,
+    @Query()
+    query: QueryAdvertisingBannersDto,
   ) {
     return this.service.findAll(query);
   }
 
   @Post()
   create(
-    @Body(new ZodValidationPipe(CreateAdvertisingBannerSchema))
-    dto: CreateAdvertisingBannerBody,
+    @Body()
+    dto: CreateAdvertisingBannerDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.create(dto, user.id);
@@ -56,8 +58,8 @@ export class AdminAdvertisingBannersController {
   @Put(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateAdvertisingBannerSchema))
-    dto: UpdateAdvertisingBannerBody,
+    @Body()
+    dto: UpdateAdvertisingBannerDto,
   ) {
     return this.service.update(id, dto);
   }

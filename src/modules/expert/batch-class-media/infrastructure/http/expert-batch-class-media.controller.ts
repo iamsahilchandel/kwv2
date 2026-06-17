@@ -13,13 +13,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertBatchClassMediaService } from '../../application/expert-batch-class-media.service.js';
 import {
   CreateBatchClassMediaSchema,
   type CreateBatchClassMediaBody,
+  CreateBatchClassMediaDto,
   QueryMediaSchema,
   type QueryMediaQuery,
+  QueryMediaDto,
 } from './dto/expert-batch-class-media.dto.js';
 
 @ApiTags('Expert - Batch Class Media')
@@ -33,7 +34,7 @@ export class ExpertBatchClassMediaController {
   findAll(
     @CurrentUser() user: IAuthUser,
     @Param('classId', ParseIntPipe) classId: number,
-    @Query(new ZodValidationPipe(QueryMediaSchema)) query: QueryMediaQuery,
+    @Query() query: QueryMediaDto,
   ) {
     return this.service.findAll(user.id, classId, query);
   }
@@ -42,7 +43,7 @@ export class ExpertBatchClassMediaController {
   create(
     @CurrentUser() user: IAuthUser,
     @Param('classId', ParseIntPipe) classId: number,
-    @Body(new ZodValidationPipe(CreateBatchClassMediaSchema)) dto: CreateBatchClassMediaBody,
+    @Body() dto: CreateBatchClassMediaDto,
   ) {
     return this.service.create(user.id, classId, dto);
   }

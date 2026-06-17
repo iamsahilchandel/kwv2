@@ -1,10 +1,21 @@
-import { Injectable, Logger, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '../../../../generated/prisma/client.js';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { RescheduleRequestNotFoundException } from '../domain/errors/expert-class-reschedule.errors.js';
-import type { QueryRescheduleQuery, CreateRescheduleBody } from '../infrastructure/http/dto/expert-class-reschedule.dto.js';
+import type {
+  QueryRescheduleQuery,
+  CreateRescheduleBody,
+} from '../infrastructure/http/dto/expert-class-reschedule.dto.js';
 
 @Injectable()
 export class ExpertClassRescheduleService {
@@ -59,7 +70,10 @@ export class ExpertClassRescheduleService {
     });
 
     if (!request) throw new RescheduleRequestNotFoundException(id);
-    if (request.requesterType !== 'expert' || request.requesterId !== BigInt(expertId)) {
+    if (
+      request.requesterType !== 'expert' ||
+      request.requesterId !== BigInt(expertId)
+    ) {
       throw new ForbiddenException();
     }
 
@@ -72,12 +86,20 @@ export class ExpertClassRescheduleService {
       include: { batch: { select: { expertId: true, centerId: true } } },
     });
 
-    if (!batchClass) throw new NotFoundException(`Batch class with id ${dto.batchClassId} not found`);
+    if (!batchClass)
+      throw new NotFoundException(
+        `Batch class with id ${dto.batchClassId} not found`,
+      );
     if (batchClass.batch.expertId !== expertId) {
-      throw new BusinessRuleException('This class does not belong to you', { batchClassId: dto.batchClassId });
+      throw new BusinessRuleException('This class does not belong to you', {
+        batchClassId: dto.batchClassId,
+      });
     }
 
-    this.logger.log('Creating reschedule request', { expertId, batchClassId: dto.batchClassId });
+    this.logger.log('Creating reschedule request', {
+      expertId,
+      batchClassId: dto.batchClassId,
+    });
 
     return this.prisma.classRescheduleRequests.create({
       data: {

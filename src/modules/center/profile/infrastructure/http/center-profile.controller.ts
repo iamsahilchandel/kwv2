@@ -3,13 +3,14 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterProfileService } from '../../application/center-profile.service.js';
 import {
   UpdateCenterProfileSchema,
   type UpdateCenterProfileBody,
+  UpdateCenterProfileDto,
   SubmitUpdateRequestSchema,
   type SubmitUpdateRequestBody,
+  SubmitUpdateRequestDto,
 } from './dto/center-profile.dto.js';
 
 @ApiTags('Center - Profile')
@@ -27,7 +28,7 @@ export class CenterProfileController {
   @Patch()
   updateProfile(
     @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(UpdateCenterProfileSchema)) dto: UpdateCenterProfileBody,
+    @Body() dto: UpdateCenterProfileDto,
   ) {
     return this.service.updateProfile(user.id, dto);
   }
@@ -35,7 +36,7 @@ export class CenterProfileController {
   @Post('update-request')
   submitUpdateRequest(
     @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(SubmitUpdateRequestSchema)) dto: SubmitUpdateRequestBody,
+    @Body() dto: SubmitUpdateRequestDto,
   ) {
     return this.service.submitUpdateRequest(user.id, dto);
   }

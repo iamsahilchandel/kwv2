@@ -18,7 +18,12 @@ export class CenterMasterListService {
   async getServices() {
     this.logger.log('Fetching services for center portal');
     return this.prisma.services.findMany({
-      select: { id: true, serviceName: true, serviceGroup: true, description: true },
+      select: {
+        id: true,
+        serviceName: true,
+        serviceGroup: true,
+        description: true,
+      },
       orderBy: { serviceName: 'asc' },
     });
   }

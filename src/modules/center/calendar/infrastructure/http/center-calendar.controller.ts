@@ -13,17 +13,20 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CenterStaffAuthGuard } from '../../../../../core/guards/center-staff-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { CenterCalendarService } from '../../application/center-calendar.service.js';
 import {
   CalendarQuerySchema,
   type CalendarQuery,
+  CalendarQueryDto,
   DailyScheduleQuerySchema,
   type DailyScheduleQuery,
+  DailyScheduleQueryDto,
   CreateBatchClassSchema,
   type CreateBatchClassBody,
+  CreateBatchClassDto,
   UpdateBatchClassSchema,
   type UpdateBatchClassBody,
+  UpdateBatchClassDto,
 } from './dto/center-calendar.dto.js';
 
 @ApiTags('Center - Calendar')
@@ -36,7 +39,7 @@ export class CenterCalendarController {
   @Get()
   getCalendar(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(CalendarQuerySchema)) query: CalendarQuery,
+    @Query() query: CalendarQueryDto,
   ) {
     return this.service.getCalendar(user.id, query);
   }
@@ -44,7 +47,7 @@ export class CenterCalendarController {
   @Get('schedule')
   getDailySchedule(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(DailyScheduleQuerySchema)) query: DailyScheduleQuery,
+    @Query() query: DailyScheduleQueryDto,
   ) {
     return this.service.getDailySchedule(user.id, query);
   }
@@ -52,7 +55,7 @@ export class CenterCalendarController {
   @Post('classes')
   createClass(
     @CurrentUser() user: IAuthUser,
-    @Body(new ZodValidationPipe(CreateBatchClassSchema)) dto: CreateBatchClassBody,
+    @Body() dto: CreateBatchClassDto,
   ) {
     return this.service.createClass(user.id, dto);
   }
@@ -61,7 +64,7 @@ export class CenterCalendarController {
   updateClass(
     @CurrentUser() user: IAuthUser,
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ZodValidationPipe(UpdateBatchClassSchema)) dto: UpdateBatchClassBody,
+    @Body() dto: UpdateBatchClassDto,
   ) {
     return this.service.updateClass(user.id, id, dto);
   }

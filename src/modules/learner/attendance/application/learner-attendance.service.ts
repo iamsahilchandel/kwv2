@@ -1,6 +1,14 @@
-import { Injectable, Logger, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import type { QueryAttendanceDto } from '../infrastructure/http/dto/learner-attendance.dto.js';
 
 @Injectable()
@@ -16,7 +24,9 @@ export class LearnerAttendanceService {
     });
 
     if (!learner?.profileId) {
-      throw new ForbiddenException('Learner profile required to view attendance');
+      throw new ForbiddenException(
+        'Learner profile required to view attendance',
+      );
     }
 
     const profileId = Number(learner.profileId);
@@ -44,7 +54,9 @@ export class LearnerAttendanceService {
       });
 
       if (!enrollment) {
-        throw new NotFoundException('You are not enrolled in this batch or enrollment is inactive');
+        throw new NotFoundException(
+          'You are not enrolled in this batch or enrollment is inactive',
+        );
       }
 
       where.batchEnrollmentId = enrollment.id;
@@ -66,7 +78,12 @@ export class LearnerAttendanceService {
               status: true,
               classType: true,
               batch: {
-                select: { id: true, batchName: true, batchType: true, status: true },
+                select: {
+                  id: true,
+                  batchName: true,
+                  batchType: true,
+                  status: true,
+                },
               },
             },
           },
@@ -80,11 +97,18 @@ export class LearnerAttendanceService {
 
     const statsRaw = await this.prisma.batchClassAttendence.groupBy({
       by: ['attendanceStatus'],
-      where: { learnerProfileId: profileId, ...(batchId && { batchEnrollmentId: where.batchEnrollmentId as number }) },
+      where: {
+        learnerProfileId: profileId,
+        ...(batchId && {
+          batchEnrollmentId: where.batchEnrollmentId as number,
+        }),
+      },
       _count: true,
     });
 
-    const stats = Object.fromEntries(statsRaw.map((s) => [s.attendanceStatus, s._count]));
+    const stats = Object.fromEntries(
+      statsRaw.map((s) => [s.attendanceStatus, s._count]),
+    );
 
     this.logger.debug('Fetched attendance records', { learnerId, total });
     return {
@@ -92,7 +116,9 @@ export class LearnerAttendanceService {
       statistics: {
         totalAttendance: total,
         attendanceByStatus: stats,
-        attendanceRate: stats['present'] ? Math.round((stats['present'] / total) * 100) : 0,
+        attendanceRate: stats['present']
+          ? Math.round((stats['present'] / total) * 100)
+          : 0,
       },
     };
   }
@@ -121,16 +147,30 @@ export class LearnerAttendanceService {
     }
 
     const records = await this.prisma.batchClassAttendence.findMany({
-      where: { batchEnrollmentId: enrollment.id, learnerProfileId: Number(learner.profileId) },
+      where: {
+        batchEnrollmentId: enrollment.id,
+        learnerProfileId: Number(learner.profileId),
+      },
       orderBy: { createdAt: 'desc' },
       include: {
         batchClass: {
-          select: { id: true, classDate: true, startTime: true, endTime: true, status: true, classType: true },
+          select: {
+            id: true,
+            classDate: true,
+            startTime: true,
+            endTime: true,
+            status: true,
+            classType: true,
+          },
         },
       },
     });
 
-    this.logger.debug('Fetched batch attendance', { learnerId, batchId, count: records.length });
+    this.logger.debug('Fetched batch attendance', {
+      learnerId,
+      batchId,
+      count: records.length,
+    });
     return records;
   }
 }

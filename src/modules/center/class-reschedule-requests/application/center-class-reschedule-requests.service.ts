@@ -1,6 +1,14 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
 import { RescheduleRequestNotFoundException } from '../domain/errors/reschedule-request.errors.js';
 import type {
@@ -11,7 +19,9 @@ import type {
 
 @Injectable()
 export class CenterClassRescheduleRequestsService {
-  private readonly logger = new Logger(CenterClassRescheduleRequestsService.name);
+  private readonly logger = new Logger(
+    CenterClassRescheduleRequestsService.name,
+  );
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -56,7 +66,14 @@ export class CenterClassRescheduleRequestsService {
       include: {
         batchClass: {
           include: {
-            batch: { select: { id: true, batchName: true, centerId: true, expertId: true } },
+            batch: {
+              select: {
+                id: true,
+                batchName: true,
+                centerId: true,
+                expertId: true,
+              },
+            },
           },
         },
       },
@@ -68,7 +85,11 @@ export class CenterClassRescheduleRequestsService {
     return request;
   }
 
-  async approve(staffId: number, requestId: number, dto: ApproveRescheduleBody) {
+  async approve(
+    staffId: number,
+    requestId: number,
+    dto: ApproveRescheduleBody,
+  ) {
     const centerId = await this.getCenterId(staffId);
 
     const request = await this.prisma.classRescheduleRequests.findUnique({
@@ -82,7 +103,11 @@ export class CenterClassRescheduleRequestsService {
       throw new BusinessRuleException('Request is no longer pending');
     }
 
-    this.logger.log('Approving reschedule request', { requestId, centerId, staffId });
+    this.logger.log('Approving reschedule request', {
+      requestId,
+      centerId,
+      staffId,
+    });
 
     const updated = await this.prisma.classRescheduleRequests.update({
       where: { id: requestId },
@@ -112,7 +137,11 @@ export class CenterClassRescheduleRequestsService {
       throw new BusinessRuleException('Request is no longer pending');
     }
 
-    this.logger.log('Rejecting reschedule request', { requestId, centerId, staffId });
+    this.logger.log('Rejecting reschedule request', {
+      requestId,
+      centerId,
+      staffId,
+    });
 
     return this.prisma.classRescheduleRequests.update({
       where: { id: requestId },
@@ -130,7 +159,8 @@ export class CenterClassRescheduleRequestsService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

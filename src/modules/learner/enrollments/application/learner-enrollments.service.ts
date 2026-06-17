@@ -5,9 +5,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { BusinessRuleException } from '../../../../common/exceptions/business-rule.exception.js';
-import { AlreadyEnrolledException, EnrollmentNotFoundException } from '../domain/errors/enrollment.errors.js';
+import {
+  AlreadyEnrolledException,
+  EnrollmentNotFoundException,
+} from '../domain/errors/enrollment.errors.js';
 import type {
   CreateEnrollmentDto,
   QueryEnrollmentsDto,
@@ -24,7 +30,8 @@ export class LearnerEnrollmentsService {
       where: { id: learnerId },
       select: { profileId: true },
     });
-    if (!learner?.profileId) throw new ForbiddenException('Learner profile required to enroll');
+    if (!learner?.profileId)
+      throw new ForbiddenException('Learner profile required to enroll');
     return Number(learner.profileId);
   }
 
@@ -33,7 +40,11 @@ export class LearnerEnrollmentsService {
     this.logger.log('Creating enrollment', { learnerId, batchId: dto.batchId });
 
     const existing = await this.prisma.batchEnrollments.findFirst({
-      where: { batchId: dto.batchId, learnerProfileId: profileId, status: 'enrolled' },
+      where: {
+        batchId: dto.batchId,
+        learnerProfileId: profileId,
+        status: 'enrolled',
+      },
     });
 
     if (existing) throw new AlreadyEnrolledException(dto.batchId);
@@ -45,7 +56,10 @@ export class LearnerEnrollmentsService {
 
     if (!batch) throw new NotFoundException(`Batch ${dto.batchId} not found`);
     if (batch.status !== 'active') {
-      throw new BusinessRuleException('Batch is not accepting enrollments', { batchId: dto.batchId, status: batch.status });
+      throw new BusinessRuleException('Batch is not accepting enrollments', {
+        batchId: dto.batchId,
+        status: batch.status,
+      });
     }
 
     const enrolledCount = await this.prisma.batchEnrollments.count({
@@ -53,11 +67,16 @@ export class LearnerEnrollmentsService {
     });
 
     if (batch.numberOfSeats && enrolledCount >= batch.numberOfSeats) {
-      throw new BusinessRuleException('Batch is full', { batchId: dto.batchId });
+      throw new BusinessRuleException('Batch is full', {
+        batchId: dto.batchId,
+      });
     }
 
     const classesBooked = dto.classesBooked ?? batch.numberOfClasses ?? 1;
-    if (batch.minimumClassesBooking && classesBooked < batch.minimumClassesBooking) {
+    if (
+      batch.minimumClassesBooking &&
+      classesBooked < batch.minimumClassesBooking
+    ) {
       throw new BusinessRuleException(
         `Minimum ${batch.minimumClassesBooking} classes required`,
         { batchId: dto.batchId, requested: classesBooked },
@@ -71,11 +90,20 @@ export class LearnerEnrollmentsService {
 
     let discountAmount = 0;
     if (dto.couponCode) {
-      const coupon = await this.prisma.coupon.findUnique({ where: { code: dto.couponCode } });
-      if (coupon && coupon.status === 'active' && coupon.endDate >= new Date()) {
+      const coupon = await this.prisma.coupon.findUnique({
+        where: { code: dto.couponCode },
+      });
+      if (
+        coupon &&
+        coupon.status === 'active' &&
+        coupon.endDate >= new Date()
+      ) {
         discountAmount =
           coupon.type === 'percentage'
-            ? Math.min((totalAmount * Number(coupon.value)) / 100, Number(coupon.maxDiscountAmount ?? Infinity))
+            ? Math.min(
+                (totalAmount * Number(coupon.value)) / 100,
+                Number(coupon.maxDiscountAmount ?? Infinity),
+              )
             : Number(coupon.value);
       }
     }
@@ -117,7 +145,10 @@ export class LearnerEnrollmentsService {
       data: { enrollmentId: enrollment.id },
     });
 
-    this.logger.log('Enrollment created', { enrollmentId: enrollment.id, orderId });
+    this.logger.log('Enrollment created', {
+      enrollmentId: enrollment.id,
+      orderId,
+    });
     return { enrollment, payment, orderId };
   }
 
@@ -139,13 +170,26 @@ export class LearnerEnrollmentsService {
         include: {
           batch: {
             include: {
-              expert: { select: { id: true, firstName: true, lastName: true, profilePicture: true } },
+              expert: {
+                select: {
+                  id: true,
+                  firstName: true,
+                  lastName: true,
+                  profilePicture: true,
+                },
+              },
               service: { select: { id: true, serviceName: true } },
               center: { select: { id: true, centerName: true } },
             },
           },
           payments: {
-            select: { id: true, status: true, totalAmount: true, paymentDate: true, orderId: true },
+            select: {
+              id: true,
+              status: true,
+              totalAmount: true,
+              paymentDate: true,
+              orderId: true,
+            },
             orderBy: { createdAt: 'desc' },
             take: 1,
           },
@@ -176,7 +220,8 @@ export class LearnerEnrollmentsService {
     });
 
     if (!enrollment) throw new EnrollmentNotFoundException(enrollmentId);
-    if (enrollment.learnerProfileId !== profileId) throw new ForbiddenException();
+    if (enrollment.learnerProfileId !== profileId)
+      throw new ForbiddenException();
 
     return enrollment;
   }
@@ -184,12 +229,17 @@ export class LearnerEnrollmentsService {
   async cancel(learnerId: number, enrollmentId: number) {
     const profileId = await this.getProfileId(learnerId);
 
-    const enrollment = await this.prisma.batchEnrollments.findUnique({ where: { id: enrollmentId } });
+    const enrollment = await this.prisma.batchEnrollments.findUnique({
+      where: { id: enrollmentId },
+    });
     if (!enrollment) throw new EnrollmentNotFoundException(enrollmentId);
-    if (enrollment.learnerProfileId !== profileId) throw new ForbiddenException();
+    if (enrollment.learnerProfileId !== profileId)
+      throw new ForbiddenException();
 
     if (!['pending', 'enrolled'].includes(enrollment.status)) {
-      throw new BusinessRuleException('Enrollment cannot be cancelled', { status: enrollment.status });
+      throw new BusinessRuleException('Enrollment cannot be cancelled', {
+        status: enrollment.status,
+      });
     }
 
     this.logger.log('Cancelling enrollment', { enrollmentId, learnerId });
@@ -202,9 +252,12 @@ export class LearnerEnrollmentsService {
   async getPaymentDetails(learnerId: number, enrollmentId: number) {
     const profileId = await this.getProfileId(learnerId);
 
-    const enrollment = await this.prisma.batchEnrollments.findUnique({ where: { id: enrollmentId } });
+    const enrollment = await this.prisma.batchEnrollments.findUnique({
+      where: { id: enrollmentId },
+    });
     if (!enrollment) throw new EnrollmentNotFoundException(enrollmentId);
-    if (enrollment.learnerProfileId !== profileId) throw new ForbiddenException();
+    if (enrollment.learnerProfileId !== profileId)
+      throw new ForbiddenException();
 
     return this.prisma.payment.findMany({
       where: { enrollmentId },

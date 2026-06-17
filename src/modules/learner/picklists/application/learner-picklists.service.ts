@@ -24,10 +24,16 @@ export class LearnerPicklistsService {
       select: { batch: { select: { serviceId: true } } },
     });
 
-    const serviceIds = [...new Set(enrollments.map((e) => e.batch?.serviceId).filter(Boolean) as number[])];
+    const serviceIds = [
+      ...new Set(
+        enrollments.map((e) => e.batch?.serviceId).filter(Boolean) as number[],
+      ),
+    ];
     if (serviceIds.length === 0) return [];
 
-    this.logger.debug('Fetching associated activities for learner picklist', { learnerId });
+    this.logger.debug('Fetching associated activities for learner picklist', {
+      learnerId,
+    });
     return this.prisma.services.findMany({
       where: { id: { in: serviceIds } },
       orderBy: { serviceName: 'asc' },
@@ -39,7 +45,9 @@ export class LearnerPicklistsService {
     const profileId = await this.getProfileId(learnerId);
     if (!profileId) return [];
 
-    this.logger.debug('Fetching associated centers for learner picklist', { learnerId });
+    this.logger.debug('Fetching associated centers for learner picklist', {
+      learnerId,
+    });
     return this.prisma.center.findMany({
       where: {
         isActive: true,
@@ -63,7 +71,9 @@ export class LearnerPicklistsService {
     const profileId = await this.getProfileId(learnerId);
     if (!profileId) return [];
 
-    this.logger.debug('Fetching associated batch types for learner picklist', { learnerId });
+    this.logger.debug('Fetching associated batch types for learner picklist', {
+      learnerId,
+    });
     const result = await this.prisma.batchEnrollments.findMany({
       where: {
         learnerProfileId: profileId,
@@ -73,16 +83,23 @@ export class LearnerPicklistsService {
       distinct: ['batchId'],
     });
 
-    return [...new Set(result.map((e) => e.batch?.batchType).filter(Boolean))].sort();
+    return [
+      ...new Set(result.map((e) => e.batch?.batchType).filter(Boolean)),
+    ].sort();
   }
 
   async getExperts(learnerId: number) {
     const profileId = await this.getProfileId(learnerId);
     if (!profileId) return [];
 
-    this.logger.debug('Fetching associated experts for learner picklist', { learnerId });
+    this.logger.debug('Fetching associated experts for learner picklist', {
+      learnerId,
+    });
     const enrollments = await this.prisma.batchEnrollments.findMany({
-      where: { learnerProfileId: profileId, status: { in: ['enrolled', 'completed'] } },
+      where: {
+        learnerProfileId: profileId,
+        status: { in: ['enrolled', 'completed'] },
+      },
       select: {
         batch: {
           select: {

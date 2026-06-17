@@ -33,7 +33,11 @@ export class ExpertBatchClassAttendanceService {
     });
   }
 
-  async markAttendance(expertId: number, classId: number, dto: MarkAttendanceBody) {
+  async markAttendance(
+    expertId: number,
+    classId: number,
+    dto: MarkAttendanceBody,
+  ) {
     const batchClass = await this.prisma.batchClasses.findUnique({
       where: { id: classId },
       include: { batch: { select: { expertId: true } } },

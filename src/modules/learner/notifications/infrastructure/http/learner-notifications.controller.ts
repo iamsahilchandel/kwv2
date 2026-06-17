@@ -1,11 +1,21 @@
-import { Controller, Get, Patch, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LearnerAuthGuard } from '../../../../../core/guards/learner-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { LearnerNotificationsService } from '../../application/learner-notifications.service.js';
-import { QueryNotificationsSchema, type QueryNotificationsQuery } from './dto/learner-notifications.dto.js';
+import {
+  QueryNotificationsSchema,
+  type QueryNotificationsQuery,
+  QueryNotificationsDto,
+} from './dto/learner-notifications.dto.js';
 
 @ApiTags('Learner - Notifications')
 @ApiBearerAuth()
@@ -16,7 +26,7 @@ export class LearnerNotificationsController {
 
   @Get()
   findAll(
-    @Query(new ZodValidationPipe(QueryNotificationsSchema)) query: QueryNotificationsQuery,
+    @Query() query: QueryNotificationsDto,
     @CurrentUser() user: IAuthUser,
   ) {
     return this.service.findAll(user.id, query);

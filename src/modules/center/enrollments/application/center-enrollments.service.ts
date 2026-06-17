@@ -1,8 +1,19 @@
-import { Injectable, Logger, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
-import { paginationParams, buildPaginatedResult } from '../../../../common/utils/pagination.util.js';
+import {
+  paginationParams,
+  buildPaginatedResult,
+} from '../../../../common/utils/pagination.util.js';
 import { EnrollmentNotFoundException } from '../domain/errors/enrollment.errors.js';
-import type { QueryEnrollmentsQuery, UpdateEnrollmentBody } from '../infrastructure/http/dto/center-enrollments.dto.js';
+import type {
+  QueryEnrollmentsQuery,
+  UpdateEnrollmentBody,
+} from '../infrastructure/http/dto/center-enrollments.dto.js';
 
 @Injectable()
 export class CenterEnrollmentsService {
@@ -60,7 +71,15 @@ export class CenterEnrollmentsService {
     const enrollment = await this.prisma.batchEnrollments.findUnique({
       where: { id: enrollmentId },
       include: {
-        batch: { select: { id: true, batchName: true, centerId: true, batchType: true, status: true } },
+        batch: {
+          select: {
+            id: true,
+            batchName: true,
+            centerId: true,
+            batchType: true,
+            status: true,
+          },
+        },
         learnerProfile: {
           select: {
             id: true,
@@ -80,7 +99,11 @@ export class CenterEnrollmentsService {
     return enrollment;
   }
 
-  async update(staffId: number, enrollmentId: number, dto: UpdateEnrollmentBody) {
+  async update(
+    staffId: number,
+    enrollmentId: number,
+    dto: UpdateEnrollmentBody,
+  ) {
     const centerId = await this.getCenterId(staffId);
 
     const enrollment = await this.prisma.batchEnrollments.findUnique({
@@ -110,7 +133,11 @@ export class CenterEnrollmentsService {
     if (!enrollment) throw new EnrollmentNotFoundException(enrollmentId);
     if (enrollment.batch.centerId !== centerId) throw new ForbiddenException();
 
-    this.logger.log('Approving enrollment (PAC)', { enrollmentId, centerId, staffId });
+    this.logger.log('Approving enrollment (PAC)', {
+      enrollmentId,
+      centerId,
+      staffId,
+    });
 
     return this.prisma.batchEnrollments.update({
       where: { id: enrollmentId },
@@ -129,7 +156,11 @@ export class CenterEnrollmentsService {
     if (!enrollment) throw new EnrollmentNotFoundException(enrollmentId);
     if (enrollment.batch.centerId !== centerId) throw new ForbiddenException();
 
-    this.logger.log('Rejecting enrollment (PAC)', { enrollmentId, centerId, staffId });
+    this.logger.log('Rejecting enrollment (PAC)', {
+      enrollmentId,
+      centerId,
+      staffId,
+    });
 
     return this.prisma.batchEnrollments.update({
       where: { id: enrollmentId },
@@ -142,7 +173,8 @@ export class CenterEnrollmentsService {
       where: { staffId, isActive: true, center: { isActive: true } },
       select: { centerId: true },
     });
-    if (!membership) throw new UnauthorizedException('No active center found for staff');
+    if (!membership)
+      throw new UnauthorizedException('No active center found for staff');
     return membership.centerId;
   }
 }

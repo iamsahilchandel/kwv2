@@ -10,11 +10,11 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExpertAuthGuard } from '../../../../../core/guards/expert-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
-import { ZodValidationPipe } from '../../../../../core/pipes/zod-validation.pipe.js';
 import { ExpertBatchesService } from '../../application/expert-batches.service.js';
 import {
   QueryExpertBatchesSchema,
   type QueryExpertBatchesQuery,
+  QueryExpertBatchesDto,
 } from './dto/expert-batches.dto.js';
 
 @ApiTags('Expert - Batches')
@@ -27,7 +27,7 @@ export class ExpertBatchesController {
   @Get()
   findAll(
     @CurrentUser() user: IAuthUser,
-    @Query(new ZodValidationPipe(QueryExpertBatchesSchema)) query: QueryExpertBatchesQuery,
+    @Query() query: QueryExpertBatchesDto,
   ) {
     return this.service.findAll(user.id, query);
   }
