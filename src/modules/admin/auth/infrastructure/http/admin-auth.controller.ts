@@ -4,14 +4,7 @@ import { Public } from '../../../../../core/guards/api-key.guard.js';
 import { AdminAuthGuard } from '../../../../../core/guards/admin-auth.guard.js';
 import { CurrentUser } from '../../../../../common/decorators/current-user.decorator.js';
 import { AdminAuthService } from '../../application/admin-auth.service.js';
-import {
-  AdminVerifyNumberSchema,
-  AdminLoginSchema,
-  type AdminVerifyNumberBody,
-  type AdminLoginBody,
-  AdminVerifyNumberDto,
-  AdminLoginDto,
-} from './dto/admin-auth.dto.js';
+import { AdminVerifyNumberDto, AdminLoginDto } from './dto/admin-auth.dto.js';
 import type { IAuthUser } from '../../../../../common/interfaces/auth-user.interface.js';
 
 @ApiTags('Admin - Authentication')
