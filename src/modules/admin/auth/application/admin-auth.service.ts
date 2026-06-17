@@ -1,14 +1,15 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  Inject,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
 import { PrismaService } from '../../../../core/database/prisma.service.js';
 import { FIREBASE_AUTH } from '../../../../core/firebase/firebase.module.js';
 import type { IAuthUser } from '../../../../common/interfaces/auth-user.interface.js';
 import { FcmUserType } from '../../../../generated/prisma/enums.js';
+import { ExternalServiceException } from '../../../../common/exceptions/external-service.exception.js';
+import { handlePrismaError } from '../../../../common/utils/prisma-error.util.js';
+import {
+  AdminAccountInactiveException,
+  AdminPhoneNotRegisteredException,
+} from '../domain/errors/admin-auth.errors.js';
 
 @Injectable()
 export class AdminAuthService {
@@ -20,53 +21,89 @@ export class AdminAuthService {
   ) {}
 
   async verifyNumber(phoneNumber: string) {
-    this.logger.log('Verifying admin phone number', {
-      phoneNumber: `***${phoneNumber.slice(-4)}`,
-    });
+    this.logger.log(`Verifying admin phone number ***${phoneNumber.slice(-4)}`);
 
-    const admin = await this.prisma.appAdminStaff.findUnique({
-      where: { phoneNumber },
-      select: { id: true, fullName: true, role: true, isActive: true },
-    });
+    let admin: {
+      id: number;
+      fullName: string;
+      role: string;
+      isActive: boolean;
+    } | null;
+
+    try {
+      admin = await this.prisma.appAdminStaff.findUnique({
+        where: { phoneNumber },
+        select: { id: true, fullName: true, role: true, isActive: true },
+      });
+    } catch (error) {
+      handlePrismaError(error);
+    }
 
     if (!admin) {
-      throw new UnauthorizedException('Phone number not registered as admin');
+      throw new AdminPhoneNotRegisteredException();
     }
 
     if (!admin.isActive) {
-      throw new UnauthorizedException('Admin account is inactive');
+      throw new AdminAccountInactiveException();
     }
 
     return { fullName: admin.fullName, role: admin.role };
   }
 
   async login(user: IAuthUser, fcmToken: string) {
-    this.logger.log('Admin login', { adminId: user.id });
+    this.logger.log(`Admin login adminId=${user.id}`);
 
-    await this.upsertFcmToken(user.id, fcmToken, FcmUserType.admin);
+    try {
+      await this.upsertFcmToken(user.id, fcmToken, FcmUserType.admin);
+    } catch (error) {
+      handlePrismaError(error);
+    }
 
-    const admin = await this.prisma.appAdminStaff.findUnique({
-      where: { id: user.id },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        phoneNumber: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-      },
-    });
+    let admin: {
+      id: number;
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      role: string;
+      isActive: boolean;
+      createdAt: Date;
+    } | null;
 
-    this.logger.log('Admin login successful', { adminId: user.id });
-    return admin;
+    try {
+      admin = await this.prisma.appAdminStaff.findUnique({
+        where: { id: user.id },
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          phoneNumber: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+        },
+      });
+    } catch (error) {
+      handlePrismaError(error);
+    }
+
+    this.logger.log(`Admin login successful adminId=${user.id}`);
+    return admin!;
   }
 
   async logout(user: IAuthUser, fcmToken: string) {
-    this.logger.log('Admin logout', { adminId: user.id });
+    this.logger.log(`Admin logout adminId=${user.id}`);
 
-    await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
-    await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.admin);
+    try {
+      await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
+    } catch (error) {
+      throw new ExternalServiceException('Firebase Auth', error);
+    }
+
+    try {
+      await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.admin);
+    } catch (error) {
+      handlePrismaError(error);
+    }
 
     return { message: 'Logged out successfully' };
   }
