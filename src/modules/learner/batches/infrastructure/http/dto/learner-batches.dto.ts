@@ -9,8 +9,16 @@ export const QueryBatchesSchema = z.object({
   batchType: z.enum(['fixed', 'ongoing', 'trial']).optional(),
   serviceId: z.coerce.number().int().positive().optional(),
   expertId: z.coerce.number().int().positive().optional(),
-  startDateFrom: z.coerce.date().optional(),
-  startDateTo: z.coerce.date().optional(),
+  startDateFrom: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
+  startDateTo: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
 });
 
 export type QueryBatches = z.infer<typeof QueryBatchesSchema>;

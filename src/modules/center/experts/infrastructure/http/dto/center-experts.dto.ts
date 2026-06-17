@@ -13,7 +13,11 @@ export type QueryCenterExpertsQuery = z.infer<typeof QueryCenterExpertsSchema>;
 
 export const AddExpertSchema = z.object({
   expertId: z.number().int().min(1),
-  joinedOn: z.coerce.date().optional(),
+  joinedOn: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
 });
 
 export type AddExpertBody = z.infer<typeof AddExpertSchema>;

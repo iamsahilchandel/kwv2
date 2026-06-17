@@ -5,13 +5,19 @@ import { PollStatus } from '../../../../../../generated/prisma/enums.js';
 export const CreatePollSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().max(1000).optional(),
-  closingDate: z.coerce.date(),
+  closingDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
   batchClassId: z.number().int().min(1).optional(),
   rescheduleRequestId: z.number().int().optional(),
   options: z
     .array(
       z.object({
-        proposedDate: z.coerce.date(),
+        proposedDate: z
+          .string()
+          .datetime({ offset: true })
+          .transform((val) => new Date(val)),
         proposedStartTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
         proposedEndTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
         optionOrder: z.number().int().default(0),
@@ -26,7 +32,11 @@ export type CreatePollBody = z.infer<typeof CreatePollSchema>;
 export const UpdatePollSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   description: z.string().max(1000).optional(),
-  closingDate: z.coerce.date().optional(),
+  closingDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
 });
 
 export type UpdatePollBody = z.infer<typeof UpdatePollSchema>;

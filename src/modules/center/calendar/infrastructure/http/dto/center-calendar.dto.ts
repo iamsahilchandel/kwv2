@@ -3,22 +3,34 @@ import { createZodDto } from 'nestjs-zod';
 import { ClassType } from '../../../../../../generated/prisma/enums.js';
 
 export const CalendarQuerySchema = z.object({
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
+  startDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
+  endDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
   batchId: z.coerce.number().int().optional(),
 });
 
 export type CalendarQuery = z.infer<typeof CalendarQuerySchema>;
 
 export const DailyScheduleQuerySchema = z.object({
-  date: z.coerce.date(),
+  date: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
 });
 
 export type DailyScheduleQuery = z.infer<typeof DailyScheduleQuerySchema>;
 
 export const CreateBatchClassSchema = z.object({
   batchId: z.number().int().min(1),
-  classDate: z.coerce.date(),
+  classDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
   startTime: z
     .string()
     .regex(/^\d{2}:\d{2}(:\d{2})?$/, 'Time must be HH:MM or HH:MM:SS'),
@@ -32,7 +44,11 @@ export const CreateBatchClassSchema = z.object({
 export type CreateBatchClassBody = z.infer<typeof CreateBatchClassSchema>;
 
 export const UpdateBatchClassSchema = z.object({
-  classDate: z.coerce.date().optional(),
+  classDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
   startTime: z
     .string()
     .regex(/^\d{2}:\d{2}(:\d{2})?$/)

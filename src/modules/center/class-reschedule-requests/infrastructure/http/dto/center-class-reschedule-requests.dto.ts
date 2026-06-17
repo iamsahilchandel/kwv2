@@ -19,7 +19,10 @@ export type QueryRescheduleRequestsQuery = z.infer<
 export const ApproveRescheduleSchema = z.object({
   proposedSchedule: z
     .object({
-      classDate: z.coerce.date(),
+      classDate: z
+        .string()
+        .datetime({ offset: true })
+        .transform((val) => new Date(val)),
       startTime: z.string(),
       endTime: z.string(),
     })

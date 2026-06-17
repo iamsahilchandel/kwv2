@@ -8,7 +8,11 @@ export const CreateCenterStaffSchema = z.object({
   email: z.email().optional(),
   phoneNumber: z.string().min(10).max(15),
   role: z.enum(CenterStaffRole),
-  joinedOn: z.coerce.date().optional(),
+  joinedOn: z
+    .string()
+    .date()
+    .transform((val) => new Date(val))
+    .optional(),
 });
 
 export type CreateCenterStaffBody = z.infer<typeof CreateCenterStaffSchema>;

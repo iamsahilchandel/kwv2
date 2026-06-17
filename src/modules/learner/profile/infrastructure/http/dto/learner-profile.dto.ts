@@ -14,7 +14,11 @@ export const CreateProfileSchema = z.object({
   lastName: z.string().max(100).optional(),
   email: z.email().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
-  dateOfBirth: z.coerce.date().optional(),
+  dateOfBirth: z
+    .string()
+    .date()
+    .transform((val) => new Date(val))
+    .optional(),
   relation: z.string().max(50).optional(),
   interests: z.array(z.number().int().positive()).optional(),
   address: z

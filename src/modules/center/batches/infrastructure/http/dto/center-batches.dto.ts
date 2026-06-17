@@ -14,8 +14,15 @@ export const CreateBatchSchema = z.object({
   expertId: z.number().int().min(1),
   serviceId: z.number().int().min(1),
   venue: z.string().max(200).optional(),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date().optional(),
+  startDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
+  endDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
   frequency: z.record(z.string(), z.unknown()),
   numberOfClasses: z.number().int().min(1).optional(),
   expertPayPerClass: z.number().positive().optional(),
@@ -41,8 +48,16 @@ export const UpdateBatchSchema = z.object({
   batchName: z.string().min(1).max(200).optional(),
   description: z.string().max(2000).optional(),
   venue: z.string().max(200).optional(),
-  startDate: z.coerce.date().optional(),
-  endDate: z.coerce.date().optional(),
+  startDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
+  endDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
   frequency: z.record(z.string(), z.unknown()).optional(),
   numberOfClasses: z.number().int().min(1).optional(),
   expertPayPerClass: z.number().positive().optional(),
@@ -64,8 +79,16 @@ export const QueryBatchesSchema = z.object({
   batchType: z.enum(BatchType).optional(),
   expertId: z.coerce.number().int().optional(),
   serviceId: z.coerce.number().int().optional(),
-  startDateFrom: z.coerce.date().optional(),
-  startDateTo: z.coerce.date().optional(),
+  startDateFrom: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
+  startDateTo: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
 });
 
 export type QueryBatchesQuery = z.infer<typeof QueryBatchesSchema>;

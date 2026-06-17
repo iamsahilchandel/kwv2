@@ -4,8 +4,16 @@ import { createZodDto } from 'nestjs-zod';
 export const CreateEnrollmentSchema = z.object({
   batchId: z.number().int().positive(),
   classesBooked: z.number().int().positive().optional(),
-  startDate: z.coerce.date().optional(),
-  endDate: z.coerce.date().optional(),
+  startDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
+  endDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val))
+    .optional(),
   couponCode: z.string().max(50).optional(),
   paymentMethod: z.string().max(50).default('gateway'),
 });

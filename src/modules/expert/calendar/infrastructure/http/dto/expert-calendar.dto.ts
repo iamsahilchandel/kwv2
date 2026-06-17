@@ -2,8 +2,14 @@ import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
 export const CalendarQuerySchema = z.object({
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
+  startDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
+  endDate: z
+    .string()
+    .datetime({ offset: true })
+    .transform((val) => new Date(val)),
 });
 
 export type CalendarQuery = z.infer<typeof CalendarQuerySchema>;
