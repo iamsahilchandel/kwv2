@@ -12,8 +12,8 @@ export class ExpertAuthService {
     @Inject(FIREBASE_AUTH) private readonly firebaseAuth: Auth,
   ) {}
 
-  async login(user: IAuthUser, fcmToken: string) {
-    await this.upsertFcmToken(user.id, fcmToken, FcmUserType.expert);
+  async login(user: IAuthUser, fcmToken?: string | null) {
+    if (fcmToken) await this.upsertFcmToken(user.id, fcmToken, FcmUserType.expert);
 
     const expert = await this.prisma.experts.findUnique({
       where: { id: user.id },
@@ -34,9 +34,9 @@ export class ExpertAuthService {
     return expert;
   }
 
-  async logout(user: IAuthUser, fcmToken: string) {
+  async logout(user: IAuthUser, fcmToken?: string | null) {
     await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
-    await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.expert);
+    if (fcmToken) await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.expert);
     return { message: 'Logged out successfully' };
   }
 

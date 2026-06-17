@@ -55,8 +55,8 @@ export class CenterAuthService {
     };
   }
 
-  async login(user: IAuthUser, fcmToken: string) {
-    await this.upsertFcmToken(user.id, fcmToken, FcmUserType.center);
+  async login(user: IAuthUser, fcmToken?: string | null) {
+    if (fcmToken) await this.upsertFcmToken(user.id, fcmToken, FcmUserType.center);
 
     const staff = await this.prisma.centerStaff.findUnique({
       where: { id: user.id },
@@ -86,9 +86,9 @@ export class CenterAuthService {
     return staff;
   }
 
-  async logout(user: IAuthUser, fcmToken: string) {
+  async logout(user: IAuthUser, fcmToken?: string | null) {
     await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
-    await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.center);
+    if (fcmToken) await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.center);
     return { message: 'Logged out successfully' };
   }
 

@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import type { Auth } from 'firebase-admin/auth';
 import { PrismaService } from '../../../core/database/prisma.service.js';
 import { FIREBASE_AUTH } from '../../../core/firebase/firebase.module.js';
@@ -10,12 +10,14 @@ import { FcmUserType } from '../../../generated/prisma/enums.js';
 
 @Injectable()
 export class LearnerAuthService {
+  private readonly logger = new Logger(LearnerAuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(FIREBASE_AUTH) private readonly firebaseAuth: Auth,
   ) {}
 
-  async login(firebaseUser: IFirebaseUser, fcmToken: string) {
+  async login(firebaseUser: IFirebaseUser, fcmToken?: string | null) {
     const phoneAsBigInt = BigInt(firebaseUser.phone);
 
     const learner = await this.prisma.$transaction(async (tx) => {
@@ -54,7 +56,7 @@ export class LearnerAuthService {
       return existing;
     });
 
-    await this.upsertFcmToken(learner.id, fcmToken, FcmUserType.learner);
+    if (fcmToken) await this.upsertFcmToken(learner.id, fcmToken, FcmUserType.learner);
 
     return {
       id: learner.id,
@@ -63,9 +65,21 @@ export class LearnerAuthService {
     };
   }
 
-  async logout(user: IAuthUser, fcmToken: string) {
-    await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
-    await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.learner);
+  async logout(user: IAuthUser, fcmToken?: string | null) {
+    try {
+      await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
+      this.logger.log('Learner refresh tokens revoked', { learnerId: user.id, uid: user.firebaseUid });
+    } catch (err: unknown) {
+      const e = err as { errorInfo?: { code?: string; message?: string }; code?: string; message?: string };
+      this.logger.error('Failed to revoke learner refresh tokens', {
+        learnerId: user.id,
+        uid: user.firebaseUid,
+        code: e?.errorInfo?.code ?? e?.code ?? 'unknown',
+        message: e?.errorInfo?.message ?? e?.message ?? 'No message',
+      });
+      throw err;
+    }
+    if (fcmToken) await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.learner);
     return { message: 'Logged out successfully' };
   }
 

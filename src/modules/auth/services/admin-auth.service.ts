@@ -29,8 +29,8 @@ export class AdminAuthService {
     return { fullName: admin.fullName, role: admin.role };
   }
 
-  async login(user: IAuthUser, fcmToken: string) {
-    await this.upsertFcmToken(user.id, fcmToken, FcmUserType.admin);
+  async login(user: IAuthUser, fcmToken?: string | null) {
+    if (fcmToken) await this.upsertFcmToken(user.id, fcmToken, FcmUserType.admin);
 
     const admin = await this.prisma.appAdminStaff.findUnique({
       where: { id: user.id },
@@ -48,9 +48,9 @@ export class AdminAuthService {
     return admin;
   }
 
-  async logout(user: IAuthUser, fcmToken: string) {
+  async logout(user: IAuthUser, fcmToken?: string | null) {
     await this.firebaseAuth.revokeRefreshTokens(user.firebaseUid);
-    await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.admin);
+    if (fcmToken) await this.deactivateFcmToken(user.id, fcmToken, FcmUserType.admin);
     return { message: 'Logged out successfully' };
   }
 

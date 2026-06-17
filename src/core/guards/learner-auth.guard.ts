@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { PrismaService } from '../database/prisma.service.js';
@@ -10,6 +11,8 @@ import { FcmUserType } from '../../generated/prisma/enums.js';
 
 @Injectable()
 export class LearnerAuthGuard implements CanActivate {
+  private readonly logger = new Logger(LearnerAuthGuard.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -17,6 +20,7 @@ export class LearnerAuthGuard implements CanActivate {
     const firebaseUser = request.firebaseUser;
 
     if (!firebaseUser) {
+      this.logger.warn('Learner guard: firebaseUser missing on request — FirebaseAuthGuard may not have run');
       throw new UnauthorizedException('Firebase token not verified');
     }
 
@@ -30,10 +34,19 @@ export class LearnerAuthGuard implements CanActivate {
     });
 
     if (!learner) {
+      this.logger.warn('Learner not found for phone', {
+        phone: firebaseUser.phone,
+        uid: firebaseUser.uid,
+        url: request.originalUrl,
+      });
       throw new UnauthorizedException('Learner not found');
     }
 
     if (!learner.firebaseUid) {
+      this.logger.log('Backfilling firebaseUid for learner', {
+        learnerId: learner.id,
+        uid: firebaseUser.uid,
+      });
       await this.prisma.learners.update({
         where: { id: learner.id },
         data: { firebaseUid: firebaseUser.uid },

@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { PrismaService } from '../database/prisma.service.js';
@@ -10,6 +11,8 @@ import { FcmUserType } from '../../generated/prisma/enums.js';
 
 @Injectable()
 export class AdminAuthGuard implements CanActivate {
+  private readonly logger = new Logger(AdminAuthGuard.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -17,6 +20,7 @@ export class AdminAuthGuard implements CanActivate {
     const firebaseUser = request.firebaseUser;
 
     if (!firebaseUser) {
+      this.logger.warn('Admin guard: firebaseUser missing on request — FirebaseAuthGuard may not have run');
       throw new UnauthorizedException('Firebase token not verified');
     }
 
@@ -32,14 +36,28 @@ export class AdminAuthGuard implements CanActivate {
     });
 
     if (!admin) {
+      this.logger.warn('Admin not found for phone', {
+        phone: firebaseUser.phone,
+        uid: firebaseUser.uid,
+        url: request.originalUrl,
+      });
       throw new UnauthorizedException('Admin not found');
     }
 
     if (!admin.isActive) {
+      this.logger.warn('Admin account is inactive', {
+        adminId: admin.id,
+        phone: firebaseUser.phone,
+        url: request.originalUrl,
+      });
       throw new UnauthorizedException('Admin account is inactive');
     }
 
     if (!admin.firebaseUid) {
+      this.logger.log('Backfilling firebaseUid for admin', {
+        adminId: admin.id,
+        uid: firebaseUser.uid,
+      });
       await this.prisma.appAdminStaff.update({
         where: { id: admin.id },
         data: { firebaseUid: firebaseUser.uid },
