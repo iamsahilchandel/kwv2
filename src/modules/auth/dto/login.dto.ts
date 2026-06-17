@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
 export const LoginBodySchema = z.object({
-  fcmToken: z.string().min(1).nullish(),
+  fcmToken: z.string().optional().nullable(),
 });
 
 export type LoginBody = z.infer<typeof LoginBodySchema>;
