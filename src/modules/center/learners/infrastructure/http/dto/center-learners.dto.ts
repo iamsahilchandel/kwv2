@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { AccessRequestStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryCenterLearnersSchema = z.object({
@@ -9,7 +10,9 @@ export const QueryCenterLearnersSchema = z.object({
   isVerified: z.coerce.boolean().optional(),
 });
 
-export type QueryCenterLearnersQuery = z.infer<typeof QueryCenterLearnersSchema>;
+export type QueryCenterLearnersQuery = z.infer<
+  typeof QueryCenterLearnersSchema
+>;
 
 export const QueryAccessRequestsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -17,10 +20,22 @@ export const QueryAccessRequestsSchema = z.object({
   status: z.enum(AccessRequestStatus).optional(),
 });
 
-export type QueryAccessRequestsQuery = z.infer<typeof QueryAccessRequestsSchema>;
+export type QueryAccessRequestsQuery = z.infer<
+  typeof QueryAccessRequestsSchema
+>;
 
 export const RejectAccessRequestSchema = z.object({
   rejectionReason: z.string().min(1).max(500),
 });
 
 export type RejectAccessRequestBody = z.infer<typeof RejectAccessRequestSchema>;
+
+export class QueryCenterLearnersDto extends createZodDto(
+  QueryCenterLearnersSchema,
+) {}
+export class QueryAccessRequestsDto extends createZodDto(
+  QueryAccessRequestsSchema,
+) {}
+export class RejectAccessRequestDto extends createZodDto(
+  RejectAccessRequestSchema,
+) {}

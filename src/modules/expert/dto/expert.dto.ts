@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { Gender } from '../../../generated/prisma/enums.js';
 
 const S3FileSchema = z.object({
@@ -89,3 +90,6 @@ export const UpdateExpertSchema = z.object({
 
 export type RegisterExpertBody = z.infer<typeof RegisterExpertSchema>;
 export type UpdateExpertBody = z.infer<typeof UpdateExpertSchema>;
+
+export class RegisterExpertDto extends createZodDto(RegisterExpertSchema) {}
+export class UpdateExpertDto extends createZodDto(UpdateExpertSchema) {}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const CreateAmenitySchema = z.object({
   amenityName: z.string().max(100),
@@ -6,3 +7,5 @@ export const CreateAmenitySchema = z.object({
 });
 
 export type CreateAmenityBody = z.infer<typeof CreateAmenitySchema>;
+
+export class CreateAmenityDto extends createZodDto(CreateAmenitySchema) {}

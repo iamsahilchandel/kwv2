@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const CenterAddressSchema = z.object({
   streetAddress: z.string().min(1),
@@ -22,3 +23,8 @@ export const CreateCenterInquirySchema = z.object({
 
 export type CenterAddress = z.infer<typeof CenterAddressSchema>;
 export type CreateCenterInquiryBody = z.infer<typeof CreateCenterInquirySchema>;
+
+export class CenterAddressDto extends createZodDto(CenterAddressSchema) {}
+export class CreateCenterInquiryDto extends createZodDto(
+  CreateCenterInquirySchema,
+) {}

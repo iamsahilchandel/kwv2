@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CenterInquiryStatus } from '../../../../../../generated/prisma/enums.js';
 import { CenterAddressSchema } from './create-center-inquiry.dto.js';
 
@@ -36,3 +37,7 @@ export const UpdateCenterInquirySchema = z.object({
 });
 
 export type UpdateCenterInquiryBody = z.infer<typeof UpdateCenterInquirySchema>;
+
+export class UpdateCenterInquiryDto extends createZodDto(
+  UpdateCenterInquirySchema,
+) {}

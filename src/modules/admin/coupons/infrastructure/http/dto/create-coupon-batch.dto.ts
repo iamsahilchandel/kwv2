@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { CouponType, CouponApplication } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  CouponType,
+  CouponApplication,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const CreateCouponBatchSchema = z.object({
   count: z.number().int().min(1).max(1000),
@@ -20,3 +24,7 @@ export const CreateCouponBatchSchema = z.object({
 });
 
 export type CreateCouponBatchBody = z.infer<typeof CreateCouponBatchSchema>;
+
+export class CreateCouponBatchDto extends createZodDto(
+  CreateCouponBatchSchema,
+) {}

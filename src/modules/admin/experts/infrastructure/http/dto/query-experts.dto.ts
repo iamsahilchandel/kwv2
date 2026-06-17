@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
 
 export const QueryExpertsSchema = PaginationQuerySchema.extend({
@@ -14,3 +15,5 @@ export const QueryExpertsSchema = PaginationQuerySchema.extend({
 });
 
 export type QueryExpertsQuery = z.infer<typeof QueryExpertsSchema>;
+
+export class QueryExpertsDto extends createZodDto(QueryExpertsSchema) {}

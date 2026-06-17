@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { RescheduleRequestStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryRescheduleSchema = z.object({
@@ -16,3 +17,6 @@ export const CreateRescheduleSchema = z.object({
 });
 
 export type CreateRescheduleBody = z.infer<typeof CreateRescheduleSchema>;
+
+export class QueryRescheduleDto extends createZodDto(QueryRescheduleSchema) {}
+export class CreateRescheduleDto extends createZodDto(CreateRescheduleSchema) {}

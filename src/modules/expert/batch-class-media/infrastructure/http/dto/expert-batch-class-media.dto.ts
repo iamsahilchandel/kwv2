@@ -1,8 +1,12 @@
 import { z } from 'zod';
-import { BatchClassMediaType, MediaVisibility } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  BatchClassMediaType,
+  MediaVisibility,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const CreateBatchClassMediaSchema = z.object({
-  mediaUrl: z.string().url(),
+  mediaUrl: z.url(),
   mediaKey: z.string().min(1),
   fileName: z.string().min(1),
   mediaType: z.enum(BatchClassMediaType),
@@ -14,7 +18,9 @@ export const CreateBatchClassMediaSchema = z.object({
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
-export type CreateBatchClassMediaBody = z.infer<typeof CreateBatchClassMediaSchema>;
+export type CreateBatchClassMediaBody = z.infer<
+  typeof CreateBatchClassMediaSchema
+>;
 
 export const QueryMediaSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -23,3 +29,8 @@ export const QueryMediaSchema = z.object({
 });
 
 export type QueryMediaQuery = z.infer<typeof QueryMediaSchema>;
+
+export class CreateBatchClassMediaDto extends createZodDto(
+  CreateBatchClassMediaSchema,
+) {}
+export class QueryMediaDto extends createZodDto(QueryMediaSchema) {}

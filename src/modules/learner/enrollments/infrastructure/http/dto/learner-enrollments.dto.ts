@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const CreateEnrollmentSchema = z.object({
   batchId: z.number().int().positive(),
@@ -9,20 +10,26 @@ export const CreateEnrollmentSchema = z.object({
   paymentMethod: z.string().max(50).default('gateway'),
 });
 
-export type CreateEnrollmentDto = z.infer<typeof CreateEnrollmentSchema>;
+export type CreateEnrollment = z.infer<typeof CreateEnrollmentSchema>;
 
 export const QueryEnrollmentsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  status: z.enum(['pending', 'enrolled', 'cancelled', 'completed', 'rejected']).optional(),
+  status: z
+    .enum(['pending', 'enrolled', 'cancelled', 'completed', 'rejected'])
+    .optional(),
   batchId: z.coerce.number().int().positive().optional(),
 });
 
-export type QueryEnrollmentsDto = z.infer<typeof QueryEnrollmentsSchema>;
+export type QueryEnrollments = z.infer<typeof QueryEnrollmentsSchema>;
 
 export const VerifyPaymentSchema = z.object({
   enrollmentId: z.number().int().positive(),
   orderId: z.string().min(1),
 });
 
-export type VerifyPaymentDto = z.infer<typeof VerifyPaymentSchema>;
+export type VerifyPayment = z.infer<typeof VerifyPaymentSchema>;
+
+export class CreateEnrollmentDto extends createZodDto(CreateEnrollmentSchema) {}
+export class QueryEnrollmentsDto extends createZodDto(QueryEnrollmentsSchema) {}
+export class VerifyPaymentDto extends createZodDto(VerifyPaymentSchema) {}

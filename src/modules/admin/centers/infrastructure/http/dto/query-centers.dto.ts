@@ -1,6 +1,10 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
-import { CenterType, CenterOperatingEntity } from '../../../../../../generated/prisma/enums.js';
+import {
+  CenterType,
+  CenterOperatingEntity,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const QueryCentersSchema = PaginationQuerySchema.extend({
   isActive: z
@@ -16,3 +20,5 @@ export const QueryCentersSchema = PaginationQuerySchema.extend({
 });
 
 export type QueryCentersQuery = z.infer<typeof QueryCentersSchema>;
+
+export class QueryCentersDto extends createZodDto(QueryCentersSchema) {}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const QueryAttendanceSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -9,4 +10,6 @@ export const QueryAttendanceSchema = z.object({
   endDate: z.coerce.date().optional(),
 });
 
-export type QueryAttendanceDto = z.infer<typeof QueryAttendanceSchema>;
+export type QueryAttendance = z.infer<typeof QueryAttendanceSchema>;
+
+export class QueryAttendanceDto extends createZodDto(QueryAttendanceSchema) {}

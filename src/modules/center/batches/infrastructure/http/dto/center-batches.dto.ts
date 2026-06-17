@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { BatchType, BatchStatus, AttendanceStatus, BenefitType } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  BatchType,
+  BatchStatus,
+  AttendanceStatus,
+  BenefitType,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const CreateBatchSchema = z.object({
   batchName: z.string().min(1).max(200),
@@ -18,13 +24,15 @@ export const CreateBatchSchema = z.object({
   requireExpertConfirmation: z.boolean().default(true),
   minimumClassesBooking: z.number().int().min(1).default(1),
   numberOfSeats: z.number().int().min(1).optional(),
-  benefits: z.array(
-    z.object({
-      benefitTitle: z.string().min(1),
-      benefitDescription: z.string().optional(),
-      benefitType: z.enum(BenefitType).default('other'),
-    }),
-  ).optional(),
+  benefits: z
+    .array(
+      z.object({
+        benefitTitle: z.string().min(1),
+        benefitDescription: z.string().optional(),
+        benefitType: z.enum(BenefitType).default('other'),
+      }),
+    )
+    .optional(),
 });
 
 export type CreateBatchBody = z.infer<typeof CreateBatchSchema>;
@@ -63,14 +71,21 @@ export const QueryBatchesSchema = z.object({
 export type QueryBatchesQuery = z.infer<typeof QueryBatchesSchema>;
 
 export const MarkAttendanceSchema = z.object({
-  attendances: z.array(
-    z.object({
-      learnerProfileId: z.number().int().min(1),
-      batchEnrollmentId: z.number().int().min(1),
-      attendanceStatus: z.enum(AttendanceStatus),
-      notes: z.string().max(500).optional(),
-    }),
-  ).min(1),
+  attendances: z
+    .array(
+      z.object({
+        learnerProfileId: z.number().int().min(1),
+        batchEnrollmentId: z.number().int().min(1),
+        attendanceStatus: z.enum(AttendanceStatus),
+        notes: z.string().max(500).optional(),
+      }),
+    )
+    .min(1),
 });
 
 export type MarkAttendanceBody = z.infer<typeof MarkAttendanceSchema>;
+
+export class CreateBatchDto extends createZodDto(CreateBatchSchema) {}
+export class UpdateBatchDto extends createZodDto(UpdateBatchSchema) {}
+export class QueryBatchesDto extends createZodDto(QueryBatchesSchema) {}
+export class MarkAttendanceDto extends createZodDto(MarkAttendanceSchema) {}

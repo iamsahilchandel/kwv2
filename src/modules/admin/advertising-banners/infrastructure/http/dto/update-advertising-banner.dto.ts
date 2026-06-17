@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { BannerType } from './create-advertising-banner.dto.js';
 
 export const UpdateAdvertisingBannerSchema = z.object({
@@ -13,3 +14,7 @@ export const UpdateAdvertisingBannerSchema = z.object({
 export type UpdateAdvertisingBannerBody = z.infer<
   typeof UpdateAdvertisingBannerSchema
 >;
+
+export class UpdateAdvertisingBannerDto extends createZodDto(
+  UpdateAdvertisingBannerSchema,
+) {}

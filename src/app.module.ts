@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
@@ -10,6 +10,7 @@ import { awsConfig } from './config/aws.config.js';
 import { cashfreeConfig } from './config/cashfree.config.js';
 import { googleMapsConfig } from './config/google-maps.config.js';
 import { govPicklistConfig } from './config/gov-picklist.config.js';
+import { HttpLoggerMiddleware } from './core/middleware/http-logger.middleware.js';
 import { DatabaseModule } from './core/database/database.module.js';
 import { RedisModule } from './core/redis/redis.module.js';
 import { ApiKeyGuard } from './core/guards/api-key.guard.js';
@@ -72,4 +73,8 @@ import { SharedModule } from './modules/shared/shared.module.js';
     { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpLoggerMiddleware).forRoutes('*');
+  }
+}

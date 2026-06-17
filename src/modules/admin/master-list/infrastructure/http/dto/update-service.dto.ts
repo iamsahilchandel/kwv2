@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { ServiceGroup } from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateServiceSchema = z.object({
@@ -8,3 +9,5 @@ export const UpdateServiceSchema = z.object({
 });
 
 export type UpdateServiceBody = z.infer<typeof UpdateServiceSchema>;
+
+export class UpdateServiceDto extends createZodDto(UpdateServiceSchema) {}

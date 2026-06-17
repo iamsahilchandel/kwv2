@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { CenterType, CenterOperatingEntity } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  CenterType,
+  CenterOperatingEntity,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateCenterProfileSchema = z.object({
   centerName: z.string().min(1).max(100).optional(),
@@ -34,3 +38,10 @@ export const SubmitUpdateRequestSchema = z.object({
 });
 
 export type SubmitUpdateRequestBody = z.infer<typeof SubmitUpdateRequestSchema>;
+
+export class UpdateCenterProfileDto extends createZodDto(
+  UpdateCenterProfileSchema,
+) {}
+export class SubmitUpdateRequestDto extends createZodDto(
+  SubmitUpdateRequestSchema,
+) {}

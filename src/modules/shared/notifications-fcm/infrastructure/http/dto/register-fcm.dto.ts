@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export enum UserType {
   AppAdmin = 'appadmin',
@@ -23,3 +24,5 @@ export const RegisterFcmTokenSchema = z.object({
 });
 
 export type RegisterFcmTokenBody = z.infer<typeof RegisterFcmTokenSchema>;
+
+export class RegisterFcmTokenDto extends createZodDto(RegisterFcmTokenSchema) {}

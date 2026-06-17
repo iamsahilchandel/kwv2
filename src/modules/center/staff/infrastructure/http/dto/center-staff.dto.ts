@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CenterStaffRole } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateCenterStaffSchema = z.object({
@@ -31,3 +32,11 @@ export const QueryCenterStaffSchema = z.object({
 });
 
 export type QueryCenterStaffQuery = z.infer<typeof QueryCenterStaffSchema>;
+
+export class CreateCenterStaffDto extends createZodDto(
+  CreateCenterStaffSchema,
+) {}
+export class UpdateCenterStaffDto extends createZodDto(
+  UpdateCenterStaffSchema,
+) {}
+export class QueryCenterStaffDto extends createZodDto(QueryCenterStaffSchema) {}

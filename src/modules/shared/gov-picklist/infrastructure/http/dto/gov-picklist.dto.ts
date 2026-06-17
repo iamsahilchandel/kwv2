@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const GovPicklistQuerySchema = z.object({
   format: z.string().optional(),
@@ -17,3 +18,5 @@ export const GovPicklistQuerySchema = z.object({
 });
 
 export type GovPicklistQuery = z.infer<typeof GovPicklistQuerySchema>;
+
+export class GovPicklistQueryDto extends createZodDto(GovPicklistQuerySchema) {}

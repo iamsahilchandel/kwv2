@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const UpdatePlatformDocumentSchema = z.object({
   documentTitle: z.string().max(200).optional(),
@@ -10,3 +11,7 @@ export const UpdatePlatformDocumentSchema = z.object({
 export type UpdatePlatformDocumentBody = z.infer<
   typeof UpdatePlatformDocumentSchema
 >;
+
+export class UpdatePlatformDocumentDto extends createZodDto(
+  UpdatePlatformDocumentSchema,
+) {}

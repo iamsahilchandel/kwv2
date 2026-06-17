@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const QueryExpertLearnersSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -6,4 +7,10 @@ export const QueryExpertLearnersSchema = z.object({
   search: z.string().max(100).optional(),
 });
 
-export type QueryExpertLearnersQuery = z.infer<typeof QueryExpertLearnersSchema>;
+export type QueryExpertLearnersQuery = z.infer<
+  typeof QueryExpertLearnersSchema
+>;
+
+export class QueryExpertLearnersDto extends createZodDto(
+  QueryExpertLearnersSchema,
+) {}

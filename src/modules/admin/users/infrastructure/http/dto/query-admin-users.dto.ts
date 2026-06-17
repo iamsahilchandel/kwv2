@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
 import { AdminRole } from '../../../../../../generated/prisma/enums.js';
 
@@ -14,3 +15,5 @@ export const QueryAdminUsersSchema = PaginationQuerySchema.extend({
 });
 
 export type QueryAdminUsersQuery = z.infer<typeof QueryAdminUsersSchema>;
+
+export class QueryAdminUsersDto extends createZodDto(QueryAdminUsersSchema) {}

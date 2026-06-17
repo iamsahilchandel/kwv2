@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { CenterPaymentMethod } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryPaymentsSchema = z.object({
@@ -22,3 +23,9 @@ export const PayWithCouponSchema = z.object({
 });
 
 export type PayWithCouponBody = z.infer<typeof PayWithCouponSchema>;
+
+export class QueryPaymentsDto extends createZodDto(QueryPaymentsSchema) {}
+export class OnboardingPaymentDto extends createZodDto(
+  OnboardingPaymentSchema,
+) {}
+export class PayWithCouponDto extends createZodDto(PayWithCouponSchema) {}

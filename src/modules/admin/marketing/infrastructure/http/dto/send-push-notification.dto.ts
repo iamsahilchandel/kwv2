@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export enum MarketingUserType {
   appadmin = 'appadmin',
@@ -24,3 +25,7 @@ export const SendPushNotificationSchema = z.object({
 export type SendPushNotificationBody = z.infer<
   typeof SendPushNotificationSchema
 >;
+
+export class SendPushNotificationDto extends createZodDto(
+  SendPushNotificationSchema,
+) {}

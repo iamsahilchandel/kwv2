@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const AdminVerifyNumberSchema = z.object({
   phoneNumber: z.string().length(10, 'Phone number must be exactly 10 digits'),
@@ -10,3 +11,8 @@ export const AdminLoginSchema = z.object({
 
 export type AdminVerifyNumberBody = z.infer<typeof AdminVerifyNumberSchema>;
 export type AdminLoginBody = z.infer<typeof AdminLoginSchema>;
+
+export class AdminVerifyNumberDto extends createZodDto(
+  AdminVerifyNumberSchema,
+) {}
+export class AdminLoginDto extends createZodDto(AdminLoginSchema) {}

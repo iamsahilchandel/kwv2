@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { CouponType, CouponApplication } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  CouponType,
+  CouponApplication,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const CreateCouponSchema = z.object({
   code: z.string().max(50).optional(),
@@ -21,3 +25,5 @@ export const CreateCouponSchema = z.object({
 });
 
 export type CreateCouponBody = z.infer<typeof CreateCouponSchema>;
+
+export class CreateCouponDto extends createZodDto(CreateCouponSchema) {}

@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { CenterType, CenterOperatingEntity } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  CenterType,
+  CenterOperatingEntity,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const UpdateCenterSchema = z.object({
   isActive: z.boolean().optional(),
@@ -12,3 +16,5 @@ export const UpdateCenterSchema = z.object({
 });
 
 export type UpdateCenterBody = z.infer<typeof UpdateCenterSchema>;
+
+export class UpdateCenterDto extends createZodDto(UpdateCenterSchema) {}

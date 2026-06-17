@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { RescheduleRequestStatus, RequesterType } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  RescheduleRequestStatus,
+  RequesterType,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const QueryRescheduleRequestsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -8,14 +12,18 @@ export const QueryRescheduleRequestsSchema = z.object({
   requesterType: z.enum(RequesterType).optional(),
 });
 
-export type QueryRescheduleRequestsQuery = z.infer<typeof QueryRescheduleRequestsSchema>;
+export type QueryRescheduleRequestsQuery = z.infer<
+  typeof QueryRescheduleRequestsSchema
+>;
 
 export const ApproveRescheduleSchema = z.object({
-  proposedSchedule: z.object({
-    classDate: z.coerce.date(),
-    startTime: z.string(),
-    endTime: z.string(),
-  }).optional(),
+  proposedSchedule: z
+    .object({
+      classDate: z.coerce.date(),
+      startTime: z.string(),
+      endTime: z.string(),
+    })
+    .optional(),
   adminNotes: z.string().max(500).optional(),
 });
 
@@ -26,3 +34,11 @@ export const RejectRescheduleSchema = z.object({
 });
 
 export type RejectRescheduleBody = z.infer<typeof RejectRescheduleSchema>;
+
+export class QueryRescheduleRequestsDto extends createZodDto(
+  QueryRescheduleRequestsSchema,
+) {}
+export class ApproveRescheduleDto extends createZodDto(
+  ApproveRescheduleSchema,
+) {}
+export class RejectRescheduleDto extends createZodDto(RejectRescheduleSchema) {}

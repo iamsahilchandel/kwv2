@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export enum TravelMode {
   Driving = 'driving',
@@ -64,3 +65,20 @@ export type NearbyPlacesQuery = z.infer<typeof NearbyPlacesQuerySchema>;
 export type PlaceDetailsQuery = z.infer<typeof PlaceDetailsQuerySchema>;
 export type AutocompleteQuery = z.infer<typeof AutocompleteQuerySchema>;
 export type StaticMapQuery = z.infer<typeof StaticMapQuerySchema>;
+
+export class GeocodeQueryDto extends createZodDto(GeocodeQuerySchema) {}
+export class LatLngQueryDto extends createZodDto(LatLngQuerySchema) {}
+export class DirectionsQueryDto extends createZodDto(DirectionsQuerySchema) {}
+export class DistanceMatrixQueryDto extends createZodDto(
+  DistanceMatrixQuerySchema,
+) {}
+export class NearbyPlacesQueryDto extends createZodDto(
+  NearbyPlacesQuerySchema,
+) {}
+export class PlaceDetailsQueryDto extends createZodDto(
+  PlaceDetailsQuerySchema,
+) {}
+export class AutocompleteQueryDto extends createZodDto(
+  AutocompleteQuerySchema,
+) {}
+export class StaticMapQueryDto extends createZodDto(StaticMapQuerySchema) {}

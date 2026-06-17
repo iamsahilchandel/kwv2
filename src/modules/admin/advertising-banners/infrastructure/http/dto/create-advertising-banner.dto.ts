@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export enum BannerType {
   center = 'center',
@@ -19,3 +20,7 @@ export const CreateAdvertisingBannerSchema = z.object({
 export type CreateAdvertisingBannerBody = z.infer<
   typeof CreateAdvertisingBannerSchema
 >;
+
+export class CreateAdvertisingBannerDto extends createZodDto(
+  CreateAdvertisingBannerSchema,
+) {}

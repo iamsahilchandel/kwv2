@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { AgreementStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryAgreementsSchema = z.object({
@@ -14,3 +15,6 @@ export const RejectAgreementSchema = z.object({
 });
 
 export type RejectAgreementBody = z.infer<typeof RejectAgreementSchema>;
+
+export class QueryAgreementsDto extends createZodDto(QueryAgreementsSchema) {}
+export class RejectAgreementDto extends createZodDto(RejectAgreementSchema) {}

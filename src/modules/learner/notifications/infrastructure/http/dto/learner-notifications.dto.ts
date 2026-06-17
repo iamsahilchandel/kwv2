@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const QueryNotificationsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -6,7 +7,13 @@ export const QueryNotificationsSchema = z.object({
   isRead: z
     .string()
     .optional()
-    .transform((v) => (v === 'true' ? true : v === 'false' ? false : undefined)),
+    .transform((v) =>
+      v === 'true' ? true : v === 'false' ? false : undefined,
+    ),
 });
 
 export type QueryNotificationsQuery = z.infer<typeof QueryNotificationsSchema>;
+
+export class QueryNotificationsDto extends createZodDto(
+  QueryNotificationsSchema,
+) {}

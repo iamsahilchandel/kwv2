@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const CashfreeWebhookHeadersSchema = z.object({
   'x-webhook-signature': z.string().min(1),
@@ -8,3 +9,7 @@ export const CashfreeWebhookHeadersSchema = z.object({
 export type CashfreeWebhookHeaders = z.infer<
   typeof CashfreeWebhookHeadersSchema
 >;
+
+export class CashfreeWebhookHeadersDto extends createZodDto(
+  CashfreeWebhookHeadersSchema,
+) {}

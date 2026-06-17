@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const UpdateLearnerSchema = z.object({
   firstName: z.string().min(1).max(100).optional(),
@@ -6,7 +7,7 @@ export const UpdateLearnerSchema = z.object({
   email: z.email().optional(),
 });
 
-export type UpdateLearnerDto = z.infer<typeof UpdateLearnerSchema>;
+export type UpdateLearner = z.infer<typeof UpdateLearnerSchema>;
 
 export const CreateProfileSchema = z.object({
   firstName: z.string().min(1).max(100),
@@ -26,8 +27,12 @@ export const CreateProfileSchema = z.object({
     .optional(),
 });
 
-export type CreateProfileDto = z.infer<typeof CreateProfileSchema>;
+export type CreateProfile = z.infer<typeof CreateProfileSchema>;
 
 export const UpdateProfileSchema = CreateProfileSchema.partial();
 
-export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;
+export type UpdateProfile = z.infer<typeof UpdateProfileSchema>;
+
+export class UpdateLearnerDto extends createZodDto(UpdateLearnerSchema) {}
+export class CreateProfileDto extends createZodDto(CreateProfileSchema) {}
+export class UpdateProfileDto extends createZodDto(UpdateProfileSchema) {}

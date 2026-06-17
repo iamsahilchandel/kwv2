@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { PollStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const CreatePollSchema = z.object({
@@ -7,14 +8,17 @@ export const CreatePollSchema = z.object({
   closingDate: z.coerce.date(),
   batchClassId: z.number().int().min(1).optional(),
   rescheduleRequestId: z.number().int().optional(),
-  options: z.array(
-    z.object({
-      proposedDate: z.coerce.date(),
-      proposedStartTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
-      proposedEndTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
-      optionOrder: z.number().int().default(0),
-    }),
-  ).min(1).max(5),
+  options: z
+    .array(
+      z.object({
+        proposedDate: z.coerce.date(),
+        proposedStartTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
+        proposedEndTime: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/),
+        optionOrder: z.number().int().default(0),
+      }),
+    )
+    .min(1)
+    .max(5),
 });
 
 export type CreatePollBody = z.infer<typeof CreatePollSchema>;
@@ -40,3 +44,8 @@ export const QueryPollsSchema = z.object({
 });
 
 export type QueryPollsQuery = z.infer<typeof QueryPollsSchema>;
+
+export class CreatePollDto extends createZodDto(CreatePollSchema) {}
+export class UpdatePollDto extends createZodDto(UpdatePollSchema) {}
+export class ClosePollDto extends createZodDto(ClosePollSchema) {}
+export class QueryPollsDto extends createZodDto(QueryPollsSchema) {}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const CalendarQuerySchema = z.object({
   startDate: z.coerce.date(),
@@ -13,3 +14,8 @@ export const UpcomingClassesQuerySchema = z.object({
 });
 
 export type UpcomingClassesQuery = z.infer<typeof UpcomingClassesQuerySchema>;
+
+export class CalendarQueryDto extends createZodDto(CalendarQuerySchema) {}
+export class UpcomingClassesQueryDto extends createZodDto(
+  UpcomingClassesQuerySchema,
+) {}

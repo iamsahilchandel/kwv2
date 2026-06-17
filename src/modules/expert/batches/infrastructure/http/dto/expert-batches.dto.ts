@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { BatchStatus, BatchType } from '../../../../../../generated/prisma/enums.js';
+import { createZodDto } from 'nestjs-zod';
+import {
+  BatchStatus,
+  BatchType,
+} from '../../../../../../generated/prisma/enums.js';
 
 export const QueryExpertBatchesSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -10,3 +14,7 @@ export const QueryExpertBatchesSchema = z.object({
 });
 
 export type QueryExpertBatchesQuery = z.infer<typeof QueryExpertBatchesSchema>;
+
+export class QueryExpertBatchesDto extends createZodDto(
+  QueryExpertBatchesSchema,
+) {}

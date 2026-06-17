@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const QueryMyExpertsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -7,7 +8,7 @@ export const QueryMyExpertsSchema = z.object({
   activityIds: z.string().optional(),
 });
 
-export type QueryMyExpertsDto = z.infer<typeof QueryMyExpertsSchema>;
+export type QueryMyExperts = z.infer<typeof QueryMyExpertsSchema>;
 
 export const QueryGlobalExpertsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -19,4 +20,9 @@ export const QueryGlobalExpertsSchema = z.object({
   activityIds: z.string().optional(),
 });
 
-export type QueryGlobalExpertsDto = z.infer<typeof QueryGlobalExpertsSchema>;
+export type QueryGlobalExperts = z.infer<typeof QueryGlobalExpertsSchema>;
+
+export class QueryMyExpertsDto extends createZodDto(QueryMyExpertsSchema) {}
+export class QueryGlobalExpertsDto extends createZodDto(
+  QueryGlobalExpertsSchema,
+) {}

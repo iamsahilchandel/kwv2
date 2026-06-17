@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { AdminRole } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateAdminUserSchema = z.object({
@@ -10,3 +11,5 @@ export const CreateAdminUserSchema = z.object({
 });
 
 export type CreateAdminUserBody = z.infer<typeof CreateAdminUserSchema>;
+
+export class CreateAdminUserDto extends createZodDto(CreateAdminUserSchema) {}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
 import { CenterInquiryStatus } from '../../../../../../generated/prisma/enums.js';
 
@@ -14,3 +15,7 @@ export const QueryCenterInquiriesSchema = PaginationQuerySchema.extend({
 export type QueryCenterInquiriesQuery = z.infer<
   typeof QueryCenterInquiriesSchema
 >;
+
+export class QueryCenterInquiriesDto extends createZodDto(
+  QueryCenterInquiriesSchema,
+) {}

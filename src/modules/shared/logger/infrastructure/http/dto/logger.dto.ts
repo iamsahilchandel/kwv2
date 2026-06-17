@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const LogsQuerySchema = z.object({
   date: z
@@ -8,3 +9,5 @@ export const LogsQuerySchema = z.object({
 });
 
 export type LogsQuery = z.infer<typeof LogsQuerySchema>;
+
+export class LogsQueryDto extends createZodDto(LogsQuerySchema) {}

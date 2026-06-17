@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { EnrollmentStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const QueryEnrollmentsSchema = z.object({
@@ -17,3 +18,6 @@ export const UpdateEnrollmentSchema = z.object({
 });
 
 export type UpdateEnrollmentBody = z.infer<typeof UpdateEnrollmentSchema>;
+
+export class QueryEnrollmentsDto extends createZodDto(QueryEnrollmentsSchema) {}
+export class UpdateEnrollmentDto extends createZodDto(UpdateEnrollmentSchema) {}

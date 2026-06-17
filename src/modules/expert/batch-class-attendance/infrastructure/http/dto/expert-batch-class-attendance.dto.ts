@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { AttendanceStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const MarkAttendanceSchema = z.object({
@@ -15,3 +16,5 @@ export const MarkAttendanceSchema = z.object({
 });
 
 export type MarkAttendanceBody = z.infer<typeof MarkAttendanceSchema>;
+
+export class MarkAttendanceDto extends createZodDto(MarkAttendanceSchema) {}

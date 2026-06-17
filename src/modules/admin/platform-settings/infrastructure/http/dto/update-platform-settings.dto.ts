@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const UpdatePlatformSettingsSchema = z.object({
   value: z.string().max(5000),
@@ -8,3 +9,7 @@ export const UpdatePlatformSettingsSchema = z.object({
 export type UpdatePlatformSettingsBody = z.infer<
   typeof UpdatePlatformSettingsSchema
 >;
+
+export class UpdatePlatformSettingsDto extends createZodDto(
+  UpdatePlatformSettingsSchema,
+) {}

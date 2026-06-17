@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const UpdateExpertSchema = z.object({
   isActive: z.boolean().optional(),
@@ -6,3 +7,5 @@ export const UpdateExpertSchema = z.object({
 });
 
 export type UpdateExpertBody = z.infer<typeof UpdateExpertSchema>;
+
+export class UpdateExpertDto extends createZodDto(UpdateExpertSchema) {}

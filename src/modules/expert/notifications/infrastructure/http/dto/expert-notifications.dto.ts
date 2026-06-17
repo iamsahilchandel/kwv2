@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const QueryNotificationsSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -7,3 +8,7 @@ export const QueryNotificationsSchema = z.object({
 });
 
 export type QueryNotificationsQuery = z.infer<typeof QueryNotificationsSchema>;
+
+export class QueryNotificationsDto extends createZodDto(
+  QueryNotificationsSchema,
+) {}

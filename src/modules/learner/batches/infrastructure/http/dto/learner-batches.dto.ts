@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const QueryBatchesSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
@@ -12,4 +13,6 @@ export const QueryBatchesSchema = z.object({
   startDateTo: z.coerce.date().optional(),
 });
 
-export type QueryBatchesDto = z.infer<typeof QueryBatchesSchema>;
+export type QueryBatches = z.infer<typeof QueryBatchesSchema>;
+
+export class QueryBatchesDto extends createZodDto(QueryBatchesSchema) {}

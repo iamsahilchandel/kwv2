@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { InterestStatus } from '../../../../../../generated/prisma/enums.js';
 
 export const CreateInterestSchema = z.object({
@@ -23,3 +24,7 @@ export const QueryInterestsSchema = z.object({
 });
 
 export type QueryInterestsQuery = z.infer<typeof QueryInterestsSchema>;
+
+export class CreateInterestDto extends createZodDto(CreateInterestSchema) {}
+export class RespondInterestDto extends createZodDto(RespondInterestSchema) {}
+export class QueryInterestsDto extends createZodDto(QueryInterestsSchema) {}

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 import { PaginationQuerySchema } from '../../../../../../common/dto/pagination.dto.js';
 import {
   CouponStatus,
@@ -15,3 +16,5 @@ export const QueryCouponsSchema = PaginationQuerySchema.extend({
 });
 
 export type QueryCouponsQuery = z.infer<typeof QueryCouponsSchema>;
+
+export class QueryCouponsDto extends createZodDto(QueryCouponsSchema) {}
