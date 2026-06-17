@@ -4,7 +4,6 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { appConfig } from './config/app.config.js';
 import { databaseConfig } from './config/database.config.js';
-import { redisConfig } from './config/redis.config.js';
 import { firebaseConfig } from './config/firebase.config.js';
 import { awsConfig } from './config/aws.config.js';
 import { cashfreeConfig } from './config/cashfree.config.js';
@@ -12,7 +11,6 @@ import { googleMapsConfig } from './config/google-maps.config.js';
 import { govPicklistConfig } from './config/gov-picklist.config.js';
 import { HttpLoggerMiddleware } from './core/middleware/http-logger.middleware.js';
 import { DatabaseModule } from './core/database/database.module.js';
-import { RedisModule } from './core/redis/redis.module.js';
 import { ApiKeyGuard } from './core/guards/api-key.guard.js';
 import { FirebaseAuthGuard } from './core/guards/firebase-auth.guard.js';
 import { RolesGuard } from './core/guards/roles.guard.js';
@@ -34,7 +32,6 @@ import { SharedModule } from './modules/shared/shared.module.js';
       load: [
         appConfig,
         databaseConfig,
-        redisConfig,
         firebaseConfig,
         awsConfig,
         cashfreeConfig,
@@ -54,7 +51,6 @@ import { SharedModule } from './modules/shared/shared.module.js';
       }),
     }),
     DatabaseModule,
-    RedisModule,
     FirebaseModule,
     HealthModule,
     AdminModule,
